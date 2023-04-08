@@ -7,14 +7,36 @@ import { api } from "~/utils/api";
 
 const BoardPage: NextPage = () => {
   const [newTitle, setNewTitle] = useState("");
+  const [currentLists, setCurrentLists] = useState<string[]>([]);
+
+  const { data: lists } = api.lists.getUserLists.useQuery();
+
+  if (lists && currentLists.length === 0) {
+    if (lists.length) {
+      setCurrentLists([lists[0]!.id]);
+    }
+  }
 
   const { mutate: addItem } = api.lists.createItemInList.useMutation();
 
   return (
     <>
-      <main className="flex min-h-screen flex-col items-center justify-center bg-slate-900">
+      <main className="flex min-h-screen flex-row items-center justify-center bg-slate-900">
+        <div className="ml-10 flex w-36 flex-col space-y-4">
+          {lists?.map((list) => (
+            <Button
+              key={list.id}
+              variant={currentLists.includes(list.id) ? "subtle" : "ghost"}
+              size="sm"
+              className="w-full justify-start"
+              onClick={() => setCurrentLists([list.id])}
+            >
+              {list.title}
+            </Button>
+          ))}
+        </div>
         <div className="flex flex-col">
-          <Input
+          {/* <Input
             value={newTitle}
             onChange={(e) => setNewTitle(e.target.value)}
           />
@@ -28,10 +50,10 @@ const BoardPage: NextPage = () => {
             }}
           >
             +
-          </Button>
+          </Button> */}
         </div>
         <div className="container flex flex-col items-center justify-center gap-12 px-4 py-16 ">
-          <ItemsList listId={"clg8advti0000vrwwqevvy0j7"} />
+          {currentLists[0] && <ItemsList listId={currentLists[0]} />}
         </div>
       </main>
     </>
