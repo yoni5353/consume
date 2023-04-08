@@ -1,7 +1,14 @@
 import { Button } from "./ui/button";
 import { Progress } from "./ui/progress";
 import { Item } from "@prisma/client";
-import { PlusCircle, List as ListIcon, ClipboardCopy } from "lucide-react";
+import {
+  PlusCircle,
+  ListIcon,
+  ClipboardCopy,
+  Trash2,
+  SplitSquareHorizontal,
+  Share2,
+} from "lucide-react";
 import {
   ContextMenu,
   ContextMenuTrigger,
@@ -26,7 +33,7 @@ export function ItemCard({
     <ContextMenu>
       <ContextMenuTrigger>
         <div className="flex flex-col gap-5">
-          <Button className="flex w-[500px] justify-between gap-5 rounded-md bg-slate-900 px-5 py-1 text-left dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700 dark:hover:text-slate-100">
+          <Button className="flex w-[50vw] justify-between gap-5 rounded-md bg-slate-900 px-5 py-1 text-left dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700 dark:hover:text-slate-100">
             <div className="space-x-3">
               <span className="font-medium">{item.title}</span>
               <span className="text-slate-400">{item.description}</span>
@@ -41,7 +48,7 @@ export function ItemCard({
       <ContextMenuContent>
         <ContextMenuSub>
           <ContextMenuSubTrigger>Move to List</ContextMenuSubTrigger>
-          <ContextMenuSubContent className="w-48">
+          <ContextMenuSubContent className="w-36">
             <ContextMenuItem>
               <PlusCircle className="mr-2 h-4 w-4" />
               New list
@@ -57,7 +64,7 @@ export function ItemCard({
 
         <ContextMenuSub>
           <ContextMenuSubTrigger>Copy to List</ContextMenuSubTrigger>
-          <ContextMenuSubContent className="w-48">
+          <ContextMenuSubContent className="w-36">
             <ContextMenuItem>
               <PlusCircle className="mr-2 h-4 w-4" />
               New list
@@ -73,12 +80,18 @@ export function ItemCard({
 
         <ContextMenuSeparator />
 
-        <ContextMenuItem onSelect={onDelete}>Delete</ContextMenuItem>
+        <ContextMenuItem onSelect={onDelete}>
+          <Trash2 className="mr-2 h-4 w-4" /> Delete
+        </ContextMenuItem>
 
-        <ContextMenuItem>Split</ContextMenuItem>
+        <ContextMenuItem>
+          <SplitSquareHorizontal className="mr-2 h-4 w-4" /> Split
+        </ContextMenuItem>
 
         <ContextMenuSub>
-          <ContextMenuSubTrigger>Share</ContextMenuSubTrigger>
+          <ContextMenuSubTrigger>
+            <Share2 className="mr-2 h-4 w-4" /> Share
+          </ContextMenuSubTrigger>
           <ContextMenuSubContent>
             <ContextMenuItem>
               <ClipboardCopy className="mr-2 h-4 w-4" /> Copy link
