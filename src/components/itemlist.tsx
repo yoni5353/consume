@@ -3,6 +3,7 @@ import { ItemCard } from "./itemcard";
 import { Input } from "./ui/input";
 import { Button } from "./ui/button";
 import { useForm, SubmitHandler } from "react-hook-form";
+import { Plus } from "lucide-react";
 
 export function ItemsList({ listId }: { listId: string }) {
   const { register, handleSubmit, reset } = useForm<{ itemTitle: string }>();
@@ -30,9 +31,14 @@ export function ItemsList({ listId }: { listId: string }) {
 
   return (
     <div className="flex flex-col gap-3">
-      <form onSubmit={handleSubmit(onCreateItem)} className="flex flex-row">
+      <form
+        onSubmit={handleSubmit(onCreateItem)}
+        className="flex flex-row gap-2"
+      >
         <Input {...register("itemTitle")} />
-        <Button type="submit">+</Button>
+        <Button type="submit" variant="subtle" className="p-2">
+          <Plus />
+        </Button>
       </form>
       {items?.map((item) => (
         <ItemCard
