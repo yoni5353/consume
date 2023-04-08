@@ -21,7 +21,7 @@ const BoardPage: NextPage = () => {
           <Button
             onClick={() => {
               addItem({
-                listId: "clg8757uv0000vr8svqsqivpa",
+                listId: "clg8advti0000vrwwqevvy0j7",
                 item: { title: newTitle },
               });
               setNewTitle("");
@@ -31,7 +31,7 @@ const BoardPage: NextPage = () => {
           </Button>
         </div>
         <div className="container flex flex-col items-center justify-center gap-12 px-4 py-16 ">
-          <ItemsList listId={"clg8757uv0000vr8svqsqivpa"} />
+          <ItemsList listId={"clg8advti0000vrwwqevvy0j7"} />
         </div>
       </main>
     </>

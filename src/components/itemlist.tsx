@@ -9,7 +9,7 @@ export function ItemsList({ listId }: { listId: string }) {
   return (
     <div className="flex flex-col gap-3">
       {items?.map((item) => (
-        <ItemCard item={item.item} />
+        <ItemCard item={item.item} key={item.itemId} />
       ))}
     </div>
   );
