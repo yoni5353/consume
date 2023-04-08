@@ -8,6 +8,8 @@ import {
 
 export const listsRouter = createTRPCRouter({
   getWithItems: protectedProcedure.query(({ ctx }) => {
-    return ctx.prisma.list.findMany({include: {items: {include: {item: true}}}});
+    return ctx.prisma.list.findFirst({
+      include: {items: {include: {item: true}}}
+    });
   }),
 });
