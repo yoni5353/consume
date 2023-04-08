@@ -1,10 +1,8 @@
 import { api } from "~/utils/api";
-import { Button } from "./ui/button";
-import { Progress } from "./ui/progress";
 import { ItemCard } from "./itemcard";
 
-export function ItemsList() {
-  const { data: listWithItems } = api.lists.getWithItems.useQuery();
+export function ItemsList({ listId }: { listId: string }) {
+  const { data: listWithItems } = api.lists.getWithItems.useQuery(listId);
 
   const items = listWithItems?.items;
 

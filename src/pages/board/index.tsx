@@ -1,9 +1,5 @@
 import { type NextPage } from "next";
-import Link from "next/link";
 import { ItemsList } from "~/components/itemlist";
-import { Button } from "~/components/ui/button";
-
-import { api } from "~/utils/api";
 
 const BoardPage: NextPage = () => {
   return (
@@ -11,7 +7,7 @@ const BoardPage: NextPage = () => {
       <main className="flex min-h-screen flex-col items-center justify-center bg-slate-900">
         <h1>Consume board</h1>
         <div className="container flex flex-col items-center justify-center gap-12 px-4 py-16 ">
-          <ItemsList />
+          <ItemsList listId={"clg7zq10d0004vrdgnrbfq8cl"} />
         </div>
       </main>
     </>
