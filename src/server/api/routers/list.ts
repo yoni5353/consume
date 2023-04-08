@@ -28,7 +28,7 @@ export const listsRouter = createTRPCRouter({
     .input(z.object({
       listId: z.string(),
       item: z.object({
-        title: z.string(),
+        title: z.string().min(1),
         description: z.optional(z.string()),
       }),
     }))

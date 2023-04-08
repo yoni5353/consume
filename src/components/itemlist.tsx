@@ -35,7 +35,7 @@ export function ItemsList({ listId }: { listId: string }) {
         onSubmit={handleSubmit(onCreateItem)}
         className="flex flex-row gap-2"
       >
-        <Input {...register("itemTitle")} />
+        <Input {...register("itemTitle", { required: true, maxLength: 256 })} />
         <Button type="submit" variant="subtle" className="p-2">
           <Plus />
         </Button>
