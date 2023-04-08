@@ -12,13 +12,16 @@ import {
   ContextMenuItem,
   ContextMenuSeparator,
 } from "./ui/context-menu";
-import { api } from "~/utils/api";
 
 const listsMock = ["toread", "towatch"];
 
-export function ItemCard({ item }: { item: Item }) {
-  const { mutate: deleteItem } = api.items.deleteItem.useMutation();
-
+export function ItemCard({
+  item,
+  onDelete,
+}: {
+  item: Item;
+  onDelete: () => void;
+}) {
   return (
     <ContextMenu>
       <ContextMenuTrigger>
@@ -70,9 +73,7 @@ export function ItemCard({ item }: { item: Item }) {
 
         <ContextMenuSeparator />
 
-        <ContextMenuItem onSelect={() => deleteItem(item.id)}>
-          Delete
-        </ContextMenuItem>
+        <ContextMenuItem onSelect={onDelete}>Delete</ContextMenuItem>
 
         <ContextMenuItem>Split</ContextMenuItem>
 

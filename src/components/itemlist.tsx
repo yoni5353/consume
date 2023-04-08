@@ -1,13 +1,27 @@
 import { api } from "~/utils/api";
 import { ItemCard } from "./itemcard";
 import { Input } from "./ui/input";
-import { useState } from "react";
 import { Button } from "./ui/button";
+import { useForm, SubmitHandler } from "react-hook-form";
 
 export function ItemsList({ listId }: { listId: string }) {
-  const [newTitle, setNewTitle] = useState("");
+  const { register, handleSubmit, reset } = useForm<{ itemTitle: string }>();
+
+  const onCreateItem: SubmitHandler<{ itemTitle: string }> = (data) => {
+    addItem({
+      listId,
+      item: { title: data.itemTitle },
+    });
+    reset();
+  };
+
+  const { mutate: deleteItem } = api.items.deleteItem.useMutation({
+    onSuccess: () => refetch(),
+  });
+
   const { data: listWithItems, refetch } =
     api.lists.getWithItems.useQuery(listId);
+
   const { mutate: addItem } = api.lists.createItemInList.useMutation({
     onSuccess: () => refetch(),
   });
@@ -16,20 +30,16 @@ export function ItemsList({ listId }: { listId: string }) {
 
   return (
     <div className="flex flex-col gap-3">
-      <Input value={newTitle} onChange={(e) => setNewTitle(e.target.value)} />
-      <Button
-        onClick={() => {
-          addItem({
-            listId,
-            item: { title: newTitle },
-          });
-          setNewTitle("");
-        }}
-      >
-        +
-      </Button>
+      <form onSubmit={handleSubmit(onCreateItem)} className="flex flex-row">
+        <Input {...register("itemTitle")} />
+        <Button type="submit">+</Button>
+      </form>
       {items?.map((item) => (
-        <ItemCard item={item.item} key={item.itemId} />
+        <ItemCard
+          item={item.item}
+          key={item.itemId}
+          onDelete={() => deleteItem(item.itemId)}
+        />
       ))}
     </div>
   );
