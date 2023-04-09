@@ -1,5 +1,4 @@
-import { ScrollArea } from "@radix-ui/react-scroll-area";
-import { ListIcon } from "lucide-react";
+import { ListIcon, PlusCircleIcon } from "lucide-react";
 import { type NextPage } from "next";
 import { useState } from "react";
 import { ItemDisplay } from "~/components/itemDisplay";
@@ -9,9 +8,7 @@ import { api } from "~/utils/api";
 
 const BoardPage: NextPage = () => {
   const [currentLists, setCurrentLists] = useState<string[]>([]);
-  const [selectedItemId, setSelectedItemId] = useState<string | undefined>(
-    undefined
-  );
+  const [selectedItemId, setSelectedItemId] = useState<string | undefined>(undefined);
 
   const { data: lists } = api.lists.getUserLists.useQuery();
 
@@ -45,6 +42,10 @@ const BoardPage: NextPage = () => {
                   {list.title}
                 </Button>
               ))}
+              <Button variant="ghost" size="sm" className="w-full justify-start">
+                <PlusCircleIcon className="mr-2 h-4 w-4" />
+                New List
+              </Button>
             </div>
           </div>
         </aside>
