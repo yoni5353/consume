@@ -41,7 +41,8 @@ export function ItemCard({
           <Button
             onClick={onClick}
             className={cn(
-              "flex w-[50vw] justify-between gap-5 rounded-md bg-slate-900 px-5 py-1 text-left",
+              "flex w-[50vw] justify-between gap-5 rounded-md bg-slate-900 px-5 py-1 text-left dark:bg-slate-300",
+              selected && "dark:hover:bg-slate-400 dark:hover:text-slate-800",
               !selected &&
                 "dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700 dark:hover:text-slate-100"
             )}
