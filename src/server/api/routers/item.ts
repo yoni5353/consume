@@ -6,11 +6,11 @@ import {
 } from "~/server/api/trpc";
 
 export const itemsRouter = createTRPCRouter({
-  deleteItem: protectedProcedure
-    .input(z.string())
+  deleteItems: protectedProcedure
+    .input(z.array(z.string()))
     .mutation(({ ctx, input }) => {
-      return ctx.prisma.item.delete({
-        where: {id: input}
+      return ctx.prisma.item.deleteMany({
+        where: {id: {in: input}}
       });
     })
 });

@@ -24,6 +24,8 @@ export function ItemContextMenu({
   onDelete: () => void;
   itemsAmount: number;
 }) {
+  const singleItem = itemsAmount === 1;
+
   return (
     <ContextMenuContent>
       <ContextMenuSub>
@@ -42,31 +44,18 @@ export function ItemContextMenu({
         </ContextMenuSubContent>
       </ContextMenuSub>
 
-      <ContextMenuSub>
-        <ContextMenuSubTrigger>Copy to List</ContextMenuSubTrigger>
-        <ContextMenuSubContent className="w-36">
-          <ContextMenuItem>
-            <PlusCircle className="mr-2 h-4 w-4" />
-            New list
-          </ContextMenuItem>
-          <ContextMenuSeparator />
-          {listsMock.map((list) => (
-            <ContextMenuItem key={list}>
-              <ListIcon className="mr-2 h-4 w-4" /> {list}
-            </ContextMenuItem>
-          ))}
-        </ContextMenuSubContent>
-      </ContextMenuSub>
-
       <ContextMenuSeparator />
 
       <ContextMenuItem onSelect={onDelete}>
         <Trash2 className="mr-2 h-4 w-4" /> Delete
+        {!singleItem && ` ${itemsAmount} Items`}
       </ContextMenuItem>
 
-      <ContextMenuItem>
-        <SplitSquareHorizontal className="mr-2 h-4 w-4" /> Split
-      </ContextMenuItem>
+      {singleItem && (
+        <ContextMenuItem>
+          <SplitSquareHorizontal className="mr-2 h-4 w-4" /> Split
+        </ContextMenuItem>
+      )}
 
       <ContextMenuSub>
         <ContextMenuSubTrigger>

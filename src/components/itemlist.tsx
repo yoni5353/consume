@@ -21,7 +21,7 @@ export function ItemsList({ listId }: { listId: string }) {
     reset();
   };
 
-  const { mutate: deleteItem } = api.items.deleteItem.useMutation({
+  const { mutate: deleteItems } = api.items.deleteItems.useMutation({
     onSuccess: () => refetch(),
   });
 
@@ -106,7 +106,7 @@ export function ItemsList({ listId }: { listId: string }) {
         <ItemContextMenu
           itemsAmount={selectedItems.length}
           onDelete={() => {
-            /* TODO */
+            deleteItems(selectedItems);
           }}
         />
       </ContextMenu>
