@@ -5,6 +5,8 @@ import { Button } from "./ui/button";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { Plus } from "lucide-react";
 import { useEffect, useState } from "react";
+import { ContextMenu, ContextMenuTrigger } from "~/components/ui/context-menu";
+import { ItemContextMenu } from "./itemcontextmenu";
 
 export function ItemsList({ listId }: { listId: string }) {
   const { register, handleSubmit, reset } = useForm<{ itemTitle: string }>();
@@ -88,17 +90,26 @@ export function ItemsList({ listId }: { listId: string }) {
           <Plus />
         </Button>
       </form>
-      {items?.map((item) => (
-        <div>
-          <ItemCard
-            item={item.item}
-            key={item.itemId}
-            selected={selectedItems.includes(item.itemId)}
-            onDelete={() => deleteItem(item.itemId)}
-            onClick={(e) => onCardClick(e, item.itemId)}
-          />
-        </div>
-      ))}
+      <ContextMenu>
+        <ContextMenuTrigger>
+          <div className="flex flex-col gap-2">
+            {items?.map((item) => (
+              <ItemCard
+                item={item.item}
+                key={item.itemId}
+                selected={selectedItems.includes(item.itemId)}
+                onClick={(e) => onCardClick(e, item.itemId)}
+              />
+            ))}
+          </div>
+        </ContextMenuTrigger>
+        <ItemContextMenu
+          itemsAmount={selectedItems.length}
+          onDelete={() => {
+            /* TODO */
+          }}
+        />
+      </ContextMenu>
     </div>
   );
 }
