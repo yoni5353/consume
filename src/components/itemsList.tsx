@@ -31,9 +31,13 @@ export function ItemsList({
     onSuccess: () => refetch(),
   });
 
+  const { mutate: moveItems } = api.items.moveItems.useMutation({
+    onSuccess: () => refetch(),
+  });
+
   const { data: listWithItems, refetch } = api.lists.getWithItems.useQuery(listId, {
     onSuccess: () => {
-      if (listWithItems?.items[0] && selectedItems.length === 0) {
+      if (listWithItems?.items[0] && !lastSelectedItem) {
         setLastSelectedItem(listWithItems.items[0].itemId);
       }
     },
@@ -108,7 +112,7 @@ export function ItemsList({
             deleteItems(selectedItems);
           }}
           onMoveItems={(targetListId) => {
-            console.log(targetListId);
+            moveItems({ itemIds: selectedItems, targetListId });
           }}
         />
       </ContextMenu>
