@@ -67,7 +67,7 @@ export function ItemsList({ listId }: { listId: string }) {
             .slice(start, end + 1)
             .map((item) => item.itemId);
           setSelectedItems((prev) => {
-            return [...prev, ...newSelectedItems];
+            return [...new Set([...prev, ...newSelectedItems])];
           });
         }
       }
