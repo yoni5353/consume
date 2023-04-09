@@ -4,11 +4,18 @@ import { Input } from "./ui/input";
 import { Button } from "./ui/button";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { Plus } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { ContextMenu, ContextMenuTrigger } from "~/components/ui/context-menu";
 import { ItemContextMenu } from "./itemcontextmenu";
+import { ScrollArea } from "@radix-ui/react-scroll-area";
 
-export function ItemsList({ listId }: { listId: string }) {
+export function ItemsList({
+  listId,
+  onItemSelected,
+}: {
+  listId: string;
+  onItemSelected: (itemId: string) => void;
+}) {
   const { register, handleSubmit, reset } = useForm<{ itemTitle: string }>();
   const [selectedItems, setSelectedItems] = useState<string[]>([]);
   const [lastSelectedItem, setLastSelectedItem] = useState<string>();
@@ -45,6 +52,9 @@ export function ItemsList({ listId }: { listId: string }) {
   if (!items) return null;
 
   const onCardClick = (e: React.MouseEvent, itemId: string) => {
+    onItemSelected(itemId);
+
+    // Selection logic
     const newSelectedItem = itemId;
     if (e.ctrlKey) {
       setSelectedItems((prev) => {

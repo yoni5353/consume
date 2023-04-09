@@ -1,12 +1,17 @@
+import { ScrollArea } from "@radix-ui/react-scroll-area";
 import { ListIcon } from "lucide-react";
 import { type NextPage } from "next";
 import { useState } from "react";
+import { ItemDisplay } from "~/components/itemdisplay";
 import { ItemsList } from "~/components/itemlist";
 import { Button } from "~/components/ui/button";
 import { api } from "~/utils/api";
 
 const BoardPage: NextPage = () => {
   const [currentLists, setCurrentLists] = useState<string[]>([]);
+  const [selectedItemId, setSelectedItemId] = useState<string | undefined>(
+    undefined
+  );
 
   const { data: lists } = api.lists.getUserLists.useQuery();
 
@@ -44,8 +49,16 @@ const BoardPage: NextPage = () => {
           </div>
         </aside>
         <div className="col-span-3 border-l border-slate-500 xl:col-span-4">
-          <div className="container flex flex-col items-center justify-center gap-12 px-4 py-16 ">
-            {currentLists[0] && <ItemsList listId={currentLists[0]} />}
+          <div className="items-top container grid grid-rows-2 justify-center gap-12 px-4 py-16">
+            <div className="flex flex-col">
+              {currentLists[0] && (
+                <ItemsList
+                  listId={currentLists[0]}
+                  onItemSelected={(id) => setSelectedItemId(id)}
+                />
+              )}
+            </div>
+            {selectedItemId && <ItemDisplay itemId={selectedItemId} />}
           </div>
         </div>
       </div>
