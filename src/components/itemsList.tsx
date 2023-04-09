@@ -107,6 +107,7 @@ export function ItemsList({
           </div>
         </ContextMenuTrigger>
         <ItemContextMenu
+          listId={listId}
           itemsAmount={selectedItems.length}
           onDelete={() => {
             deleteItems(selectedItems);

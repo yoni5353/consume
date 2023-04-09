@@ -18,16 +18,20 @@ import { api } from "~/utils/api";
 
 export function ItemContextMenu({
   itemsAmount,
+  listId,
   onDelete,
   onMoveItems,
 }: {
   itemsAmount: number;
+  listId: string;
   onDelete: () => void;
   onMoveItems: (targetListId: string) => void;
 }) {
   const singleItem = itemsAmount === 1;
 
-  const lists = api.lists.getUserLists.useQuery().data;
+  const lists = api.lists.getUserLists
+    .useQuery()
+    .data?.filter((list) => list.id !== listId);
 
   return (
     <ContextMenuContent>
@@ -36,7 +40,7 @@ export function ItemContextMenu({
         <ContextMenuSubContent className="w-36">
           <ContextMenuItem>
             <PlusCircle className="mr-2 h-4 w-4" />
-            New list {itemsAmount}
+            New list
           </ContextMenuItem>
           <ContextMenuSeparator />
           {lists?.map((list) => (
