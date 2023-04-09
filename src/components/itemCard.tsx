@@ -9,7 +9,7 @@ export function ItemCard({
   selected,
 }: {
   item: Item;
-  onClick: (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
+  onClick?: (event: React.MouseEvent) => void;
   selected: boolean;
 }) {
   return (

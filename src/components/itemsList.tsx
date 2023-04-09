@@ -1,13 +1,12 @@
 import { api } from "~/utils/api";
-import { ItemCard } from "./itemcard";
+import { ItemCard } from "./itemCard";
 import { Input } from "./ui/input";
 import { Button } from "./ui/button";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { Plus } from "lucide-react";
 import { useState } from "react";
 import { ContextMenu, ContextMenuTrigger } from "~/components/ui/context-menu";
-import { ItemContextMenu } from "./itemcontextmenu";
-import { ScrollArea } from "@radix-ui/react-scroll-area";
+import { ItemContextMenu } from "./itemContextMenu";
 
 export function ItemsList({
   listId,
@@ -32,16 +31,13 @@ export function ItemsList({
     onSuccess: () => refetch(),
   });
 
-  const { data: listWithItems, refetch } = api.lists.getWithItems.useQuery(
-    listId,
-    {
-      onSuccess: () => {
-        if (listWithItems && listWithItems.items[0]) {
-          setLastSelectedItem(listWithItems.items[0].itemId);
-        }
-      },
-    }
-  );
+  const { data: listWithItems, refetch } = api.lists.getWithItems.useQuery(listId, {
+    onSuccess: () => {
+      if (listWithItems && listWithItems.items[0]) {
+        setLastSelectedItem(listWithItems.items[0].itemId);
+      }
+    },
+  });
 
   const { mutate: addItem } = api.lists.createItemInList.useMutation({
     onSuccess: () => refetch(),
@@ -67,15 +63,11 @@ export function ItemsList({
     } else if (e.shiftKey) {
       if (lastSelectedItem) {
         const index = items.findIndex((item) => item.itemId === itemId);
-        const firstIndex = items.findIndex(
-          (item) => item.itemId === lastSelectedItem
-        );
+        const firstIndex = items.findIndex((item) => item.itemId === lastSelectedItem);
         if (~index && ~firstIndex) {
           const start = Math.min(index, firstIndex);
           const end = Math.max(index, firstIndex);
-          const newSelectedItems = items
-            .slice(start, end + 1)
-            .map((item) => item.itemId);
+          const newSelectedItems = items.slice(start, end + 1).map((item) => item.itemId);
           setSelectedItems((prev) => {
             return [...new Set([...prev, ...newSelectedItems])];
           });
@@ -91,10 +83,7 @@ export function ItemsList({
 
   return (
     <div className="flex flex-col gap-3">
-      <form
-        onSubmit={handleSubmit(onCreateItem)}
-        className="flex flex-row gap-2"
-      >
+      <form onSubmit={handleSubmit(onCreateItem)} className="flex flex-row gap-2">
         <Input {...register("itemTitle", { required: true, maxLength: 256 })} />
         <Button type="submit" variant="subtle" className="p-2">
           <Plus />
@@ -117,6 +106,9 @@ export function ItemsList({
           itemsAmount={selectedItems.length}
           onDelete={() => {
             deleteItems(selectedItems);
+          }}
+          onMoveItems={(targetListId) => {
+            console.log(targetListId);
           }}
         />
       </ContextMenu>

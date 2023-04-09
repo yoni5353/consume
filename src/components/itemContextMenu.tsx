@@ -14,17 +14,20 @@ import {
   Share2,
   ClipboardCopy,
 } from "lucide-react";
-
-const listsMock = ["toread", "towatch"];
+import { api } from "~/utils/api";
 
 export function ItemContextMenu({
-  onDelete,
   itemsAmount,
+  onDelete,
+  onMoveItems,
 }: {
-  onDelete: () => void;
   itemsAmount: number;
+  onDelete: () => void;
+  onMoveItems: (targetListId: string) => void;
 }) {
   const singleItem = itemsAmount === 1;
+
+  const lists = api.lists.getUserLists.useQuery().data;
 
   return (
     <ContextMenuContent>
@@ -36,9 +39,9 @@ export function ItemContextMenu({
             New list {itemsAmount}
           </ContextMenuItem>
           <ContextMenuSeparator />
-          {listsMock.map((list) => (
-            <ContextMenuItem key={list}>
-              <ListIcon className="mr-2 h-4 w-4" /> {list}
+          {lists?.map((list) => (
+            <ContextMenuItem key={list.id} onSelect={() => onMoveItems(list.id)}>
+              <ListIcon className="mr-2 h-4 w-4" /> {list.title}
             </ContextMenuItem>
           ))}
         </ContextMenuSubContent>

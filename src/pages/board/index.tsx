@@ -2,8 +2,8 @@ import { ScrollArea } from "@radix-ui/react-scroll-area";
 import { ListIcon } from "lucide-react";
 import { type NextPage } from "next";
 import { useState } from "react";
-import { ItemDisplay } from "~/components/itemdisplay";
-import { ItemsList } from "~/components/itemlist";
+import { ItemDisplay } from "~/components/itemDisplay";
+import { ItemsList } from "~/components/itemsList";
 import { Button } from "~/components/ui/button";
 import { api } from "~/utils/api";
 
