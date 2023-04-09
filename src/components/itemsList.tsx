@@ -33,7 +33,7 @@ export function ItemsList({
 
   const { data: listWithItems, refetch } = api.lists.getWithItems.useQuery(listId, {
     onSuccess: () => {
-      if (listWithItems && listWithItems.items[0]) {
+      if (listWithItems?.items[0] && selectedItems.length === 0) {
         setLastSelectedItem(listWithItems.items[0].itemId);
       }
     },
