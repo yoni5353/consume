@@ -10,19 +10,20 @@ import { SubmitHandler, useForm } from "react-hook-form";
 import { DialogProps } from "@radix-ui/react-dialog";
 import { Label } from "./ui/label";
 import { Input } from "./ui/input";
-import { Item } from "@prisma/client";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { CreateListSchema } from "~/utils/apischemas";
 
-type NewListFormData = {
-  listName: string;
-  initialItems: Item[];
-};
+type CreateListSechemaType = z.infer<typeof CreateListSchema>;
 
 export function CreateListDialog({
   onCreateList,
   onOpenChange,
   ...dialogProps
-}: { onCreateList: SubmitHandler<NewListFormData> } & DialogProps) {
-  const { register, handleSubmit, reset } = useForm<NewListFormData>();
+}: { onCreateList: SubmitHandler<CreateListSechemaType> } & DialogProps) {
+  const { register, handleSubmit, reset } = useForm<CreateListSechemaType>({
+    resolver: zodResolver(CreateListSchema),
+  });
 
   const handleClose = () => {
     reset();
@@ -50,7 +51,7 @@ export function CreateListDialog({
           <Input
             type="text"
             id="listName"
-            {...register("listName", { required: true, maxLength: 256 })}
+            {...register("listTitle", { required: true, maxLength: 256 })}
           />
           <DialogFooter>
             <Button type="button" onClick={handleClose}>

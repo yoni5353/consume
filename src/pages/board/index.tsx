@@ -12,9 +12,14 @@ const BoardPage: NextPage = () => {
   const [selectedItemId, setSelectedItemId] = useState<string | undefined>(undefined);
   const [isNewListOpen, setIsNewListOpen] = useState(false);
 
-  const { data: lists } = api.lists.getUserLists.useQuery();
+  const { data: lists, refetch } = api.lists.getUserLists.useQuery();
 
-  const createList = () => console.log("create list");
+  const { mutate: createList } = api.lists.createList.useMutation({
+    onSuccess: () => {
+      setIsNewListOpen(false);
+      refetch();
+    },
+  });
 
   if (lists && currentLists.length === 0) {
     if (lists.length) {
