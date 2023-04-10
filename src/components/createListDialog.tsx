@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-misused-promises */
 import {
   Dialog,
   DialogContent,
@@ -43,7 +44,7 @@ export function CreateListDialog({
             {/* Adds the following items... */}
           </DialogDescription>
         </DialogHeader>
-        <form onSubmit={void handleSubmit(onCreateList)}>
+        <form onSubmit={handleSubmit(onCreateList)}>
           <Label htmlFor="listName">List name</Label>
           <Input
             type="text"

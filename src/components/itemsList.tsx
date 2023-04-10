@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-misused-promises */
 import { api } from "~/utils/api";
 import { ItemCard } from "./itemCard";
 import { Input } from "./ui/input";
@@ -89,7 +90,7 @@ export function ItemsList({
 
   return (
     <div className="flex flex-col gap-3">
-      <form onSubmit={void handleSubmit(onCreateItem)} className="flex flex-row gap-2">
+      <form onSubmit={handleSubmit(onCreateItem)} className="flex flex-row gap-2">
         <Input {...register("itemTitle", { required: true, maxLength: 256 })} />
         <Button type="submit" variant="subtle" className="p-2">
           <Plus />
