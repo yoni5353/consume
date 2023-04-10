@@ -1,4 +1,4 @@
-import { ListIcon, PlusCircleIcon } from "lucide-react";
+import { ListIcon, PlusCircleIcon, Trash2 } from "lucide-react";
 import { type NextPage } from "next";
 import { useState } from "react";
 import { ItemDisplay } from "~/components/itemDisplay";
@@ -6,6 +6,12 @@ import { ItemsList } from "~/components/itemsList";
 import { CreateListDialog } from "~/components/createListDialog";
 import { Button } from "~/components/ui/button";
 import { api } from "~/utils/api";
+import {
+  ContextMenu,
+  ContextMenuItem,
+  ContextMenuTrigger,
+  ContextMenuContent,
+} from "~/components/ui/context-menu";
 
 const BoardPage: NextPage = () => {
   const [currentLists, setCurrentLists] = useState<string[]>([]);
@@ -19,6 +25,13 @@ const BoardPage: NextPage = () => {
       setIsNewListOpen(false);
       void refetch();
     },
+  });
+
+  const { mutate: deleteList } = api.lists.deleteList.useMutation({
+    onSuccess: () => {
+      setIsNewListOpen(false);
+      void refetch();
+    }
   });
 
   if (lists && currentLists.length === 0) {
@@ -40,18 +53,35 @@ const BoardPage: NextPage = () => {
                 Lists
               </h2>
               <div className="space-y-2">
-                {lists?.map((list) => (
-                  <Button
-                    key={list.id}
-                    variant={currentLists.includes(list.id) ? "subtle" : "ghost"}
-                    size="sm"
-                    className="w-full justify-start"
-                    onClick={() => setCurrentLists([list.id])}
-                  >
-                    <ListIcon className="mr-2 h-4 w-4" />
-                    {list.title}
-                  </Button>
-                ))}
+                <ContextMenu modal={false}>
+                  <ContextMenuTrigger>
+                    <div className="space-y-2">
+                      {lists?.map((list) => (
+                        <Button
+                          key={list.id}
+                          variant={currentLists.includes(list.id) ? "subtle" : "ghost"}
+                          size="sm"
+                          className="w-full justify-start"
+                          onClick={() => setCurrentLists([list.id])}
+                          onAuxClick={() => setCurrentLists([list.id])}
+                        >
+                          <ListIcon className="mr-2 h-4 w-4" />
+                          {list.title}
+                        </Button>
+                      ))}
+                    </div>
+                  </ContextMenuTrigger>
+                  <ContextMenuContent>
+                    <ContextMenuItem
+                      onSelect={() => {
+                        const lastList = currentLists.at(-1);
+                        lastList && deleteList(lastList);
+                      }}
+                    >
+                      <Trash2 className="mr-2 h-4 w-4" /> Delete List
+                    </ContextMenuItem>
+                  </ContextMenuContent>
+                </ContextMenu>
                 <Button
                   variant="ghost"
                   size="sm"
