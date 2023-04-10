@@ -6,16 +6,19 @@ import { cn } from "~/utils/ui/cn";
 export function ItemCard({
   item,
   onClick,
+  onAuxClick,
   selected,
 }: {
   item: Item;
   onClick?: (event: React.MouseEvent) => void;
+  onAuxClick?: (event: React.MouseEvent) => void;
   selected: boolean;
 }) {
   return (
     <div className="flex flex-col gap-5">
       <Button
         onClick={onClick}
+        onAuxClick={onAuxClick}
         className={cn(
           "flex w-[50vw] justify-between gap-5 rounded-md bg-slate-900 px-5 py-1 text-left dark:bg-slate-300",
           selected && "dark:hover:bg-slate-400 dark:hover:text-slate-800",

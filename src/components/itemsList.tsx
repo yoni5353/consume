@@ -51,7 +51,11 @@ export function ItemsList({
 
   if (!items) return null;
 
-  const onCardClick = (e: React.MouseEvent, itemId: string) => {
+  const onCardClick = (
+    e: React.MouseEvent,
+    itemId: string,
+    auxClick: boolean = false
+  ) => {
     onItemSelected(itemId);
 
     // Selection logic
@@ -78,7 +82,9 @@ export function ItemsList({
         }
       }
     } else {
-      setSelectedItems([itemId]);
+      if (!(auxClick && selectedItems.includes(itemId))) {
+        setSelectedItems([itemId]);
+      }
     }
     if (!e.shiftKey) {
       setLastSelectedItem(newSelectedItem);
@@ -93,7 +99,7 @@ export function ItemsList({
           <Plus />
         </Button>
       </form>
-      <ContextMenu>
+      <ContextMenu modal={false}>
         <ContextMenuTrigger>
           <div className="flex flex-col gap-2">
             {items?.map((item) => (
@@ -102,6 +108,7 @@ export function ItemsList({
                 key={item.itemId}
                 selected={selectedItems.includes(item.itemId)}
                 onClick={(e) => onCardClick(e, item.itemId)}
+                onAuxClick={(e) => onCardClick(e, item.itemId, true)}
               />
             ))}
           </div>
