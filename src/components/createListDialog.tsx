@@ -43,7 +43,7 @@ export function CreateListDialog({
             {/* Adds the following items... */}
           </DialogDescription>
         </DialogHeader>
-        <form onSubmit={handleSubmit(onCreateList)}>
+        <form onSubmit={void handleSubmit(onCreateList)}>
           <Label htmlFor="listName">List name</Label>
           <Input
             type="text"

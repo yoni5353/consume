@@ -51,11 +51,7 @@ export function ItemsList({
 
   if (!items) return null;
 
-  const onCardClick = (
-    e: React.MouseEvent,
-    itemId: string,
-    auxClick = false
-  ) => {
+  const onCardClick = (e: React.MouseEvent, itemId: string, auxClick = false) => {
     onItemSelected(itemId);
 
     // Selection logic
@@ -93,7 +89,7 @@ export function ItemsList({
 
   return (
     <div className="flex flex-col gap-3">
-      <form onSubmit={handleSubmit(onCreateItem)} className="flex flex-row gap-2">
+      <form onSubmit={void handleSubmit(onCreateItem)} className="flex flex-row gap-2">
         <Input {...register("itemTitle", { required: true, maxLength: 256 })} />
         <Button type="submit" variant="subtle" className="p-2">
           <Plus />

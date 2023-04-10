@@ -17,13 +17,13 @@ const BoardPage: NextPage = () => {
   const { mutate: createList } = api.lists.createList.useMutation({
     onSuccess: () => {
       setIsNewListOpen(false);
-      refetch();
+      void refetch();
     },
   });
 
   if (lists && currentLists.length === 0) {
-    if (lists.length) {
-      setCurrentLists([lists[0]!.id]);
+    if (lists[0]) {
+      setCurrentLists([lists[0].id]);
     }
   }
 
@@ -82,7 +82,7 @@ const BoardPage: NextPage = () => {
       <CreateListDialog
         open={isNewListOpen}
         onOpenChange={() => setIsNewListOpen(false)}
-        onCreateList={createList}
+        onCreateList={(data) => createList(data)}
       />
     </>
   );
