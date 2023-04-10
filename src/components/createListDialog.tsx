@@ -6,11 +6,10 @@ import {
 } from "~/components/ui/dialog";
 import { DialogFooter, DialogHeader } from "./ui/dialog";
 import { Button } from "./ui/button";
-import { SubmitHandler, useForm } from "react-hook-form";
-import { DialogProps } from "@radix-ui/react-dialog";
+import { type SubmitHandler, useForm } from "react-hook-form";
+import { type DialogProps } from "@radix-ui/react-dialog";
 import { Label } from "./ui/label";
 import { Input } from "./ui/input";
-import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { CreateListSchema, type CreateListSechemaType } from "~/utils/apischemas";
 

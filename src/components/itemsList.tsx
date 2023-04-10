@@ -2,7 +2,7 @@ import { api } from "~/utils/api";
 import { ItemCard } from "./itemCard";
 import { Input } from "./ui/input";
 import { Button } from "./ui/button";
-import { useForm, SubmitHandler } from "react-hook-form";
+import { useForm, type SubmitHandler } from "react-hook-form";
 import { Plus } from "lucide-react";
 import { useState } from "react";
 import { ContextMenu, ContextMenuTrigger } from "~/components/ui/context-menu";
@@ -54,7 +54,7 @@ export function ItemsList({
   const onCardClick = (
     e: React.MouseEvent,
     itemId: string,
-    auxClick: boolean = false
+    auxClick = false
   ) => {
     onItemSelected(itemId);
 

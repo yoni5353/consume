@@ -1,6 +1,6 @@
 import { Button } from "./ui/button";
 import { Progress } from "./ui/progress";
-import { Item } from "@prisma/client";
+import { type Item } from "@prisma/client";
 import { cn } from "~/utils/ui/cn";
 
 export function ItemCard({
