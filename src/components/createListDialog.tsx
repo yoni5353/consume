@@ -12,9 +12,7 @@ import { Label } from "./ui/label";
 import { Input } from "./ui/input";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { CreateListSchema } from "~/utils/apischemas";
-
-type CreateListSechemaType = z.infer<typeof CreateListSchema>;
+import { CreateListSchema, type CreateListSechemaType } from "~/utils/apischemas";
 
 export function CreateListDialog({
   onCreateList,
