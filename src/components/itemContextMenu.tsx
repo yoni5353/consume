@@ -36,7 +36,9 @@ export function ItemContextMenu({
   return (
     <ContextMenuContent>
       <ContextMenuSub>
-        <ContextMenuSubTrigger>Move to List</ContextMenuSubTrigger>
+        <ContextMenuSubTrigger>
+          {singleItem ? "Move to List" : `Move ${itemsAmount} Items`}
+        </ContextMenuSubTrigger>
         <ContextMenuSubContent className="w-36">
           <ContextMenuItem>
             <PlusCircle className="mr-2 h-4 w-4" />
