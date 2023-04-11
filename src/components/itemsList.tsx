@@ -91,7 +91,7 @@ export function ItemsList({
   };
 
   return (
-    <div className="flex flex-col gap-3">
+    <div className="items-list flex flex-col gap-3">
       <form onSubmit={handleSubmit(onCreateItem)} className="flex flex-row gap-2">
         <Input {...register("itemTitle", { required: true, maxLength: 256 })} />
         <Button type="submit" variant="subtle" className="p-2">

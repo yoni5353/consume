@@ -59,12 +59,12 @@ const BoardPage: NextPage = () => {
   return (
     <>
       <main className="flex min-h-screen flex-row bg-gradient-to-b from-rose-500 to-indigo-700">
-        <div className="mx-3 mt-3 grid h-[97vh] w-full grid-cols-4 rounded-md bg-slate-900 p-5 xl:grid-cols-5 ">
-          <aside className="space-y-5 pr-10">
+        <div className="main-grid mx-3 mt-3 grid h-[97vh] w-full grid-cols-4 overflow-hidden rounded-md bg-slate-900 p-5 xl:grid-cols-5 ">
+          <aside className="sidebar space-y-5 pr-10">
             <h1 className="align-center mb-2 flex flex-row px-2 text-2xl font-extrabold tracking-tight">
               CONSUME
             </h1>
-            <div>
+            <div className="overflow-auto">
               <h2 className="align-center mb-2 flex flex-row px-2 text-lg font-semibold tracking-tight">
                 Lists
               </h2>
@@ -77,7 +77,7 @@ const BoardPage: NextPage = () => {
                           key={list.id}
                           variant={currentLists.includes(list.id) ? "subtle" : "ghost"}
                           size="sm"
-                          className="w-full justify-start font-extrabold text-xs"
+                          className="w-full justify-start text-xs font-extrabold"
                           onClick={() => setCurrentLists([list.id])}
                           onAuxClick={() => setCurrentLists([list.id])}
                         >
@@ -110,9 +110,9 @@ const BoardPage: NextPage = () => {
               </div>
             </div>
           </aside>
-          <div className="col-span-3 border-l border-slate-500 xl:col-span-4">
-            <div className="items-top container grid grid-rows-2 justify-center gap-12 px-4 py-16">
-              <div className="flex flex-col">
+          <div className="col-span-3 overflow-hidden border-l border-slate-500 xl:col-span-4">
+            <div className="lists items-top container grid h-full w-full grid-cols-1 grid-rows-2 justify-center overflow-auto px-4 py-16">
+              <div className="flex h-full flex-col overflow-auto px-20">
                 {currentLists[0] && (
                   <ItemsList
                     listId={currentLists[0]}
@@ -123,7 +123,9 @@ const BoardPage: NextPage = () => {
                   />
                 )}
               </div>
-              {selectedItemId && <ItemDisplay itemId={selectedItemId} />}
+              <div className="item-display px-10">
+                {selectedItemId && <ItemDisplay itemId={selectedItemId} />}
+              </div>
             </div>
           </div>
         </div>
