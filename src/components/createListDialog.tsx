@@ -17,9 +17,11 @@ import { CreateListSchema, type CreateListSechemaType } from "~/utils/apischemas
 export function CreateListDialog({
   onCreateList,
   onOpenChange,
+  hasInitialItems,
   ...dialogProps
 }: {
   onCreateList: SubmitHandler<CreateListSechemaType>;
+  hasInitialItems: boolean;
 } & DialogProps) {
   const { register, handleSubmit, reset } = useForm<CreateListSechemaType>({
     resolver: zodResolver(CreateListSchema),
@@ -28,6 +30,11 @@ export function CreateListDialog({
   const handleClose = () => {
     reset();
     onOpenChange?.(false);
+  };
+
+  const onSubmit = (data: CreateListSechemaType) => {
+    onCreateList(data);
+    reset();
   };
 
   return (
@@ -42,19 +49,24 @@ export function CreateListDialog({
         <DialogHeader>
           <DialogTitle>Create new list</DialogTitle>
           <DialogDescription>
-            Create a new list. You can add items to it later.
-            {/* Adds the following items... */}
+            {hasInitialItems
+              ? "Create a new list initialized with the chosen items."
+              : "Create a new list. You can add items to it later."}
           </DialogDescription>
         </DialogHeader>
-        <form onSubmit={handleSubmit(onCreateList)}>
-          <Label htmlFor="listName">List name</Label>
-          <Input
-            type="text"
-            id="listName"
-            {...register("listTitle", { required: true, maxLength: 256 })}
-          />
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
+          <div className="mx-10 flex flex-row items-center space-x-2">
+            <Label htmlFor="listName" className="items-center text-right uppercase">
+              Title
+            </Label>
+            <Input
+              type="text"
+              id="listName"
+              {...register("listTitle", { required: true, maxLength: 256 })}
+            />
+          </div>
           <DialogFooter>
-            <Button type="button" onClick={handleClose}>
+            <Button variant="outline" type="button" onClick={handleClose}>
               Cancel
             </Button>
             <Button type="submit">Create</Button>

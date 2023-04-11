@@ -36,12 +36,14 @@ const BoardPage: NextPage = () => {
   });
 
   const [_isCreateListOpen, _setIsCreateListOpen] = useState(false);
+  const [hasInitialItems, _setHasInitialItems] = useState(false);
   const [nextListCreation, _setNextListCreation] = useState<
     Partial<CreateListSechemaType>
   >({});
   const openListCreation = useCallback(
     (creationPartial: Partial<CreateListSechemaType> = {}) => {
       _setNextListCreation(creationPartial);
+      _setHasInitialItems(!!creationPartial.initialItemsIds?.length);
       _setIsCreateListOpen(true);
     },
     []
@@ -80,7 +82,7 @@ const BoardPage: NextPage = () => {
                           onAuxClick={() => setCurrentLists([list.id])}
                         >
                           <ListIcon className="mr-2 h-4 w-4" />
-                          {list.title.toUpperCase()}
+                          <span className="uppercase">{list.title}</span>
                         </Button>
                       ))}
                     </div>
@@ -130,6 +132,7 @@ const BoardPage: NextPage = () => {
         open={_isCreateListOpen}
         onOpenChange={closeListCreation}
         onCreateList={(data) => createList({ ...data, ...nextListCreation })}
+        hasInitialItems={hasInitialItems}
       />
     </>
   );
