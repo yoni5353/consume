@@ -24,7 +24,7 @@ const BoardPage: NextPage = () => {
     onSuccess: (newList) => {
       closeListCreation();
       void refetch();
-      setCurrentLists([newList.id]);
+      moveToList(newList.id);
     },
   });
 
@@ -34,6 +34,11 @@ const BoardPage: NextPage = () => {
       void refetch();
     },
   });
+
+  const moveToList = useCallback((listId: string) => {
+    setCurrentLists([listId]);
+    setSelectedItemId(undefined);
+  }, []);
 
   const [_isCreateListOpen, _setIsCreateListOpen] = useState(false);
   const [hasInitialItems, _setHasInitialItems] = useState(false);
@@ -48,11 +53,11 @@ const BoardPage: NextPage = () => {
     },
     []
   );
-  const closeListCreation = () => _setIsCreateListOpen(false);
+  const closeListCreation = useCallback(() => _setIsCreateListOpen(false), []);
 
   if (lists && currentLists.length === 0) {
     if (lists[0]) {
-      setCurrentLists([lists[0].id]);
+      moveToList(lists[0].id);
     }
   }
 
@@ -78,8 +83,8 @@ const BoardPage: NextPage = () => {
                           variant={currentLists.includes(list.id) ? "subtle" : "ghost"}
                           size="sm"
                           className="w-full justify-start text-xs font-extrabold"
-                          onClick={() => setCurrentLists([list.id])}
-                          onAuxClick={() => setCurrentLists([list.id])}
+                          onClick={() => moveToList(list.id)}
+                          onAuxClick={() => moveToList(list.id)}
                         >
                           <ListIcon className="mr-2 h-4 w-4" />
                           <span className="uppercase">{list.title}</span>
