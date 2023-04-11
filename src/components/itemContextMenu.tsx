@@ -21,11 +21,13 @@ export function ItemContextMenu({
   listId,
   onDelete,
   onMoveItems,
+  onMoveItemsToNewList,
 }: {
   itemsAmount: number;
   listId: string;
   onDelete: () => void;
   onMoveItems: (targetListId: string) => void;
+  onMoveItemsToNewList: (originListId: string) => void;
 }) {
   const singleItem = itemsAmount === 1;
 
@@ -40,7 +42,7 @@ export function ItemContextMenu({
           {singleItem ? "Move to List" : `Move ${itemsAmount} Items`}
         </ContextMenuSubTrigger>
         <ContextMenuSubContent className="w-36">
-          <ContextMenuItem>
+          <ContextMenuItem onClick={() => onMoveItemsToNewList(listId)}>
             <PlusCircle className="mr-2 h-4 w-4" />
             New list
           </ContextMenuItem>

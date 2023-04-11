@@ -12,29 +12,15 @@ import { ItemContextMenu } from "./itemContextMenu";
 export function ItemsList({
   listId,
   onItemSelected,
+  onMoveItemsToNewList,
 }: {
   listId: string;
   onItemSelected: (itemId: string) => void;
+  onMoveItemsToNewList?: (originListId: string, itemIds: string[]) => void;
 }) {
   const { register, handleSubmit, reset } = useForm<{ itemTitle: string }>();
   const [selectedItems, setSelectedItems] = useState<string[]>([]);
   const [lastSelectedItem, setLastSelectedItem] = useState<string>();
-
-  const onCreateItem: SubmitHandler<{ itemTitle: string }> = (data) => {
-    addItem({
-      listId,
-      item: { title: data.itemTitle },
-    });
-    reset();
-  };
-
-  const { mutate: deleteItems } = api.items.deleteItems.useMutation({
-    onSuccess: () => refetch(),
-  });
-
-  const { mutate: moveItems } = api.items.moveItems.useMutation({
-    onSuccess: () => refetch(),
-  });
 
   const { data: listWithItems, refetch } = api.lists.getWithItems.useQuery(listId, {
     onSuccess: () => {
@@ -44,9 +30,25 @@ export function ItemsList({
     },
   });
 
+  const { mutate: deleteItems } = api.items.deleteItems.useMutation({
+    onSuccess: () => refetch(),
+  });
+
+  const { mutate: moveItems } = api.items.moveItems.useMutation({
+    onSuccess: () => refetch(),
+  });
+
   const { mutate: addItem } = api.lists.createItemInList.useMutation({
     onSuccess: () => refetch(),
   });
+
+  const onCreateItem: SubmitHandler<{ itemTitle: string }> = (data) => {
+    addItem({
+      listId,
+      item: { title: data.itemTitle },
+    });
+    reset();
+  };
 
   const items = listWithItems?.items;
 
@@ -119,6 +121,12 @@ export function ItemsList({
           onMoveItems={(targetListId) => {
             moveItems({ itemIds: selectedItems, targetListId });
           }}
+          onMoveItemsToNewList={(originListId) =>
+            onMoveItemsToNewList?.(
+              originListId,
+              selectedItems.map((itemId) => itemId)
+            )
+          }
         />
       </ContextMenu>
     </div>

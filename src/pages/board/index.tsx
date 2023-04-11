@@ -1,6 +1,6 @@
 import { ListIcon, PlusCircleIcon, Trash2 } from "lucide-react";
 import { type NextPage } from "next";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { ItemDisplay } from "~/components/itemDisplay";
 import { ItemsList } from "~/components/itemsList";
 import { CreateListDialog } from "~/components/createListDialog";
@@ -12,27 +12,41 @@ import {
   ContextMenuTrigger,
   ContextMenuContent,
 } from "~/components/ui/context-menu";
+import { type CreateListSechemaType } from "~/utils/apischemas";
 
 const BoardPage: NextPage = () => {
   const [currentLists, setCurrentLists] = useState<string[]>([]);
   const [selectedItemId, setSelectedItemId] = useState<string | undefined>(undefined);
-  const [isNewListOpen, setIsNewListOpen] = useState(false);
 
   const { data: lists, refetch } = api.lists.getUserLists.useQuery();
 
   const { mutate: createList } = api.lists.createList.useMutation({
-    onSuccess: () => {
-      setIsNewListOpen(false);
+    onSuccess: (newList) => {
+      closeListCreation();
       void refetch();
+      setCurrentLists([newList.id]);
     },
   });
 
   const { mutate: deleteList } = api.lists.deleteList.useMutation({
     onSuccess: () => {
-      setIsNewListOpen(false);
+      closeListCreation();
       void refetch();
-    }
+    },
   });
+
+  const [_isCreateListOpen, _setIsCreateListOpen] = useState(false);
+  const [nextListCreation, _setNextListCreation] = useState<
+    Partial<CreateListSechemaType>
+  >({});
+  const openListCreation = useCallback(
+    (creationPartial: Partial<CreateListSechemaType> = {}) => {
+      _setNextListCreation(creationPartial);
+      _setIsCreateListOpen(true);
+    },
+    []
+  );
+  const closeListCreation = () => _setIsCreateListOpen(false);
 
   if (lists && currentLists.length === 0) {
     if (lists[0]) {
@@ -86,7 +100,7 @@ const BoardPage: NextPage = () => {
                   variant="ghost"
                   size="sm"
                   className="w-full justify-start"
-                  onClick={() => setIsNewListOpen(true)}
+                  onClick={() => openListCreation()}
                 >
                   <PlusCircleIcon className="mr-2 h-4 w-4" />
                   New List
@@ -101,6 +115,9 @@ const BoardPage: NextPage = () => {
                   <ItemsList
                     listId={currentLists[0]}
                     onItemSelected={(id) => setSelectedItemId(id)}
+                    onMoveItemsToNewList={(originListId, itemIds) => {
+                      openListCreation({ originListId, initialItemsIds: itemIds });
+                    }}
                   />
                 )}
               </div>
@@ -110,9 +127,9 @@ const BoardPage: NextPage = () => {
         </div>
       </main>
       <CreateListDialog
-        open={isNewListOpen}
-        onOpenChange={() => setIsNewListOpen(false)}
-        onCreateList={(data) => createList(data)}
+        open={_isCreateListOpen}
+        onOpenChange={closeListCreation}
+        onCreateList={(data) => createList({ ...data, ...nextListCreation })}
       />
     </>
   );

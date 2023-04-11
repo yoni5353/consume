@@ -18,7 +18,9 @@ export function CreateListDialog({
   onCreateList,
   onOpenChange,
   ...dialogProps
-}: { onCreateList: SubmitHandler<CreateListSechemaType> } & DialogProps) {
+}: {
+  onCreateList: SubmitHandler<CreateListSechemaType>;
+} & DialogProps) {
   const { register, handleSubmit, reset } = useForm<CreateListSechemaType>({
     resolver: zodResolver(CreateListSchema),
   });
