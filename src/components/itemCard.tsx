@@ -19,7 +19,7 @@ export function ItemCard({
       <Button
         onClick={onClick}
         onAuxClick={onAuxClick}
-        onContextMenu={onClick} // For context menu with keyboard
+        onContextMenu={onAuxClick} // For context menu with keyboard
         className={cn(
           "flex w-[50vw] justify-between gap-5 rounded-md bg-slate-900 px-5 py-1 text-left dark:bg-slate-300",
           selected && "dark:hover:bg-slate-400 dark:hover:text-slate-800",
