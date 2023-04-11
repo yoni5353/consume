@@ -14,10 +14,12 @@ import {
 } from "~/components/ui/context-menu";
 import { type CreateListSechemaType } from "~/utils/apischemas";
 import { cn } from "~/utils/ui/cn";
+import { useAutoAnimate } from "@formkit/auto-animate/react";
 
 const BoardPage: NextPage = () => {
   const [currentLists, setCurrentLists] = useState<string[]>([]);
   const [selectedItemId, setSelectedItemId] = useState<string | undefined>(undefined);
+  const [listRef] = useAutoAnimate<HTMLDivElement>();
 
   const { data: lists, refetch } = api.lists.getUserLists.useQuery();
 
@@ -65,7 +67,7 @@ const BoardPage: NextPage = () => {
   return (
     <>
       <main className="flex min-h-screen flex-row bg-gradient-to-b from-rose-500 to-indigo-700">
-        <div className="main-grid mx-3 mt-3 grid h-[97vh] w-full grid-cols-4 overflow-hidden rounded-md bg-slate-900 p-5 xl:grid-cols-5 ">
+        <div className="main-grid m-3 grid w-full grid-cols-4 overflow-hidden rounded-md bg-slate-900 p-5 xl:grid-cols-5 ">
           <aside className="sidebar space-y-5 pr-10">
             <h1 className="align-center mb-2 flex flex-row px-2 text-2xl font-extrabold tracking-tight">
               CONSUME
@@ -74,10 +76,10 @@ const BoardPage: NextPage = () => {
               <h2 className="align-center mb-2 flex flex-row px-2 text-lg font-semibold tracking-tight">
                 Lists
               </h2>
-              <div className="space-y-2">
+              <div className="space-y-2 pb-1">
                 <ContextMenu modal={false}>
                   <ContextMenuTrigger>
-                    <div className="space-y-2">
+                    <div className="lists-list space-y-2" ref={listRef}>
                       {lists?.map((list) => (
                         <Button
                           key={list.id}

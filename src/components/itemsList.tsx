@@ -8,6 +8,7 @@ import { Plus } from "lucide-react";
 import { useState } from "react";
 import { ContextMenu, ContextMenuTrigger } from "~/components/ui/context-menu";
 import { ItemContextMenu } from "./itemContextMenu";
+import { useAutoAnimate } from "@formkit/auto-animate/react";
 
 export function ItemsList({
   listId,
@@ -21,6 +22,7 @@ export function ItemsList({
   const { register, handleSubmit, reset } = useForm<{ itemTitle: string }>();
   const [selectedItems, setSelectedItems] = useState<string[]>([]);
   const [lastSelectedItem, setLastSelectedItem] = useState<string>();
+  const [listRef] = useAutoAnimate<HTMLDivElement>();
 
   const { data: listWithItems, refetch } = api.lists.getWithItems.useQuery(listId, {
     onSuccess: () => {
@@ -100,7 +102,7 @@ export function ItemsList({
       </form>
       <ContextMenu modal={false}>
         <ContextMenuTrigger>
-          <div className="flex flex-col gap-2">
+          <div className="items flex flex-col gap-2" ref={listRef}>
             {items?.map((item) => (
               <ItemCard
                 item={item.item}
