@@ -46,12 +46,16 @@ export function ItemContextMenu({
             <PlusCircle className="mr-2 h-4 w-4" />
             New list
           </ContextMenuItem>
-          <ContextMenuSeparator />
-          {lists?.map((list) => (
-            <ContextMenuItem key={list.id} onSelect={() => onMoveItems(list.id)}>
-              <ListIcon className="mr-2 h-4 w-4" /> {list.title}
-            </ContextMenuItem>
-          ))}
+          {!!lists?.length && (
+            <>
+              <ContextMenuSeparator />
+              {lists?.map((list) => (
+                <ContextMenuItem key={list.id} onSelect={() => onMoveItems(list.id)}>
+                  <ListIcon className="mr-2 h-4 w-4" /> {list.title}
+                </ContextMenuItem>
+              ))}
+            </>
+          )}
         </ContextMenuSubContent>
       </ContextMenuSub>
 

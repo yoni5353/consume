@@ -75,12 +75,12 @@ const BoardPage: NextPage = () => {
                           key={list.id}
                           variant={currentLists.includes(list.id) ? "subtle" : "ghost"}
                           size="sm"
-                          className="w-full justify-start"
+                          className="w-full justify-start font-extrabold text-xs"
                           onClick={() => setCurrentLists([list.id])}
                           onAuxClick={() => setCurrentLists([list.id])}
                         >
                           <ListIcon className="mr-2 h-4 w-4" />
-                          {list.title}
+                          {list.title.toUpperCase()}
                         </Button>
                       ))}
                     </div>
