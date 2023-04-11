@@ -13,6 +13,7 @@ import {
   ContextMenuContent,
 } from "~/components/ui/context-menu";
 import { type CreateListSechemaType } from "~/utils/apischemas";
+import { cn } from "~/utils/ui/cn";
 
 const BoardPage: NextPage = () => {
   const [currentLists, setCurrentLists] = useState<string[]>([]);
@@ -69,7 +70,7 @@ const BoardPage: NextPage = () => {
             <h1 className="align-center mb-2 flex flex-row px-2 text-2xl font-extrabold tracking-tight">
               CONSUME
             </h1>
-            <div className="overflow-auto">
+            <div className="overflow-auto px-2">
               <h2 className="align-center mb-2 flex flex-row px-2 text-lg font-semibold tracking-tight">
                 Lists
               </h2>
@@ -116,8 +117,13 @@ const BoardPage: NextPage = () => {
             </div>
           </aside>
           <div className="col-span-3 overflow-hidden border-l border-slate-500 xl:col-span-4">
-            <div className="lists items-top container grid h-full w-full grid-cols-1 grid-rows-2 justify-center overflow-auto px-4 py-16">
-              <div className="flex h-full flex-col overflow-auto px-20">
+            <div className="lists items-top container grid h-full w-full grid-cols-1 grid-rows-3 justify-center overflow-auto px-4 py-12">
+              <div
+                className={cn(
+                  "flex h-full flex-col overflow-auto px-20 pt-2",
+                  !!selectedItemId ? "row-span-2" : "row-span-3"
+                )}
+              >
                 {currentLists[0] && (
                   <ItemsList
                     listId={currentLists[0]}
