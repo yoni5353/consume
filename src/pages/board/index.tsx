@@ -35,11 +35,12 @@ const BoardPage: NextPage = () => {
     onSuccess: () => {
       closeListCreation();
       void refetch();
+      moveToList(lists?.[0]?.id);
     },
   });
 
-  const moveToList = useCallback((listId: string) => {
-    setCurrentLists([listId]);
+  const moveToList = useCallback((listId: string | undefined) => {
+    setCurrentLists(listId ? [listId] : []);
     setSelectedItemId(undefined);
   }, []);
 
