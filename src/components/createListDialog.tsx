@@ -55,7 +55,7 @@ export function CreateListDialog({
           </DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
-          <div className="mx-10 flex flex-row items-center space-x-2">
+          <div className="mx-10 flex flex-row items-center space-x-4">
             <Label htmlFor="listName" className="items-center text-right uppercase">
               Title
             </Label>
