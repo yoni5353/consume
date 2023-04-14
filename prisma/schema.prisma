@@ -52,6 +52,17 @@ model ItemsInLists {
   @@id([itemId, listId])
 }
 
+model ItemTemplate {
+  id          String   @id @default(cuid())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  createdBy   User     @relation(fields: [createdById], references: [id])
+  createdById String
+
+  title       String
+  description String @default("")
+}
+
 // Necessary for Next auth
 model Account {
   id                String  @id @default(cuid())
@@ -91,6 +102,7 @@ model User {
   Item         Item[]
   List         List[]
   ItemsInLists ItemsInLists[]
+  ItemTemplate ItemTemplate[]
 }
 
 model VerificationToken {
