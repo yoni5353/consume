@@ -1,11 +1,8 @@
 /* eslint-disable @typescript-eslint/no-misused-promises */
 import { api } from "~/utils/api";
 import { ItemCard } from "./itemCard";
-import { Input } from "./ui/input";
-import { Button } from "./ui/button";
-import { useForm, type SubmitHandler } from "react-hook-form";
-import { LayoutTemplateIcon, Plus, PlusCircleIcon } from "lucide-react";
-import { useState } from "react";
+import { LayoutTemplateIcon, PlusCircleIcon } from "lucide-react";
+import { useCallback, useState } from "react";
 import { ContextMenu, ContextMenuTrigger } from "~/components/ui/context-menu";
 import { ItemContextMenu } from "./itemContextMenu";
 import { useAutoAnimate } from "@formkit/auto-animate/react";
@@ -29,7 +26,6 @@ export function ItemsList({
   onItemSelected: (itemId: string) => void;
   onMoveItemsToNewList?: (originListId: string, itemIds: string[]) => void;
 }) {
-  const { register, handleSubmit, reset } = useForm<{ itemTitle: string }>();
   const [selectedItems, setSelectedItems] = useState<string[]>([]);
   const [lastSelectedItem, setLastSelectedItem] = useState<string>();
   const [listRef] = useAutoAnimate<HTMLDivElement>();
@@ -49,18 +45,6 @@ export function ItemsList({
   const { mutate: moveItems } = api.items.moveItems.useMutation({
     onSuccess: () => refetch(),
   });
-
-  const { mutate: addItem } = api.lists.createItemInList.useMutation({
-    onSuccess: () => refetch(),
-  });
-
-  const onCreateItem: SubmitHandler<{ itemTitle: string }> = (data) => {
-    addItem({
-      listId,
-      item: { title: data.itemTitle },
-    });
-    reset();
-  };
 
   const items = listWithItems?.items;
 
@@ -104,13 +88,7 @@ export function ItemsList({
 
   return (
     <div className="items-list flex flex-col gap-3">
-      <ItemCreation />
-      <form onSubmit={handleSubmit(onCreateItem)} className="flex flex-row gap-2">
-        <Input {...register("itemTitle", { required: true, maxLength: 256 })} />
-        <Button type="submit" variant="subtle" className="p-2">
-          <Plus />
-        </Button>
-      </form>
+      <ItemCreation listId={listId} />
       <ContextMenu modal={false}>
         <ContextMenuTrigger>
           <div className="items flex flex-col gap-2" ref={listRef}>
@@ -146,41 +124,60 @@ export function ItemsList({
   );
 }
 
-function ItemCreation() {
-  const [search, setSearch] = useState<string>("");
+function ItemCreation({ listId }: { listId: string }) {
+  const [term, setTerm] = useState<string>("");
+
+  const ctx = api.useContext();
 
   const { data: templates, isLoading } = api.templates.searchItemTemplates.useQuery(
-    search,
+    term,
     { keepPreviousData: true }
   );
 
+  const { mutate: createItem } = api.lists.createItemInList.useMutation({
+    onSuccess: () => {
+      setTerm("");
+      void ctx.lists.getWithItems.invalidate(listId);
+    },
+  });
+
+  const onCreateNew = useCallback(() => {
+    createItem({ listId, item: { title: term } });
+  }, [createItem, listId, term]);
+
   return (
     <Command className="z-10 h-min w-full" shouldFilter={false}>
-      <CommandInput placeholder="Enter a new Thingy" onValueChange={setSearch} />
-      <CommandList>
-        <CommandGroup title="Create New">
-          <CommandItem onSelect={(e) => console.log(e)}>
-            <PlusCircleIcon className="mr-2 h-4 w-4" />
-            Create Item&nbsp;{search ? <i>{`'${search}'`}</i> : ""}
-          </CommandItem>
-        </CommandGroup>
-        {!!search && !!templates?.length && (
-          <>
-            <CommandSeparator />
-            <CommandGroup heading="Templates">
-              {isLoading && <CommandLoading>Loading...</CommandLoading>}
-              {templates?.map((template) => {
-                return (
-                  <CommandItem key={template.id} onSelect={(e) => console.log(e)}>
-                    <LayoutTemplateIcon className="mr-2 h-4 w-4" />
-                    {template.title}
-                  </CommandItem>
-                );
-              })}
-            </CommandGroup>
-          </>
-        )}
-      </CommandList>
+      <CommandInput
+        placeholder="Enter a new Thingy"
+        value={term}
+        onValueChange={setTerm}
+      />
+      {!!term && (
+        <CommandList>
+          <CommandGroup title="Create New">
+            <CommandItem onSelect={onCreateNew}>
+              <PlusCircleIcon className="mr-2 h-4 w-4" />
+              Create Item&nbsp;{term ? <i>{`'${term}'`}</i> : ""}
+            </CommandItem>
+          </CommandGroup>
+          {!!term && !!templates?.length && (
+            <>
+              <CommandSeparator />
+              <CommandGroup heading="Templates">
+                {isLoading && <CommandLoading>Loading...</CommandLoading>}
+                {templates?.map((template) => {
+                  return (
+                    <CommandItem key={template.id} onSelect={(e) => console.log(e)}>
+                      <LayoutTemplateIcon className="mr-2 h-4 w-4" />
+                      {template.title}
+                    </CommandItem>
+                  );
+                })}
+              </CommandGroup>
+            </>
+          )}
+        </CommandList>
+      )}
     </Command>
   );
 }
