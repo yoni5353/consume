@@ -50,34 +50,4 @@ export const listsRouter = createTRPCRouter({
       where: { id: input },
     });
   }),
-
-  createItemInList: protectedProcedure
-    .input(
-      z.object({
-        listId: z.string(),
-        item: z.object({
-          title: z.string().min(1),
-          description: z.optional(z.string()),
-        }),
-      })
-    )
-    .mutation(({ ctx, input }) => {
-      return ctx.prisma.list.update({
-        where: { id: input.listId },
-        data: {
-          items: {
-            create: {
-              assignedBy: { connect: { id: ctx.session.user.id } },
-              item: {
-                create: {
-                  title: input.item.title,
-                  description: input.item.description,
-                  createdBy: { connect: { id: ctx.session.user.id } },
-                },
-              },
-            },
-          },
-        },
-      });
-    }),
 });

@@ -134,7 +134,7 @@ function ItemCreation({ listId }: { listId: string }) {
     { keepPreviousData: true }
   );
 
-  const { mutate: createItem } = api.lists.createItemInList.useMutation({
+  const { mutate: createItem } = api.items.createItem.useMutation({
     onSuccess: () => {
       setTerm("");
       void ctx.lists.getWithItems.invalidate(listId);
