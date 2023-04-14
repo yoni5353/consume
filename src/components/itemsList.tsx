@@ -4,11 +4,21 @@ import { ItemCard } from "./itemCard";
 import { Input } from "./ui/input";
 import { Button } from "./ui/button";
 import { useForm, type SubmitHandler } from "react-hook-form";
-import { Plus } from "lucide-react";
+import { LayoutTemplateIcon, Plus, PlusCircleIcon } from "lucide-react";
 import { useState } from "react";
 import { ContextMenu, ContextMenuTrigger } from "~/components/ui/context-menu";
 import { ItemContextMenu } from "./itemContextMenu";
 import { useAutoAnimate } from "@formkit/auto-animate/react";
+import {
+  Command,
+  CommandEmpty,
+  CommandInput,
+  CommandItem,
+  CommandList,
+  CommandGroup,
+  CommandSeparator,
+} from "./ui/command";
+import { CommandLoading } from "cmdk";
 
 export function ItemsList({
   listId,
@@ -94,6 +104,7 @@ export function ItemsList({
 
   return (
     <div className="items-list flex flex-col gap-3">
+      <ItemCreation />
       <form onSubmit={handleSubmit(onCreateItem)} className="flex flex-row gap-2">
         <Input {...register("itemTitle", { required: true, maxLength: 256 })} />
         <Button type="submit" variant="subtle" className="p-2">
@@ -132,5 +143,44 @@ export function ItemsList({
         />
       </ContextMenu>
     </div>
+  );
+}
+
+function ItemCreation() {
+  const [search, setSearch] = useState<string>("");
+
+  const { data: templates, isLoading } = api.templates.searchItemTemplates.useQuery(
+    search,
+    { keepPreviousData: true }
+  );
+
+  return (
+    <Command className="z-10 h-min w-full" shouldFilter={false}>
+      <CommandInput placeholder="Enter a new Thingy" onValueChange={setSearch} />
+      <CommandList>
+        <CommandGroup title="Create New">
+          <CommandItem onSelect={(e) => console.log(e)}>
+            <PlusCircleIcon className="mr-2 h-4 w-4" />
+            Create Item&nbsp;{search ? <i>{`'${search}'`}</i> : ""}
+          </CommandItem>
+        </CommandGroup>
+        {!!search && !!templates?.length && (
+          <>
+            <CommandSeparator />
+            <CommandGroup heading="Templates">
+              {isLoading && <CommandLoading>Loading...</CommandLoading>}
+              {templates?.map((template) => {
+                return (
+                  <CommandItem key={template.id} onSelect={(e) => console.log(e)}>
+                    <LayoutTemplateIcon className="mr-2 h-4 w-4" />
+                    {template.title}
+                  </CommandItem>
+                );
+              })}
+            </CommandGroup>
+          </>
+        )}
+      </CommandList>
+    </Command>
   );
 }
