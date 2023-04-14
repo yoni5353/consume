@@ -1,14 +1,21 @@
 /* eslint-disable @typescript-eslint/no-misused-promises */
 import { api } from "~/utils/api";
 import { ItemCard } from "./itemCard";
-import { Input } from "./ui/input";
-import { Button } from "./ui/button";
-import { useForm, type SubmitHandler } from "react-hook-form";
-import { Plus } from "lucide-react";
-import { useState } from "react";
+import { LayoutTemplateIcon, PlusCircleIcon } from "lucide-react";
+import { useCallback, useState } from "react";
 import { ContextMenu, ContextMenuTrigger } from "~/components/ui/context-menu";
 import { ItemContextMenu } from "./itemContextMenu";
 import { useAutoAnimate } from "@formkit/auto-animate/react";
+import {
+  Command,
+  CommandEmpty,
+  CommandInput,
+  CommandItem,
+  CommandList,
+  CommandGroup,
+  CommandSeparator,
+} from "./ui/command";
+import { CommandLoading } from "cmdk";
 
 export function ItemsList({
   listId,
@@ -19,7 +26,6 @@ export function ItemsList({
   onItemSelected: (itemId: string) => void;
   onMoveItemsToNewList?: (originListId: string, itemIds: string[]) => void;
 }) {
-  const { register, handleSubmit, reset } = useForm<{ itemTitle: string }>();
   const [selectedItems, setSelectedItems] = useState<string[]>([]);
   const [lastSelectedItem, setLastSelectedItem] = useState<string>();
   const [listRef] = useAutoAnimate<HTMLDivElement>();
@@ -39,18 +45,6 @@ export function ItemsList({
   const { mutate: moveItems } = api.items.moveItems.useMutation({
     onSuccess: () => refetch(),
   });
-
-  const { mutate: addItem } = api.lists.createItemInList.useMutation({
-    onSuccess: () => refetch(),
-  });
-
-  const onCreateItem: SubmitHandler<{ itemTitle: string }> = (data) => {
-    addItem({
-      listId,
-      item: { title: data.itemTitle },
-    });
-    reset();
-  };
 
   const items = listWithItems?.items;
 
@@ -93,13 +87,11 @@ export function ItemsList({
   };
 
   return (
-    <div className="items-list flex flex-col gap-3">
-      <form onSubmit={handleSubmit(onCreateItem)} className="flex flex-row gap-2">
-        <Input {...register("itemTitle", { required: true, maxLength: 256 })} />
-        <Button type="submit" variant="subtle" className="p-2">
-          <Plus />
-        </Button>
-      </form>
+    <div className="items-list relative flex flex-col gap-3">
+      <div className="item-creation-field absolute z-10 w-full">
+        <ItemCreation listId={listId} />
+      </div>
+      <div className="h-12" />
       <ContextMenu modal={false}>
         <ContextMenuTrigger>
           <div className="items flex flex-col gap-2" ref={listRef}>
@@ -132,5 +124,82 @@ export function ItemsList({
         />
       </ContextMenu>
     </div>
+  );
+}
+
+function ItemCreation({ listId }: { listId: string }) {
+  const [term, setTerm] = useState<string>("");
+
+  const ctx = api.useContext();
+
+  const { data: templates, isLoading } = api.templates.searchItemTemplates.useQuery(
+    term,
+    { keepPreviousData: true }
+  );
+
+  const { mutate: createItem } = api.items.createItem.useMutation({
+    onSuccess: () => {
+      setTerm("");
+      void ctx.lists.getWithItems.invalidate(listId);
+    },
+  });
+
+  const { mutate: createItemFromTemplate } = api.items.createItemFromTemplate.useMutation(
+    {
+      onSuccess: () => {
+        setTerm("");
+        void ctx.lists.getWithItems.invalidate(listId);
+      },
+    }
+  );
+
+  const onCreateNew = useCallback(() => {
+    createItem({ listId, item: { title: term } });
+  }, [createItem, listId, term]);
+
+  const onCreateFromTemplate = useCallback(
+    (templateId: string) => {
+      createItemFromTemplate({ listId, templateId });
+    },
+    [createItemFromTemplate, listId]
+  );
+
+  return (
+    <Command className="h-min w-full border-2 dark:border-slate-950" shouldFilter={false}>
+      <CommandInput
+        placeholder="Enter a new Thingy"
+        value={term}
+        onValueChange={setTerm}
+      />
+      {!!term && (
+        <CommandList>
+          <CommandGroup title="Create New" className="pb-0">
+            <CommandItem onSelect={onCreateNew}>
+              <PlusCircleIcon className="mr-2 h-4 w-4" />
+              Create Item&nbsp;{term ? <i>{`'${term}'`}</i> : ""}
+            </CommandItem>
+          </CommandGroup>
+          {!!term && !!templates?.length && (
+            <>
+              <CommandSeparator />
+              <CommandGroup heading="Templates">
+                {isLoading && <CommandLoading>Loading...</CommandLoading>}
+                {templates?.map((template) => {
+                  return (
+                    <CommandItem
+                      key={template.id}
+                      onSelect={() => onCreateFromTemplate(template.id)}
+                    >
+                      <LayoutTemplateIcon className="mr-2 h-4 w-4" />
+                      {template.title}
+                    </CommandItem>
+                  );
+                })}
+              </CommandGroup>
+            </>
+          )}
+        </CommandList>
+      )}
+    </Command>
   );
 }
