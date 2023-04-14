@@ -87,8 +87,11 @@ export function ItemsList({
   };
 
   return (
-    <div className="items-list flex flex-col gap-3">
-      <ItemCreation listId={listId} />
+    <div className="items-list relative flex flex-col gap-3">
+      <div className="item-creation-field absolute z-10 w-full">
+        <ItemCreation listId={listId} />
+      </div>
+      <div className="h-12" />
       <ContextMenu modal={false}>
         <ContextMenuTrigger>
           <div className="items flex flex-col gap-2" ref={listRef}>
@@ -162,7 +165,7 @@ function ItemCreation({ listId }: { listId: string }) {
   );
 
   return (
-    <Command className="z-10 h-min w-full" shouldFilter={false}>
+    <Command className="h-min w-full border-2 dark:border-slate-950" shouldFilter={false}>
       <CommandInput
         placeholder="Enter a new Thingy"
         value={term}
@@ -170,7 +173,7 @@ function ItemCreation({ listId }: { listId: string }) {
       />
       {!!term && (
         <CommandList>
-          <CommandGroup title="Create New">
+          <CommandGroup title="Create New" className="pb-0">
             <CommandItem onSelect={onCreateNew}>
               <PlusCircleIcon className="mr-2 h-4 w-4" />
               Create Item&nbsp;{term ? <i>{`'${term}'`}</i> : ""}
