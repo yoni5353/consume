@@ -141,9 +141,25 @@ function ItemCreation({ listId }: { listId: string }) {
     },
   });
 
+  const { mutate: createItemFromTemplate } = api.items.createItemFromTemplate.useMutation(
+    {
+      onSuccess: () => {
+        setTerm("");
+        void ctx.lists.getWithItems.invalidate(listId);
+      },
+    }
+  );
+
   const onCreateNew = useCallback(() => {
     createItem({ listId, item: { title: term } });
   }, [createItem, listId, term]);
+
+  const onCreateFromTemplate = useCallback(
+    (templateId: string) => {
+      createItemFromTemplate({ listId, templateId });
+    },
+    [createItemFromTemplate, listId]
+  );
 
   return (
     <Command className="z-10 h-min w-full" shouldFilter={false}>
@@ -167,7 +183,10 @@ function ItemCreation({ listId }: { listId: string }) {
                 {isLoading && <CommandLoading>Loading...</CommandLoading>}
                 {templates?.map((template) => {
                   return (
-                    <CommandItem key={template.id} onSelect={(e) => console.log(e)}>
+                    <CommandItem
+                      key={template.id}
+                      onSelect={() => onCreateFromTemplate(template.id)}
+                    >
                       <LayoutTemplateIcon className="mr-2 h-4 w-4" />
                       {template.title}
                     </CommandItem>

@@ -1,6 +1,8 @@
+import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 
 import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
+import { exludeTemplateMetadta } from "./templateHelpers";
 
 export const itemsRouter = createTRPCRouter({
   getItem: protectedProcedure.input(z.string()).query(({ ctx, input }) => {
@@ -66,6 +68,42 @@ export const itemsRouter = createTRPCRouter({
                 create: {
                   title: input.item.title,
                   description: input.item.description,
+                  createdBy: { connect: { id: ctx.session.user.id } },
+                },
+              },
+            },
+          },
+        },
+      });
+    }),
+
+  createItemFromTemplate: protectedProcedure
+    .input(
+      z.object({
+        listId: z.string(),
+        templateId: z.string(),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      const template = await ctx.prisma.itemTemplate
+        .findUnique({
+          where: { id: input.templateId },
+        })
+        .then((template) => template && exludeTemplateMetadta(template));
+
+      if (!template) {
+        throw new TRPCError({ code: "NOT_FOUND", message: "Template not found" });
+      }
+
+      return ctx.prisma.list.update({
+        where: { id: input.listId },
+        data: {
+          items: {
+            create: {
+              assignedBy: { connect: { id: ctx.session.user.id } },
+              item: {
+                create: {
+                  ...template,
                   createdBy: { connect: { id: ctx.session.user.id } },
                 },
               },
