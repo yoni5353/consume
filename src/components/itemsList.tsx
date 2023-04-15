@@ -16,6 +16,7 @@ import {
   CommandSeparator,
 } from "./ui/command";
 import { CommandLoading } from "cmdk";
+import { cn } from "~/utils/ui/cn";
 
 export function ItemsList({
   listId,
@@ -173,7 +174,10 @@ function ItemCreation({ listId }: { listId: string }) {
       />
       {!!term && (
         <CommandList>
-          <CommandGroup title="Create New" className="pb-0">
+          <CommandGroup
+            title="Create New"
+            className={cn(!!term && !!templates?.length ? "pb-0" : "")}
+          >
             <CommandItem onSelect={onCreateNew}>
               <PlusCircleIcon className="mr-2 h-4 w-4" />
               Create Item&nbsp;{term ? <i>{`'${term}'`}</i> : ""}
