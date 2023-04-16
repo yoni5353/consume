@@ -33,9 +33,9 @@ model Item {
 model Progress {
   id String @id @default(cuid())
 
-  type         String  @default("check")
-  currentValue Decimal
-  maxValue     Decimal
+  type         String @default("check")
+  currentValue Float
+  maxValue     Float
 
   Item Item?
 }
