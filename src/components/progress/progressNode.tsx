@@ -44,3 +44,7 @@ export function ProgressNode({
     </div>
   );
 }
+
+const progressTypeToDisplay = {
+  
+}

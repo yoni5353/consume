@@ -3,6 +3,7 @@ import { z } from "zod";
 
 import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
 import { exludeTemplateMetadta } from "./templateHelpers";
+import { ProgressType } from "~/utils/progressType";
 
 export const itemsRouter = createTRPCRouter({
   getItem: protectedProcedure.input(z.string()).query(({ ctx, input }) => {
@@ -74,7 +75,7 @@ export const itemsRouter = createTRPCRouter({
                   createdBy: { connect: { id: ctx.session.user.id } },
                   progress: {
                     create: {
-                      type: "check",
+                      type: ProgressType.CHECK,
                       currentValue: 0,
                       maxValue: 1,
                     },
@@ -130,9 +131,9 @@ export const itemsRouter = createTRPCRouter({
     }),
 
   switchProgressType: protectedProcedure
-    .input(z.object({ itemId: z.string(), newProgressType: z.enum(["check", "slider"]) }))
+    .input(z.object({ itemId: z.string(), newProgressType: z.nativeEnum(ProgressType) }))
     .mutation(({ ctx, input }) => {
-      const newMaxValue = input.newProgressType === "check" ? 1 : 10;
+      const newMaxValue = input.newProgressType === ProgressType.CHECK ? 1 : 10;
 
       return ctx.prisma.item.update({
         where: { id: input.itemId },

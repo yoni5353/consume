@@ -8,6 +8,7 @@ import {
 } from "./ui/select";
 import moment from "moment";
 import { Label } from "./ui/label";
+import { ProgressType } from "~/utils/progressType";
 
 export function ItemDisplay({ itemId }: { itemId: string }) {
   const { data: item, refetch } = api.items.getItem.useQuery(itemId);
@@ -32,7 +33,7 @@ export function ItemDisplay({ itemId }: { itemId: string }) {
         <Select
           value={item.progress.type}
           onValueChange={(newValue) => {
-            const newType = newValue as "slider" | "check";
+            const newType = newValue as ProgressType;
             switchProgress({ itemId, newProgressType: newType });
           }}
         >
@@ -40,8 +41,8 @@ export function ItemDisplay({ itemId }: { itemId: string }) {
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="check">Check</SelectItem>
-            <SelectItem value="slider">Slider</SelectItem>
+            <SelectItem value={ProgressType.CHECK}>Check</SelectItem>
+            <SelectItem value={ProgressType.SLIDER}>Slider</SelectItem>
           </SelectContent>
         </Select>
       </div>
