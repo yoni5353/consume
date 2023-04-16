@@ -8,7 +8,6 @@ import { ItemContextMenu } from "./itemContextMenu";
 import { useAutoAnimate } from "@formkit/auto-animate/react";
 import {
   Command,
-  CommandEmpty,
   CommandInput,
   CommandItem,
   CommandList,

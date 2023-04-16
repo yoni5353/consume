@@ -1,6 +1,6 @@
+import { ProgressNode } from "./progress/progressNode";
 import { Button } from "./ui/button";
-import { Progress } from "./ui/progress";
-import { type Item } from "@prisma/client";
+import { type Progress, type Item } from "@prisma/client";
 import { cn } from "~/utils/ui/cn";
 
 export function ItemCard({
@@ -9,7 +9,7 @@ export function ItemCard({
   onAuxClick,
   selected,
 }: {
-  item: Item;
+  item: Item & { progress: Progress };
   onClick?: (event: React.MouseEvent) => void;
   onAuxClick?: (event: React.MouseEvent) => void;
   selected: boolean;
@@ -28,7 +28,7 @@ export function ItemCard({
         )}
       >
         <div className="truncate font-medium">{item.title}</div>
-        <Progress value={30} className="w-24 border-[1px] border-slate-500" />
+        <ProgressNode progress={item.progress} />
       </Button>
     </div>
   );
