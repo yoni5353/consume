@@ -161,6 +161,9 @@ export const itemsRouter = createTRPCRouter({
             },
           },
         },
+        include: {
+          progress: true,
+        },
       });
     }),
 });
