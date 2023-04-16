@@ -1,8 +1,9 @@
 import { type Progress } from "@prisma/client";
 import { ProgressBar } from "../ui/progress";
-import { useState } from "react";
+import { type ReactNode, useState } from "react";
 import { api } from "~/utils/api";
 import { Slider } from "../ui/slider";
+import { ProgressType } from "~/utils/progressType";
 
 export function ProgressNode({
   progress,
@@ -36,15 +37,31 @@ export function ProgressNode({
           onValueCommit={() => updateProgress({ itemId, newProgress: value })}
         />
       ) : (
-        <ProgressBar
-          value={(progress.currentValue / progress.maxValue) * 100}
-          className="w-24 border-[1px] border-slate-700"
-        />
+        progressTypeToDisplay[progress.type as ProgressType]?.({ progress }) ??
+        defaultDisplay({ progress })
       )}
     </div>
   );
 }
 
-const progressTypeToDisplay = {
-  
-}
+const defaultDisplay = ({ progress }: { progress: Progress }) => {
+  return (
+    <ProgressBar
+      value={(progress.currentValue / progress.maxValue) * 100}
+      className="w-24 border-[1px] border-slate-700"
+    />
+  );
+};
+
+const progressTypeToDisplay: {
+  [key in ProgressType]?: ({ progress }: { progress: Progress }) => ReactNode;
+} = {
+  [ProgressType.CHECK]: ({ progress }) =>
+    progress.currentValue > 0 ? "DONE" : "NOT DONE",
+  [ProgressType.SLIDER]: ({ progress }) => (
+    <ProgressBar
+      value={(progress.currentValue / progress.maxValue) * 100}
+      className="w-24 border-[1px] border-slate-700"
+    />
+  ),
+};
