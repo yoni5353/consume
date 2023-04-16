@@ -8,6 +8,9 @@ export const itemsRouter = createTRPCRouter({
   getItem: protectedProcedure.input(z.string()).query(({ ctx, input }) => {
     return ctx.prisma.item.findUnique({
       where: { id: input },
+      include: {
+        progress: true,
+      },
     });
   }),
 
@@ -69,6 +72,13 @@ export const itemsRouter = createTRPCRouter({
                   title: input.item.title,
                   description: input.item.description,
                   createdBy: { connect: { id: ctx.session.user.id } },
+                  progress: {
+                    create: {
+                      type: "check",
+                      currentValue: 0,
+                      maxValue: 1,
+                    },
+                  },
                 },
               },
             },
@@ -104,9 +114,34 @@ export const itemsRouter = createTRPCRouter({
               item: {
                 create: {
                   ...template,
+                  progress: {
+                    create: {
+                      currentValue: 0,
+                      maxValue: 1,
+                    },
+                  },
                   createdBy: { connect: { id: ctx.session.user.id } },
                 },
               },
+            },
+          },
+        },
+      });
+    }),
+
+  switchProgressType: protectedProcedure
+    .input(z.object({ itemId: z.string(), newProgressType: z.enum(["check", "slider"]) }))
+    .mutation(({ ctx, input }) => {
+      const newMaxValue = input.newProgressType === "check" ? 1 : 10;
+
+      return ctx.prisma.item.update({
+        where: { id: input.itemId },
+        data: {
+          progress: {
+            update: {
+              type: input.newProgressType,
+              currentValue: 0,
+              maxValue: newMaxValue,
             },
           },
         },

@@ -24,7 +24,20 @@ model Item {
   title       String
   description String @default("")
 
+  progress   Progress @relation(fields: [progressId], references: [id], onDelete: Cascade)
+  progressId String   @unique
+
   lists ItemsInLists[]
+}
+
+model Progress {
+  id String @id @default(cuid())
+
+  type         String  @default("check")
+  currentValue Decimal
+  maxValue     Decimal
+
+  Item Item?
 }
 
 model List {
@@ -61,6 +74,8 @@ model ItemTemplate {
 
   title       String
   description String @default("")
+
+  progressType String @default("check")
 }
 
 // Necessary for Next auth
