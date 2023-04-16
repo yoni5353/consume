@@ -147,4 +147,19 @@ export const itemsRouter = createTRPCRouter({
         },
       });
     }),
+
+  updateProgress: protectedProcedure
+    .input(z.object({ itemId: z.string(), newProgress: z.number().min(0) }))
+    .mutation(({ ctx, input }) => {
+      return ctx.prisma.item.update({
+        where: { id: input.itemId },
+        data: {
+          progress: {
+            update: {
+              currentValue: input.newProgress,
+            },
+          },
+        },
+      });
+    }),
 });

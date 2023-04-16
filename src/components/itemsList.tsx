@@ -97,8 +97,8 @@ export function ItemsList({
           <div className="items flex flex-col gap-2" ref={listRef}>
             {items?.map((item) => (
               <ItemCard
-                item={item.item}
                 key={item.itemId}
+                itemId={item.itemId}
                 selected={selectedItems.includes(item.itemId)}
                 onClick={(e) => onCardClick(e, item.itemId)}
                 onAuxClick={(e) => onCardClick(e, item.itemId, true)}
