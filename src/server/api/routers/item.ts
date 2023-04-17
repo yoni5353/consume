@@ -129,23 +129,60 @@ export const itemsRouter = createTRPCRouter({
       });
     }),
 
-  switchProgressType: protectedProcedure
-    .input(z.object({ itemId: z.string(), newProgressType: z.nativeEnum(ProgressType) }))
-    .mutation(({ ctx, input }) => {
-      const newMaxValue = defaultProgressMaxValues[input.newProgressType];
+  switchProgress: protectedProcedure
+    .input(
+      z.object({
+        itemId: z.string(),
+        newProgressType: z.optional(z.nativeEnum(ProgressType)),
+        newMaxValue: z.optional(z.number().min(0)),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      const currentProgress = (
+        await ctx.prisma.item.findUnique({
+          where: { id: input.itemId },
+          select: { progress: true },
+        })
+      )?.progress;
 
-      return ctx.prisma.item.update({
-        where: { id: input.itemId },
-        data: {
-          progress: {
-            update: {
-              type: input.newProgressType,
-              currentValue: 0,
-              maxValue: newMaxValue,
+      if (!currentProgress) {
+        throw new TRPCError({ code: "NOT_FOUND", message: "Progress not found" });
+      }
+
+      if (input.newProgressType && input.newProgressType !== currentProgress.type) {
+        const newCurrentValue =
+          input.newProgressType === ProgressType.PERCENTAGE
+            ? (currentProgress.currentValue / currentProgress.maxValue) * 100
+            : 0;
+
+        return ctx.prisma.item.update({
+          where: { id: input.itemId },
+          data: {
+            progress: {
+              update: {
+                type: input.newProgressType,
+                currentValue: newCurrentValue,
+                maxValue:
+                  input.newMaxValue ?? defaultProgressMaxValues[input.newProgressType],
+              },
             },
           },
-        },
-      });
+        });
+      } else if (!!input.newMaxValue) {
+        return ctx.prisma.item.update({
+          where: { id: input.itemId },
+          data: {
+            progress: {
+              update: {
+                currentValue: Math.min(currentProgress.currentValue, input.newMaxValue),
+                maxValue: input.newMaxValue,
+              },
+            },
+          },
+        });
+      } else {
+        throw new TRPCError({ code: "BAD_REQUEST" });
+      }
     }),
 
   updateProgress: protectedProcedure
