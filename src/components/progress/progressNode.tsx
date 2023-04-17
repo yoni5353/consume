@@ -4,6 +4,7 @@ import { type ReactNode, useState, useEffect } from "react";
 import { api } from "~/utils/api";
 import { Slider } from "../ui/slider";
 import { ProgressType } from "~/utils/progress";
+import { Label } from "../ui/label";
 
 export function ProgressNode({
   progress,
@@ -80,23 +81,28 @@ const progressTypeToDisplay: {
     onValueChange,
     onValueCommit,
   }) => (
-    <>
-      {isHovering ? (
-        <Slider
-          className="w-24 rounded border-[1px] border-slate-100"
-          value={[value]}
-          onValueChange={(newValue) => onValueChange(newValue[0] ?? 0)}
-          min={0}
-          max={progress.maxValue}
-          onValueCommit={(newValue) => onValueCommit(newValue[0] ?? 0)}
-        />
-      ) : (
-        <ProgressBar
-          value={(progress.currentValue / progress.maxValue) * 100}
-          className="w-24 border-[1px] border-slate-700"
-        />
-      )}
-    </>
+    <div className="flex flex-col items-center">
+      <Label className="text-xs">
+        {value} / {progress.maxValue}
+      </Label>
+      <div>
+        {isHovering ? (
+          <Slider
+            className="w-24 rounded border-[1px] border-slate-100"
+            value={[value]}
+            onValueChange={(newValue) => onValueChange(newValue[0] ?? 0)}
+            min={0}
+            max={progress.maxValue}
+            onValueCommit={(newValue) => onValueCommit(newValue[0] ?? 0)}
+          />
+        ) : (
+          <ProgressBar
+            value={(progress.currentValue / progress.maxValue) * 100}
+            className="h-3 w-24 border-[1px] border-slate-700"
+          />
+        )}
+      </div>
+    </div>
   ),
   [ProgressType.PERCENTAGE]: ({
     value,
