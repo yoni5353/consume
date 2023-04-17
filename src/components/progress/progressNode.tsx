@@ -1,6 +1,6 @@
 import { type Progress } from "@prisma/client";
 import { ProgressBar } from "../ui/progress";
-import { type ReactNode, useState } from "react";
+import { type ReactNode, useState, useEffect } from "react";
 import { api } from "~/utils/api";
 import { Slider } from "../ui/slider";
 import { ProgressType } from "~/utils/progress";
@@ -20,6 +20,10 @@ export function ProgressNode({
   const { mutate: updateProgress } = api.items.updateProgress.useMutation({
     onSuccess: () => ctx.items.getItem.invalidate(itemId),
   });
+
+  useEffect(() => {
+    setValue(progress.currentValue);
+  }, [progress.currentValue]);
 
   return (
     <div

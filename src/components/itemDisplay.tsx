@@ -9,11 +9,12 @@ import {
 import moment from "moment";
 import { Label } from "./ui/label";
 import { ProgressType } from "~/utils/progress";
+import { Input } from "./ui/input";
 
 export function ItemDisplay({ itemId }: { itemId: string }) {
   const { data: item, refetch } = api.items.getItem.useQuery(itemId);
 
-  const { mutate: switchProgress } = api.items.switchProgressType.useMutation({
+  const { mutate: switchProgress } = api.items.switchProgress.useMutation({
     onSuccess: () => refetch(),
   });
 
@@ -37,7 +38,7 @@ export function ItemDisplay({ itemId }: { itemId: string }) {
             switchProgress({ itemId, newProgressType: newType });
           }}
         >
-          <SelectTrigger className="w-[180px]">
+          <SelectTrigger className="w-32">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
@@ -46,6 +47,26 @@ export function ItemDisplay({ itemId }: { itemId: string }) {
             <SelectItem value={ProgressType.PERCENTAGE}>Precentage</SelectItem>
           </SelectContent>
         </Select>
+      </div>
+      <div className="flex flex-col items-center">
+        {item.progress.type === ProgressType.SLIDER && (
+          <div className="mx-5 flex flex-row items-center space-x-10">
+            <Label htmlFor="sliderAmount" className="items-center text-right uppercase">
+              Slider Max Value
+            </Label>
+            <Input
+              type="number"
+              min={0}
+              max={1000}
+              id="sliderAmount"
+              value={item.progress.maxValue}
+              onChange={(event) => {
+                const newValue = parseInt(event.target.value);
+                switchProgress({ itemId, newMaxValue: newValue });
+              }}
+            />
+          </div>
+        )}
       </div>
     </div>
   );
