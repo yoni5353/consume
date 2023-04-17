@@ -13,7 +13,7 @@ export function ProgressNode({
   itemId: string;
 }) {
   const [value, setValue] = useState(progress.currentValue);
-  const [isEditing, setIsEditing] = useState<boolean>(false);
+  const [isHovering, setIsHovering] = useState<boolean>(false);
 
   const ctx = api.useContext();
 
@@ -24,22 +24,18 @@ export function ProgressNode({
   return (
     <div
       className="flex h-full w-24 items-center justify-center"
-      onMouseEnter={() => setIsEditing(true)}
-      onMouseLeave={() => setIsEditing(false)}
+      onMouseEnter={() => setIsHovering(true)}
+      onMouseLeave={() => setIsHovering(false)}
     >
-      {!isEditing
-        ? progressTypeToDisplay[progress.type as ProgressType]?.display({
-            progress,
-            value,
-          }) ?? defaultDisplay({ progress })
-        : progressTypeToDisplay[progress.type as ProgressType]?.editor({
-            value,
-            progress,
-            onValueChange: (newValue) => setValue(newValue),
-            onValueCommit: (newValue) => {
-              return updateProgress({ itemId, newProgress: newValue });
-            },
-          }) ?? defaultDisplay({ progress })}
+      {progressTypeToDisplay[progress.type as ProgressType]?.({
+        value,
+        progress,
+        isHovering: isHovering,
+        onValueChange: (newValue) => setValue(newValue),
+        onValueCommit: (newValue) => {
+          return updateProgress({ itemId, newProgress: newValue });
+        },
+      }) ?? defaultDisplay({ progress })}
     </div>
   );
 }
@@ -54,66 +50,73 @@ const defaultDisplay = ({ progress }: { progress: Progress }) => {
 };
 
 const progressTypeToDisplay: {
-  [key in ProgressType]?: {
-    display: (props: { progress: Progress; value: number }) => ReactNode;
-    editor: (props: {
-      value: number;
-      progress: Progress;
-      onValueChange: (newValue: number) => void;
-      onValueCommit: (newValue: number) => void;
-    }) => ReactNode;
-  };
+  [key in ProgressType]?: (props: {
+    isHovering: boolean;
+    value: number;
+    progress: Progress;
+    onValueChange: (newValue: number) => void;
+    onValueCommit: (newValue: number) => void;
+  }) => ReactNode;
 } = {
-  [ProgressType.CHECK]: {
-    display: ({ value }) => (
-      <input className="h-6 w-6" type="checkbox" checked={value === 1} readOnly />
-    ),
-    editor: ({ value, onValueChange, onValueCommit }) => (
-      <input
-        className="h-6 w-6"
-        type="checkbox"
-        checked={value === 1}
-        onChange={(e) => {
-          onValueChange(e.target.checked ? 1 : 0);
-          onValueCommit(e.target.checked ? 1 : 0);
-        }}
-      />
-    ),
-  },
-  [ProgressType.SLIDER]: {
-    display: ({ progress }) => (
-      <ProgressBar
-        value={(progress.currentValue / progress.maxValue) * 100}
-        className="w-24 border-[1px] border-slate-700"
-      />
-    ),
-    editor: ({ value, progress, onValueChange, onValueCommit }) => (
-      <Slider
-        className="w-24 rounded border-[1px] border-slate-100"
-        value={[value]}
-        onValueChange={(newValue) => onValueChange(newValue[0] ?? 0)}
-        min={0}
-        max={progress.maxValue}
-        onValueCommit={(newValue) => onValueCommit(newValue[0] ?? 0)}
-      />
-    ),
-  },
-  [ProgressType.PERCENTAGE]: {
-    display: ({ progress }) => (
-      <ProgressBar
-        value={(progress.currentValue / progress.maxValue) * 100}
-        className="w-24 border-[1px] border-slate-700"
-      />
-    ),
-    editor: ({ value, progress, onValueChange, onValueCommit }) => (
-      <Slider
-        className="w-24 rounded border-[1px] border-slate-100"
-        value={[value]}
-        onValueChange={(newValue) => onValueChange(newValue[0] ?? 0)}
-        min={0}
-        max={progress.maxValue}
-        onValueCommit={(newValue) => onValueCommit(newValue[0] ?? 0)}
-      />
-    ),
-  },
+  [ProgressType.CHECK]: ({ value, onValueChange, onValueCommit }) => (
+    <input
+      className="h-6 w-6"
+      type="checkbox"
+      checked={value === 1}
+      onChange={(e) => {
+        onValueChange(e.target.checked ? 1 : 0);
+        onValueCommit(e.target.checked ? 1 : 0);
+      }}
+    />
+  ),
+  [ProgressType.SLIDER]: ({
+    value,
+    progress,
+    isHovering,
+    onValueChange,
+    onValueCommit,
+  }) => (
+    <>
+      {isHovering ? (
+        <Slider
+          className="w-24 rounded border-[1px] border-slate-100"
+          value={[value]}
+          onValueChange={(newValue) => onValueChange(newValue[0] ?? 0)}
+          min={0}
+          max={progress.maxValue}
+          onValueCommit={(newValue) => onValueCommit(newValue[0] ?? 0)}
+        />
+      ) : (
+        <ProgressBar
+          value={(progress.currentValue / progress.maxValue) * 100}
+          className="w-24 border-[1px] border-slate-700"
+        />
+      )}
+    </>
+  ),
+  [ProgressType.PERCENTAGE]: ({
+    value,
+    progress,
+    isHovering,
+    onValueChange,
+    onValueCommit,
+  }) => (
+    <>
+      {isHovering ? (
+        <Slider
+          className="w-24 rounded border-[1px] border-slate-100"
+          value={[value]}
+          onValueChange={(newValue) => onValueChange(newValue[0] ?? 0)}
+          min={0}
+          max={progress.maxValue}
+          onValueCommit={(newValue) => onValueCommit(newValue[0] ?? 0)}
+        />
+      ) : (
+        <ProgressBar
+          value={(progress.currentValue / progress.maxValue) * 100}
+          className="w-24 border-[1px] border-slate-700"
+        />
+      )}
+    </>
+  ),
 };
