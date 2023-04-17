@@ -18,7 +18,7 @@ const ConSlider = React.forwardRef<
     <SliderPrimitive.Track className="relative h-2 w-full grow overflow-hidden rounded-full bg-slate-200 dark:bg-slate-800">
       <SliderPrimitive.Range
         className={cn("absolute h-full bg-slate-900  dark:bg-slate-200", {
-          "dark:bg-blue-500": isDone,
+          "dark:bg-blue-600": isDone,
         })}
       />
     </SliderPrimitive.Track>

@@ -19,7 +19,7 @@ const ProgressBar = React.forwardRef<
       className={cn(
         // Changed bg-slate-400 to bg-slate-200
         "h-full w-full flex-1 bg-slate-900 transition-all dark:bg-slate-200",
-        isDone ? "bg-slate-400 dark:bg-blue-500" : ""
+        isDone ? "bg-slate-400 dark:bg-blue-600" : ""
       )}
       style={{ transform: `translateX(-${100 - (value || 0)}%)` }}
     />

@@ -67,7 +67,7 @@ const progressTypeToDisplay: {
 } = {
   [ProgressType.CHECK]: ({ value, onValueChange, onValueCommit }) => (
     <input
-      className="h-6 w-6"
+      className="h-6 w-6 accent-blue-600"
       type="checkbox"
       checked={value === 1}
       onChange={(e) => {
