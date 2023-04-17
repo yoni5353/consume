@@ -3,7 +3,7 @@ import { ProgressBar } from "../ui/progress";
 import { type ReactNode, useState } from "react";
 import { api } from "~/utils/api";
 import { Slider } from "../ui/slider";
-import { ProgressType } from "~/utils/progressType";
+import { ProgressType } from "~/utils/progress";
 
 export function ProgressNode({
   progress,
@@ -81,6 +81,24 @@ const progressTypeToDisplay: {
     ),
   },
   [ProgressType.SLIDER]: {
+    display: ({ progress }) => (
+      <ProgressBar
+        value={(progress.currentValue / progress.maxValue) * 100}
+        className="w-24 border-[1px] border-slate-700"
+      />
+    ),
+    editor: ({ value, progress, onValueChange, onValueCommit }) => (
+      <Slider
+        className="w-24 rounded border-[1px] border-slate-100"
+        value={[value]}
+        onValueChange={(newValue) => onValueChange(newValue[0] ?? 0)}
+        min={0}
+        max={progress.maxValue}
+        onValueCommit={(newValue) => onValueCommit(newValue[0] ?? 0)}
+      />
+    ),
+  },
+  [ProgressType.PERCENTAGE]: {
     display: ({ progress }) => (
       <ProgressBar
         value={(progress.currentValue / progress.maxValue) * 100}

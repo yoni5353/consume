@@ -8,7 +8,7 @@ import {
 } from "./ui/select";
 import moment from "moment";
 import { Label } from "./ui/label";
-import { ProgressType } from "~/utils/progressType";
+import { ProgressType } from "~/utils/progress";
 
 export function ItemDisplay({ itemId }: { itemId: string }) {
   const { data: item, refetch } = api.items.getItem.useQuery(itemId);
@@ -43,6 +43,7 @@ export function ItemDisplay({ itemId }: { itemId: string }) {
           <SelectContent>
             <SelectItem value={ProgressType.CHECK}>Check</SelectItem>
             <SelectItem value={ProgressType.SLIDER}>Slider</SelectItem>
+            <SelectItem value={ProgressType.PERCENTAGE}>Precentage</SelectItem>
           </SelectContent>
         </Select>
       </div>
