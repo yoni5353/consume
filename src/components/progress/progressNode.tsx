@@ -2,9 +2,9 @@ import { type Progress } from "@prisma/client";
 import { ProgressBar } from "../ui/progress";
 import { type ReactNode, useState, useEffect } from "react";
 import { api } from "~/utils/api";
-import { Slider } from "../ui/slider";
 import { ProgressType } from "~/utils/progress";
 import { Label } from "../ui/label";
+import { ConSlider } from "../ui/con-slider";
 
 export function ProgressNode({
   progress,
@@ -36,6 +36,7 @@ export function ProgressNode({
         value,
         progress,
         isHovering: isHovering,
+        isDone: progress.currentValue === progress.maxValue,
         onValueChange: (newValue) => setValue(newValue),
         onValueCommit: (newValue) => {
           return updateProgress({ itemId, newProgress: newValue });
@@ -59,6 +60,7 @@ const progressTypeToDisplay: {
     isHovering: boolean;
     value: number;
     progress: Progress;
+    isDone: boolean;
     onValueChange: (newValue: number) => void;
     onValueCommit: (newValue: number) => void;
   }) => ReactNode;
@@ -80,6 +82,7 @@ const progressTypeToDisplay: {
     isHovering,
     onValueChange,
     onValueCommit,
+    isDone,
   }) => (
     <div className="flex flex-col items-center">
       <Label className="text-xs">
@@ -87,18 +90,20 @@ const progressTypeToDisplay: {
       </Label>
       <div>
         {isHovering ? (
-          <Slider
+          <ConSlider
             className="w-24 rounded border-[1px] border-slate-100"
             value={[value]}
             onValueChange={(newValue) => onValueChange(newValue[0] ?? 0)}
             min={0}
             max={progress.maxValue}
             onValueCommit={(newValue) => onValueCommit(newValue[0] ?? 0)}
+            isDone={isDone}
           />
         ) : (
           <ProgressBar
             value={(progress.currentValue / progress.maxValue) * 100}
             className="h-3 w-24 border-[1px] border-slate-700"
+            isDone={isDone}
           />
         )}
       </div>
@@ -110,20 +115,24 @@ const progressTypeToDisplay: {
     isHovering,
     onValueChange,
     onValueCommit,
+    isDone,
   }) => (
     <>
       {isHovering ? (
-        <Slider
+        <ConSlider
           className="w-24 rounded border-[1px] border-slate-100"
           value={[value]}
           onValueChange={(newValue) => onValueChange(newValue[0] ?? 0)}
           min={0}
           max={progress.maxValue}
           onValueCommit={(newValue) => onValueCommit(newValue[0] ?? 0)}
+          isDone={isDone}
+          circularThumb
         />
       ) : (
         <ProgressBar
           value={(progress.currentValue / progress.maxValue) * 100}
+          isDone={isDone}
           className="w-24 border-[1px] border-slate-700"
         />
       )}
