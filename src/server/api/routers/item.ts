@@ -3,6 +3,7 @@ import { z } from "zod";
 import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
 import { exludeTemplateMetadta } from "./templateHelpers";
 import { ProgressType, defaultProgressMaxValues } from "~/utils/progress";
+import { type PartialItem, getItemFromLink } from "~/server/scrapers/main";
 
 export const itemsRouter = createTRPCRouter({
   getItem: protectedProcedure.input(z.string()).query(({ ctx, input }) => {
@@ -137,10 +138,15 @@ export const itemsRouter = createTRPCRouter({
       })
     )
     .mutation(async ({ ctx, input }) => {
-      const partialItem = {
-        title: "New Link Item",
-        link: input.link,
-      };
+      let partialItem: PartialItem;
+      try {
+        partialItem = await getItemFromLink(input.link);
+      } catch (e) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to fetch data from link",
+        });
+      }
 
       return ctx.prisma.list.update({
         where: { id: input.listId },
