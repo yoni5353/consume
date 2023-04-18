@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-misused-promises */
 import { api } from "~/utils/api";
 import { ItemCard } from "./itemCard";
-import { LayoutTemplateIcon, PlusCircleIcon } from "lucide-react";
+import { LayoutTemplateIcon, LinkIcon, PlusCircleIcon } from "lucide-react";
 import { useCallback, useState } from "react";
 import { ContextMenu, ContextMenuTrigger } from "~/components/ui/context-menu";
 import { ItemContextMenu } from "./itemContextMenu";
@@ -153,6 +153,13 @@ function ItemCreation({ listId }: { listId: string }) {
     }
   );
 
+  const { mutate: createItemFromLink } = api.items.createItemFromLink.useMutation({
+    onSuccess: () => {
+      setTerm("");
+      void ctx.lists.getWithItems.invalidate(listId);
+    },
+  });
+
   const onCreateNew = useCallback(() => {
     createItem({ listId, item: { title: term } });
   }, [createItem, listId, term]);
@@ -164,10 +171,14 @@ function ItemCreation({ listId }: { listId: string }) {
     [createItemFromTemplate, listId]
   );
 
+  const onCreateNewFromLink = useCallback(() => {
+    createItemFromLink({ listId, link: term });
+  }, [createItemFromLink, listId, term]);
+
   return (
     <Command className="h-min w-full border-2 dark:border-slate-950" shouldFilter={false}>
       <CommandInput
-        placeholder="Enter a new Thingy"
+        placeholder="Enter item title or paste a link..."
         value={term}
         onValueChange={setTerm}
       />
@@ -177,9 +188,15 @@ function ItemCreation({ listId }: { listId: string }) {
             title="Create New"
             className={cn(!!term && !!templates?.length ? "pb-0" : "")}
           >
+            {term.startsWith("https://") && (
+              <CommandItem onSelect={onCreateNewFromLink}>
+                <LinkIcon className="mr-2 h-4 w-4" />
+                Create Generic Link Item&nbsp;{term ? <i>{`'${term}'`}</i> : ""}
+              </CommandItem>
+            )}
             <CommandItem onSelect={onCreateNew}>
               <PlusCircleIcon className="mr-2 h-4 w-4" />
-              Create Item&nbsp;{term ? <i>{`'${term}'`}</i> : ""}
+              Create Item
             </CommandItem>
           </CommandGroup>
           {!!term && !!templates?.length && (

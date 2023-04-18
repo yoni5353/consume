@@ -21,12 +21,16 @@ export function ItemDisplay({ itemId }: { itemId: string }) {
   if (!item) return null;
 
   return (
-    <div className="flex h-full flex-col gap-5 overflow-hidden p-2">
-      <h3 className="mt-8 scroll-m-20 truncate text-2xl font-semibold tracking-tight">
+    <div className="flex h-full flex-col gap-3 overflow-hidden p-2">
+      <h3 className="mb-2 mt-0 scroll-m-20 truncate text-2xl font-semibold tracking-tight">
         {item.title}
       </h3>
+      {item.link && (
+        <a href={item.link} target="_blank" className="italic">
+          {item.link}
+        </a>
+      )}
       {item.description && <p>{item.description}</p>}
-      <p className="text-slate-500">Created {moment(item.createdAt).fromNow()}</p>
       <div className="mx-5 flex flex-row items-center space-x-10">
         <Label htmlFor="progressType" className="items-center text-right uppercase">
           Progress Type
@@ -68,6 +72,7 @@ export function ItemDisplay({ itemId }: { itemId: string }) {
           </div>
         )}
       </div>
+      <p className="text-slate-500">Created {moment(item.createdAt).fromNow()}</p>
     </div>
   );
 }

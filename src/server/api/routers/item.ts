@@ -129,6 +129,43 @@ export const itemsRouter = createTRPCRouter({
       });
     }),
 
+  createItemFromLink: protectedProcedure
+    .input(
+      z.object({
+        listId: z.string(),
+        link: z.string(),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      const partialItem = {
+        title: "New Link Item",
+        link: input.link,
+      };
+
+      return ctx.prisma.list.update({
+        where: { id: input.listId },
+        data: {
+          items: {
+            create: {
+              assignedBy: { connect: { id: ctx.session.user.id } },
+              item: {
+                create: {
+                  ...partialItem,
+                  progress: {
+                    create: {
+                      currentValue: 0,
+                      maxValue: 1,
+                    },
+                  },
+                  createdBy: { connect: { id: ctx.session.user.id } },
+                },
+              },
+            },
+          },
+        },
+      });
+    }),
+
   switchProgress: protectedProcedure
     .input(
       z.object({
