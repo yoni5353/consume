@@ -23,6 +23,7 @@ model Item {
 
   title       String
   description String @default("")
+  link        String @default("")
 
   progress   Progress @relation(fields: [progressId], references: [id], onDelete: Cascade)
   progressId String   @unique
@@ -74,6 +75,7 @@ model ItemTemplate {
 
   title       String
   description String @default("")
+  link        String @default("")
 
   progressType String @default("check")
 }
