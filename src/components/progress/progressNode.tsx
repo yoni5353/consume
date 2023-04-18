@@ -19,7 +19,16 @@ export function ProgressNode({
   const ctx = api.useContext();
 
   const { mutate: updateProgress } = api.items.updateProgress.useMutation({
-    onSuccess: () => ctx.items.getItem.invalidate(itemId),
+    onMutate({ newProgress }) {
+      ctx.items.getItem.setData(itemId, (prevItem) => {
+        if (prevItem) {
+          return {
+            ...prevItem,
+            progress: { ...prevItem.progress, currentValue: newProgress },
+          };
+        }
+      });
+    },
   });
 
   useEffect(() => {
@@ -36,7 +45,7 @@ export function ProgressNode({
         value,
         progress,
         isHovering: isHovering,
-        isDone: progress.currentValue === progress.maxValue,
+        isDone: value === progress.maxValue,
         onValueChange: (newValue) => setValue(newValue),
         onValueCommit: (newValue) => {
           return updateProgress({ itemId, newProgress: newValue });
