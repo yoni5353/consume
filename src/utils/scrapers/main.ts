@@ -3,7 +3,11 @@ import { load } from "cheerio";
 import { getMalItem } from "./mal";
 import { getNetflixItem } from "./netflix";
 
-export type PartialItem = { title: string; progress?: Partial<Progress> } & Partial<
+export type PartialItem = {
+  title: string;
+  progress?: Partial<Progress>;
+  mediaType?: { name: string };
+} & Partial<
   Omit<
     Item,
     "id" | "createdById" | "createdAt" | "createdBy" | "progressId" | "mediaTypeId"

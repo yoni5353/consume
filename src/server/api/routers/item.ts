@@ -160,6 +160,16 @@ export const itemsRouter = createTRPCRouter({
         type: progressType,
       };
 
+      const mediaTypeConnection = partialItem.mediaType
+        ? {
+            id: (
+              await ctx.prisma.mediaType.findFirstOrThrow({
+                where: { name: partialItem.mediaType.name },
+              })
+            ).id,
+          }
+        : undefined;
+
       return ctx.prisma.list.update({
         where: { id: input.listId },
         data: {
@@ -175,6 +185,7 @@ export const itemsRouter = createTRPCRouter({
                     },
                   },
                   createdBy: { connect: { id: ctx.session.user.id } },
+                  mediaType: { connect: mediaTypeConnection },
                 },
               },
             },

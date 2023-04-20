@@ -15,6 +15,7 @@ export async function getMalItem(link: string): Promise<PartialItem> {
         currentValue: 0,
         maxValue: episodesNumber,
       },
+      mediaType: { name: "Anime" },
     };
   });
 }
