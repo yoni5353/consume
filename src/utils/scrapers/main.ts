@@ -29,7 +29,7 @@ export const scrapers: {
 }[] = [
   {
     name: "MAL",
-    regex: /myanimelist\.net/,
+    regex: /myanimelist\.net\/anime\/\d/,
     func: getMalItem,
   },
 ];

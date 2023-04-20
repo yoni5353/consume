@@ -1,4 +1,4 @@
-import { PartialItem } from "./main";
+import { type PartialItem } from "./main";
 import { load } from "cheerio";
 
 export async function getMalItem(link: string): Promise<PartialItem> {
