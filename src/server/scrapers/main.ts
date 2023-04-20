@@ -1,7 +1,7 @@
-import { type Item } from "@prisma/client";
+import { type Progress, type Item } from "@prisma/client";
 import * as cheerio from "cheerio";
 
-export type PartialItem = { title: string } & Partial<
+export type PartialItem = { title: string; progress?: Partial<Progress> } & Partial<
   Omit<Item, "id" | "createdById" | "createdAt" | "createdBy" | "progressId">
 >;
 

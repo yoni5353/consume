@@ -148,6 +148,17 @@ export const itemsRouter = createTRPCRouter({
         });
       }
 
+      const progressMaxValue = partialItem?.progress?.maxValue ?? 1;
+      const progressType =
+        progressMaxValue > 1 ? ProgressType.SLIDER : ProgressType.CHECK;
+
+      const partialProgress = {
+        currentValue: 0,
+        maxValue: 1,
+        ...partialItem?.progress,
+        type: progressType,
+      };
+
       return ctx.prisma.list.update({
         where: { id: input.listId },
         data: {
@@ -159,8 +170,7 @@ export const itemsRouter = createTRPCRouter({
                   ...partialItem,
                   progress: {
                     create: {
-                      currentValue: 0,
-                      maxValue: 1,
+                      ...partialProgress,
                     },
                   },
                   createdBy: { connect: { id: ctx.session.user.id } },
