@@ -16,6 +16,14 @@ export function ItemDisplay({ itemId }: { itemId: string }) {
 
   const { data: mediaTypes } = api.mediaTypes.getAll.useQuery();
 
+  const ctx = api.useContext();
+
+  const { mutate: editItem } = api.items.editItem.useMutation({
+    onSuccess: () => {
+      void ctx.items.getItem.invalidate(itemId);
+    },
+  });
+
   const { mutate: switchProgress } = api.items.switchProgress.useMutation({
     onSuccess: () => refetch(),
   });
@@ -57,9 +65,10 @@ export function ItemDisplay({ itemId }: { itemId: string }) {
       <div className="mx-5 flex flex-row items-center space-x-10">
         <Label className="items-center text-right uppercase">Media Type</Label>
         <Select
-          value={item.mediaType?.id}
-          onValueChange={(newValue) => {
-            // noop
+          value={item.mediaType?.id?.toString()}
+          onValueChange={(newMediaTypeId) => {
+            const mediaTypeId = parseInt(newMediaTypeId);
+            editItem({ itemId, mediaTypeId });
           }}
         >
           <SelectTrigger className="w-32">
@@ -67,7 +76,7 @@ export function ItemDisplay({ itemId }: { itemId: string }) {
           </SelectTrigger>
           <SelectContent>
             {mediaTypes?.map((mediaType) => (
-              <SelectItem key={mediaType.id} value={mediaType.id}>
+              <SelectItem key={mediaType.id} value={mediaType.id.toString()}>
                 {mediaType.name}
               </SelectItem>
             ))}

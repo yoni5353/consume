@@ -183,6 +183,30 @@ export const itemsRouter = createTRPCRouter({
       });
     }),
 
+  editItem: protectedProcedure
+    .input(
+      z.object({
+        itemId: z.string(),
+        title: z.optional(z.string().min(1)),
+        description: z.optional(z.string()),
+        mediaTypeId: z.optional(z.number()),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      return ctx.prisma.item.update({
+        where: { id: input.itemId },
+        data: {
+          title: input.title || undefined,
+          description: input.description || undefined,
+          mediaType: {
+            connect: {
+              id: input.mediaTypeId,
+            },
+          },
+        },
+      });
+    }),
+
   switchProgress: protectedProcedure
     .input(
       z.object({
