@@ -10,6 +10,7 @@ import moment from "moment";
 import { Label } from "./ui/label";
 import { ProgressType } from "~/utils/progress";
 import { Input } from "./ui/input";
+import { MediaTypeIcon } from "./resources/mediaTypeIcon";
 
 export function ItemDisplay({ itemId }: { itemId: string }) {
   const { data: item, refetch } = api.items.getItem.useQuery(itemId);
@@ -57,6 +58,44 @@ export function ItemDisplay({ itemId }: { itemId: string }) {
       )}
       {item.description && <p>{item.description}</p>}
       <div className="mx-5 flex flex-row items-center space-x-10">
+        <Label className="items-center text-right uppercase">Media Type</Label>
+        <Select
+          value={item.mediaType?.id?.toString() ?? "0"}
+          onValueChange={(newMediaTypeId) => {
+            const mediaTypeId = parseInt(newMediaTypeId);
+            editItem({ itemId, mediaTypeId: mediaTypeId || null });
+          }}
+        >
+          <SelectTrigger className="w-32">
+            <SelectValue>
+              <div className="flex items-center">
+                <MediaTypeIcon
+                  mediaType={item?.mediaType ?? undefined}
+                  className="mr-2"
+                />
+                {item.mediaType?.name ?? "None"}
+              </div>
+            </SelectValue>
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="0">
+              <div className="flex items-center space-x-2">
+                <MediaTypeIcon mediaType={undefined} className="mr-2" />
+                None
+              </div>
+            </SelectItem>
+            {mediaTypes?.map((mediaType) => (
+              <SelectItem key={mediaType.id} value={mediaType.id.toString()}>
+                <div className="flex items-center space-x-2">
+                  <MediaTypeIcon mediaType={mediaType} className="mr-2" />
+                  {mediaType.name}
+                </div>
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
+      <div className="mx-5 flex flex-row items-center space-x-10">
         <Label htmlFor="progressType" className="items-center text-right uppercase">
           Progress Type
         </Label>
@@ -74,28 +113,6 @@ export function ItemDisplay({ itemId }: { itemId: string }) {
             <SelectItem value={ProgressType.CHECK}>Check</SelectItem>
             <SelectItem value={ProgressType.SLIDER}>Slider</SelectItem>
             <SelectItem value={ProgressType.PERCENTAGE}>Precentage</SelectItem>
-          </SelectContent>
-        </Select>
-      </div>
-      <div className="mx-5 flex flex-row items-center space-x-10">
-        <Label className="items-center text-right uppercase">Media Type</Label>
-        <Select
-          value={item.mediaType?.id?.toString() ?? "0"}
-          onValueChange={(newMediaTypeId) => {
-            const mediaTypeId = parseInt(newMediaTypeId);
-            editItem({ itemId, mediaTypeId: mediaTypeId || null });
-          }}
-        >
-          <SelectTrigger className="w-32">
-            <SelectValue>{item.mediaType?.name ?? "None"}</SelectValue>
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="0">None</SelectItem>
-            {mediaTypes?.map((mediaType) => (
-              <SelectItem key={mediaType.id} value={mediaType.id.toString()}>
-                {mediaType.name}
-              </SelectItem>
-            ))}
           </SelectContent>
         </Select>
       </div>

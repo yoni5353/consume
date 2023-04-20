@@ -2,6 +2,7 @@ import { api } from "~/utils/api";
 import { ProgressNode } from "./progress/progressNode";
 import { Button } from "./ui/button";
 import { cn } from "~/utils/ui/cn";
+import { MediaTypeIcon } from "./resources/mediaTypeIcon";
 
 export function ItemCard({
   itemId,
@@ -25,13 +26,16 @@ export function ItemCard({
         onAuxClick={onAuxClick}
         onContextMenu={onAuxClick} // For context menu with keyboard
         className={cn(
-          "flex justify-between gap-5 rounded-md bg-slate-900 px-5 py-1 text-left dark:bg-slate-500",
+          "flex justify-between gap-5 rounded-md bg-slate-900 px-3 py-1 text-left dark:bg-slate-500",
           selected && "dark:hover:bg-slate-400 dark:hover:text-slate-800",
           !selected &&
             "dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700 dark:hover:text-slate-100"
         )}
       >
-        <div className="truncate font-medium">{item.title}</div>
+        <div className="flex items-center">
+          <MediaTypeIcon mediaType={item.mediaType ?? undefined} className="mr-3" />
+          <div className="truncate font-medium">{item.title}</div>
+        </div>
         <ProgressNode progress={item.progress} itemId={item.id} />
       </Button>
     </div>
