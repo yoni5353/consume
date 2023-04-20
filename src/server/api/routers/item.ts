@@ -189,20 +189,23 @@ export const itemsRouter = createTRPCRouter({
         itemId: z.string(),
         title: z.optional(z.string().min(1)),
         description: z.optional(z.string()),
-        mediaTypeId: z.optional(z.number()),
+        mediaTypeId: z.optional(z.number().nullable()),
       })
     )
     .mutation(async ({ ctx, input }) => {
+      const mediaTypeConnection =
+        input.mediaTypeId === undefined
+          ? {}
+          : input.mediaTypeId === null
+          ? { disconnect: true }
+          : { connect: { id: input.mediaTypeId } };
+
       return ctx.prisma.item.update({
         where: { id: input.itemId },
         data: {
           title: input.title || undefined,
           description: input.description || undefined,
-          mediaType: {
-            connect: {
-              id: input.mediaTypeId,
-            },
-          },
+          mediaType: mediaTypeConnection,
         },
       });
     }),

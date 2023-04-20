@@ -19,8 +19,23 @@ export function ItemDisplay({ itemId }: { itemId: string }) {
   const ctx = api.useContext();
 
   const { mutate: editItem } = api.items.editItem.useMutation({
-    onSuccess: () => {
-      void ctx.items.getItem.invalidate(itemId);
+    async onMutate({ mediaTypeId }) {
+      await ctx.items.getItem.cancel(itemId);
+      ctx.items.getItem.setData(itemId, (prevItem) => {
+        if (prevItem) {
+          const newMediaType = mediaTypes?.find((mt) => mt.id === mediaTypeId);
+
+          if (!mediaTypeId || !newMediaType) {
+            return { ...prevItem, mediaTypeId: null, mediaType: null };
+          }
+
+          return {
+            ...prevItem,
+            mediaTypeId,
+            mediaType: { ...prevItem.mediaType, ...newMediaType },
+          };
+        }
+      });
     },
   });
 
@@ -65,16 +80,17 @@ export function ItemDisplay({ itemId }: { itemId: string }) {
       <div className="mx-5 flex flex-row items-center space-x-10">
         <Label className="items-center text-right uppercase">Media Type</Label>
         <Select
-          value={item.mediaType?.id?.toString()}
+          value={item.mediaType?.id?.toString() ?? "0"}
           onValueChange={(newMediaTypeId) => {
             const mediaTypeId = parseInt(newMediaTypeId);
-            editItem({ itemId, mediaTypeId });
+            editItem({ itemId, mediaTypeId: mediaTypeId || null });
           }}
         >
           <SelectTrigger className="w-32">
-            <SelectValue>{item.mediaType?.name}</SelectValue>
+            <SelectValue>{item.mediaType?.name ?? "None"}</SelectValue>
           </SelectTrigger>
           <SelectContent>
+            <SelectItem value="0">None</SelectItem>
             {mediaTypes?.map((mediaType) => (
               <SelectItem key={mediaType.id} value={mediaType.id.toString()}>
                 {mediaType.name}
