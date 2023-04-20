@@ -3,7 +3,7 @@ import { z } from "zod";
 import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
 import { exludeTemplateMetadta } from "./templateHelpers";
 import { ProgressType, defaultProgressMaxValues } from "~/utils/progress";
-import { type PartialItem, getItemFromLink } from "~/server/scrapers/main";
+import { type PartialItem, getItemFromLink } from "~/utils/scrapers/main";
 
 export const itemsRouter = createTRPCRouter({
   getItem: protectedProcedure.input(z.string()).query(({ ctx, input }) => {

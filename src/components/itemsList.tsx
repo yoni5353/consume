@@ -16,6 +16,7 @@ import {
 } from "./ui/command";
 import { CommandLoading } from "cmdk";
 import { cn } from "~/utils/ui/cn";
+import { scrapers } from "~/utils/scrapers/main";
 
 export function ItemsList({
   listId,
@@ -175,6 +176,14 @@ function ItemCreation({ listId }: { listId: string }) {
     createItemFromLink({ listId, link: term });
   }, [createItemFromLink, listId, term]);
 
+  const matchingScraperLists = scrapers.filter((scraper) => {
+    return scraper.regex.test(term);
+  });
+
+  const showBaseLink =
+    (term.startsWith("https://") || term.startsWith("http://")) &&
+    matchingScraperLists.length === 0;
+
   return (
     <Command className="h-min w-full border-2 dark:border-slate-950" shouldFilter={false}>
       <CommandInput
@@ -184,17 +193,30 @@ function ItemCreation({ listId }: { listId: string }) {
       />
       {!!term && (
         <CommandList>
-          <CommandGroup
-            title="Create New"
-            className={cn(!!term && !!templates?.length ? "pb-0" : "")}
-          >
-            {term.startsWith("https://") && (
-              <CommandItem onSelect={onCreateNewFromLink}>
+          <CommandGroup className={cn(!!term && !!templates?.length ? "pb-0" : "")}>
+            {matchingScraperLists.map((scraper) => (
+              <CommandItem
+                key={scraper.name}
+                onSelect={() => createItemFromLink({ listId, link: term })}
+                title="Create an item based on the given link"
+              >
                 <LinkIcon className="mr-2 h-4 w-4" />
-                Create Generic Link Item&nbsp;{term ? <i>{`'${term}'`}</i> : ""}
+                Create {scraper.name} Item
+              </CommandItem>
+            ))}
+            {showBaseLink && (
+              <CommandItem
+                onSelect={onCreateNewFromLink}
+                title="Create generic Item with the given link"
+              >
+                <LinkIcon className="mr-2 h-4 w-4" />
+                Create Generic Link Item
               </CommandItem>
             )}
-            <CommandItem onSelect={onCreateNew}>
+            <CommandItem
+              onSelect={onCreateNew}
+              title="Creates new Item with the give title"
+            >
               <PlusCircleIcon className="mr-2 h-4 w-4" />
               Create Item
             </CommandItem>
