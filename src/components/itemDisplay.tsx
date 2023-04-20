@@ -14,6 +14,8 @@ import { Input } from "./ui/input";
 export function ItemDisplay({ itemId }: { itemId: string }) {
   const { data: item, refetch } = api.items.getItem.useQuery(itemId);
 
+  const { data: mediaTypes } = api.mediaTypes.getAll.useQuery();
+
   const { mutate: switchProgress } = api.items.switchProgress.useMutation({
     onSuccess: () => refetch(),
   });
@@ -49,6 +51,26 @@ export function ItemDisplay({ itemId }: { itemId: string }) {
             <SelectItem value={ProgressType.CHECK}>Check</SelectItem>
             <SelectItem value={ProgressType.SLIDER}>Slider</SelectItem>
             <SelectItem value={ProgressType.PERCENTAGE}>Precentage</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
+      <div className="mx-5 flex flex-row items-center space-x-10">
+        <Label className="items-center text-right uppercase">Media Type</Label>
+        <Select
+          value={item.mediaType?.id}
+          onValueChange={(newValue) => {
+            // noop
+          }}
+        >
+          <SelectTrigger className="w-32">
+            <SelectValue>{item.mediaType?.name}</SelectValue>
+          </SelectTrigger>
+          <SelectContent>
+            {mediaTypes?.map((mediaType) => (
+              <SelectItem key={mediaType.id} value={mediaType.id}>
+                {mediaType.name}
+              </SelectItem>
+            ))}
           </SelectContent>
         </Select>
       </div>

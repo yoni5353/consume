@@ -11,6 +11,7 @@ export const itemsRouter = createTRPCRouter({
       where: { id: input },
       include: {
         progress: true,
+        mediaType: true,
       },
     });
   }),
