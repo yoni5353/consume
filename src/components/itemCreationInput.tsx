@@ -13,7 +13,7 @@ import { scrapers } from "~/utils/scrapers/main";
 import { cn } from "~/utils/ui/cn";
 import { CommandLoading } from "cmdk";
 
-export function ItemCreation({ listId }: { listId: string }) {
+export function ItemCreationInput({ listId }: { listId: string }) {
   const [term, setTerm] = useState<string>("");
 
   const ctx = api.useContext();

@@ -5,7 +5,7 @@ import { useState } from "react";
 import { ContextMenu, ContextMenuTrigger } from "~/components/ui/context-menu";
 import { ItemContextMenu } from "./itemContextMenu";
 import { useAutoAnimate } from "@formkit/auto-animate/react";
-import { ItemCreation } from "./itemCreationInput";
+import { ItemCreationInput } from "./itemCreationInput";
 
 export function ItemsList({
   listId,
@@ -79,7 +79,7 @@ export function ItemsList({
   return (
     <div className="items-list relative flex flex-col gap-3">
       <div className="item-creation-field absolute z-10 w-full">
-        <ItemCreation listId={listId} />
+        <ItemCreationInput listId={listId} />
       </div>
       <div className="h-12" />
       <ContextMenu modal={false}>
