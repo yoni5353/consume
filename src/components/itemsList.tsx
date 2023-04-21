@@ -6,6 +6,7 @@ import { ContextMenu, ContextMenuTrigger } from "~/components/ui/context-menu";
 import { ItemContextMenu } from "./itemContextMenu";
 import { useAutoAnimate } from "@formkit/auto-animate/react";
 import { ItemCreationInput } from "./itemCreationInput";
+import { cn } from "~/utils/ui/cn";
 
 export function ItemsList({
   listId,
@@ -76,6 +77,8 @@ export function ItemsList({
     }
   };
 
+  const isGrid = true;
+
   return (
     <div className="items-list relative flex flex-col gap-3">
       <div className="item-creation-field absolute z-10 w-full">
@@ -84,11 +87,18 @@ export function ItemsList({
       <div className="h-12" />
       <ContextMenu modal={false}>
         <ContextMenuTrigger>
-          <div className="items flex flex-col gap-2" ref={listRef}>
+          <div
+            className={cn(
+              "items flex flex-col gap-2",
+              isGrid && "grid grid-cols-5 gap-5"
+            )}
+            ref={listRef}
+          >
             {items?.map((item) => (
               <ItemCard
                 key={item.itemId}
                 itemId={item.itemId}
+                layout={isGrid ? "card" : "inline"}
                 selected={selectedItems.includes(item.itemId)}
                 onClick={(e) => onCardClick(e, item.itemId)}
                 onAuxClick={(e) => onCardClick(e, item.itemId, true)}
