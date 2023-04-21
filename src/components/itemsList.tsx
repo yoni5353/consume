@@ -12,10 +12,12 @@ export function ItemsList({
   listId,
   onItemSelected,
   onMoveItemsToNewList,
+  layout,
 }: {
   listId: string;
   onItemSelected: (itemId: string) => void;
   onMoveItemsToNewList?: (originListId: string, itemIds: string[]) => void;
+  layout: "list" | "grid";
 }) {
   const [selectedItems, setSelectedItems] = useState<string[]>([]);
   const [lastSelectedItem, setLastSelectedItem] = useState<string>();
@@ -77,8 +79,6 @@ export function ItemsList({
     }
   };
 
-  const isGrid = true;
-
   return (
     <div className="items-list relative flex flex-col gap-3">
       <div className="item-creation-field absolute z-10 w-full">
@@ -90,7 +90,7 @@ export function ItemsList({
           <div
             className={cn(
               "items flex flex-col gap-2",
-              isGrid && "grid grid-cols-5 gap-5"
+              layout === "grid" && "grid grid-cols-3 gap-5 xl:grid-cols-5"
             )}
             ref={listRef}
           >
@@ -98,7 +98,7 @@ export function ItemsList({
               <ItemCard
                 key={item.itemId}
                 itemId={item.itemId}
-                layout={isGrid ? "card" : "inline"}
+                layout={layout === "grid" ? "card" : "inline"}
                 selected={selectedItems.includes(item.itemId)}
                 onClick={(e) => onCardClick(e, item.itemId)}
                 onAuxClick={(e) => onCardClick(e, item.itemId, true)}

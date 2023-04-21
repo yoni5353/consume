@@ -1,4 +1,4 @@
-import { ListIcon, PlusCircleIcon, Trash2 } from "lucide-react";
+import { Layout, ListIcon, PlusCircleIcon, Trash2 } from "lucide-react";
 import { type NextPage } from "next";
 import { useCallback, useState } from "react";
 import { ItemDisplay } from "~/components/itemDisplay";
@@ -15,8 +15,10 @@ import {
 import { type CreateListSechemaType } from "~/utils/apischemas";
 import { cn } from "~/utils/ui/cn";
 import { useAutoAnimate } from "@formkit/auto-animate/react";
+import { Toggle } from "~/components/ui/toggle";
 
 const BoardPage: NextPage = () => {
+  const [currentLayout, setCurrentLayout] = useState<"list" | "grid">("list");
   const [currentLists, setCurrentLists] = useState<string[]>([]);
   const [selectedItemId, setSelectedItemId] = useState<string | undefined>(undefined);
   const [listRef] = useAutoAnimate<HTMLDivElement>();
@@ -120,7 +122,14 @@ const BoardPage: NextPage = () => {
             </div>
           </aside>
           <div className="col-span-3 overflow-hidden border-l border-slate-500 xl:col-span-4">
-            <div className="lists items-top container grid h-full w-full grid-cols-1 grid-rows-3 justify-center overflow-auto px-4 py-12">
+            <div className="flex w-full flex-row-reverse">
+              <Toggle
+                onPressedChange={(pressed) => setCurrentLayout(pressed ? "grid" : "list")}
+              >
+                <Layout className="h-4 w-4" />
+              </Toggle>
+            </div>
+            <div className="lists items-top container grid h-full w-full grid-cols-1 grid-rows-3 justify-center overflow-auto p-4">
               <div
                 className={cn(
                   "flex h-full flex-col overflow-auto px-20 pt-2",
@@ -129,6 +138,7 @@ const BoardPage: NextPage = () => {
               >
                 {currentLists[0] && (
                   <ItemsList
+                    layout={currentLayout}
                     listId={currentLists[0]}
                     onItemSelected={(id) => setSelectedItemId(id)}
                     onMoveItemsToNewList={(originListId, itemIds) => {

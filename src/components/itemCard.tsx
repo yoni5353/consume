@@ -27,11 +27,11 @@ export function ItemCard({
       <>
         <div className="flex items-center space-x-2">
           <MediaTypeIcon mediaType={item.mediaType ?? undefined} />
-          {item.image ? (
+          {/* {item.image ? (
             <Image src={item.image} alt="Item image" width={20} height={30} />
           ) : (
             <div className="w-[20px]" />
-          )}
+          )} */}
           <div className="truncate font-medium">{item.title}</div>
         </div>
         <ProgressNode progress={item.progress} itemId={item.id} />
