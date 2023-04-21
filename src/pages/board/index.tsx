@@ -132,7 +132,7 @@ const BoardPage: NextPage = () => {
             <div className="lists items-top container grid h-full w-full grid-cols-1 grid-rows-3 justify-center overflow-auto p-4">
               <div
                 className={cn(
-                  "flex h-full flex-col overflow-auto px-20 pt-2",
+                  "flex h-full flex-col overflow-auto px-10 pt-2",
                   !!selectedItemId ? "row-span-2" : "row-span-3"
                 )}
               >

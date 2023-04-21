@@ -90,7 +90,7 @@ export function ItemsList({
           <div
             className={cn(
               "items flex flex-col gap-2",
-              layout === "grid" && "grid grid-cols-3 gap-5 xl:grid-cols-5"
+              layout === "grid" && "grid grid-cols-3 gap-5 xl:grid-cols-6"
             )}
             ref={listRef}
           >

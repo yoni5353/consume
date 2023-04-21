@@ -5,13 +5,16 @@ import { api } from "~/utils/api";
 import { ProgressType } from "~/utils/progress";
 import { Label } from "../ui/label";
 import { ConSlider } from "../ui/con-slider";
+import { cn } from "~/utils/ui/cn";
 
 export function ProgressNode({
   progress,
   itemId,
+  className,
 }: {
   progress: Progress;
   itemId: string;
+  className?: string;
 }) {
   const [value, setValue] = useState(progress.currentValue);
   const [isHovering, setIsHovering] = useState<boolean>(false);
@@ -37,7 +40,7 @@ export function ProgressNode({
 
   return (
     <div
-      className="flex h-full w-24 items-center justify-center"
+      className={cn("flex h-full w-full items-center justify-center", className)}
       onMouseEnter={() => setIsHovering(true)}
       onMouseLeave={() => setIsHovering(false)}
     >
