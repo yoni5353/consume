@@ -3,6 +3,7 @@ import { ProgressNode } from "./progress/progressNode";
 import { Button } from "./ui/button";
 import { cn } from "~/utils/ui/cn";
 import { MediaTypeIcon } from "./resources/mediaTypeIcon";
+import Image from "next/image";
 
 export function ItemCard({
   itemId,
@@ -32,8 +33,13 @@ export function ItemCard({
             "dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700 dark:hover:text-slate-100"
         )}
       >
-        <div className="flex items-center">
-          <MediaTypeIcon mediaType={item.mediaType ?? undefined} className="mr-3" />
+        <div className="flex items-center space-x-2">
+          <MediaTypeIcon mediaType={item.mediaType ?? undefined} />
+          {item.image ? (
+            <Image src={item.image} alt="Item image" width={20} height={30} />
+          ) : (
+            <div className="w-[20px]" />
+          )}
           <div className="truncate font-medium">{item.title}</div>
         </div>
         <ProgressNode progress={item.progress} itemId={item.id} />

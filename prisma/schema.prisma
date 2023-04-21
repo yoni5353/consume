@@ -24,6 +24,7 @@ model Item {
   title       String
   description String @default("")
   link        String @default("")
+  image       String @default("")
 
   progress   Progress @relation(fields: [progressId], references: [id], onDelete: Cascade)
   progressId String   @unique

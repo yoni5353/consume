@@ -6,9 +6,12 @@ export async function getNetflixItem(link: string): Promise<PartialItem> {
     const $ = load(await res.text());
 
     const title = $("title").text().replace("Watch ", "").replace(" | Netflix", "");
+    const logo = $(".logo").attr("src");
+
     return {
       title,
       link,
+      image: logo,
     };
   });
 }

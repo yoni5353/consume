@@ -7,6 +7,12 @@
 /** @type {import("next").NextConfig} */
 const config = {
   reactStrictMode: true,
+  images: {
+    domains: [
+      "cdn.myanimelist.net",
+      "occ-0-1853-1167.1.nflxso.net" // Netflix
+    ]
+  },
 
   /**
    * If you have the "experimental: { appDir: true }" setting enabled, then you

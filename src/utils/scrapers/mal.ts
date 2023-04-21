@@ -6,11 +6,14 @@ export async function getMalItem(link: string): Promise<PartialItem> {
     const $ = load(await res.text());
 
     const title = $("title").text().replace(" - MyAnimeList.net", "");
+    const image = $("meta[property='og:image']").attr("content");
     const episodesNumber = parseInt($("#curEps").first().text());
+
     return {
       title,
-      description: `${episodesNumber} episodes`,
+      description: `${episodesNumber} episodes; ${image ?? "No image unfo"}`,
       link,
+      image,
       progress: {
         currentValue: 0,
         maxValue: episodesNumber,
