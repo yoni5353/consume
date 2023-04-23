@@ -85,7 +85,7 @@ export function ItemCard({
           selected && "dark:hover:bg-slate-400 dark:hover:text-slate-800",
           !selected &&
             "dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700 dark:hover:text-slate-100",
-          layout === "inline" && "h-12",
+          layout === "inline" && "h-10",
           layout === "card" && "h-56"
         )}
       >
