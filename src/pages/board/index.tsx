@@ -21,14 +21,18 @@ const BoardPage: NextPage = () => {
   const [currentLayout, setCurrentLayout] = useState<"list" | "grid">("list");
   const [currentLists, setCurrentLists] = useState<string[]>([]);
   const [selectedItemId, setSelectedItemId] = useState<string | undefined>(undefined);
-  const [listRef] = useAutoAnimate<HTMLDivElement>();
+  const [sprintsRef] = useAutoAnimate<HTMLDivElement>();
+  const [backlogRef] = useAutoAnimate<HTMLDivElement>();
 
-  const { data: lists, refetch } = api.lists.getUserLists.useQuery();
+  const { data: lists, refetch } = api.lists.getBacklog.useQuery();
+
+  const { data: sprints, refetch: refetchSprints } = api.lists.getSprints.useQuery();
 
   const { mutate: createList } = api.lists.createList.useMutation({
     onSuccess: (newList) => {
       closeListCreation();
       void refetch();
+      void refetchSprints();
       moveToList(newList.id);
     },
   });
@@ -46,8 +50,14 @@ const BoardPage: NextPage = () => {
     setSelectedItemId(undefined);
   }, []);
 
+  const selectSprint = useCallback((sprintId: string) => {
+    setCurrentLists([]);
+    setSelectedItemId(undefined);
+  }, []);
+
   const [_isCreateListOpen, _setIsCreateListOpen] = useState(false);
   const [hasInitialItems, _setHasInitialItems] = useState(false);
+  const [isCreatingSprint, _setIsCreatingSprint] = useState(false);
   const [nextListCreation, _setNextListCreation] = useState<
     Partial<CreateListSechemaType>
   >({});
@@ -55,17 +65,12 @@ const BoardPage: NextPage = () => {
     (creationPartial: Partial<CreateListSechemaType> = {}) => {
       _setNextListCreation(creationPartial);
       _setHasInitialItems(!!creationPartial.initialItemsIds?.length);
+      _setIsCreatingSprint(!!creationPartial.isSprint);
       _setIsCreateListOpen(true);
     },
     []
   );
   const closeListCreation = useCallback(() => _setIsCreateListOpen(false), []);
-
-  if (lists && currentLists.length === 0) {
-    if (lists[0]) {
-      moveToList(lists[0].id);
-    }
-  }
 
   return (
     <>
@@ -77,12 +82,41 @@ const BoardPage: NextPage = () => {
             </h1>
             <div className="overflow-auto px-2">
               <h2 className="align-center mb-2 flex flex-row px-2 text-lg font-semibold tracking-tight">
-                Lists
+                Sprints
+              </h2>
+              <div className="space-y-2 pb-1">
+                <div className="sprints-list space-y-2" ref={sprintsRef}>
+                  {sprints?.map((sprint) => (
+                    <Button
+                      key={sprint.id}
+                      variant={currentLists.includes(sprint.id) ? "subtle" : "ghost"}
+                      size="sm"
+                      className="w-full justify-start text-xs font-extrabold"
+                      onClick={() => selectSprint(sprint.id)}
+                      onAuxClick={() => selectSprint(sprint.id)}
+                    >
+                      <ListIcon className="mr-2 h-4 w-4" />
+                      <span className="uppercase">{sprint.title}</span>
+                    </Button>
+                  ))}
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="w-full justify-start"
+                    onClick={() => openListCreation({ isSprint: true })}
+                  >
+                    <PlusCircleIcon className="mr-2 h-4 w-4" />
+                    New Sprint
+                  </Button>
+                </div>
+              </div>
+              <h2 className="align-center mb-2 flex flex-row px-2 text-lg font-semibold tracking-tight">
+                Backlog
               </h2>
               <div className="space-y-2 pb-1">
                 <ContextMenu modal={false}>
                   <ContextMenuTrigger>
-                    <div className="lists-list space-y-2" ref={listRef}>
+                    <div className="lists-list space-y-2" ref={backlogRef}>
                       {lists?.map((list) => (
                         <Button
                           key={list.id}
@@ -146,6 +180,19 @@ const BoardPage: NextPage = () => {
                     }}
                   />
                 )}
+                {!currentLists[0] &&
+                  sprints?.map((sprint) => (
+                    <ItemsList
+                      key={sprint.id}
+                      layout={currentLayout}
+                      listId={sprint.id}
+                      isSprint={true}
+                      onItemSelected={(id) => setSelectedItemId(id)}
+                      onMoveItemsToNewList={(originListId, itemIds) => {
+                        openListCreation({ originListId, initialItemsIds: itemIds });
+                      }}
+                    />
+                  ))}
               </div>
               <div className="item-display px-10">
                 {selectedItemId && <ItemDisplay itemId={selectedItemId} />}
@@ -159,6 +206,7 @@ const BoardPage: NextPage = () => {
         onOpenChange={closeListCreation}
         onCreateList={(data) => createList({ ...data, ...nextListCreation })}
         hasInitialItems={hasInitialItems}
+        isCreatingSprint={isCreatingSprint}
       />
     </>
   );

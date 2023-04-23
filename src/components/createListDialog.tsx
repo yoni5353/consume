@@ -18,10 +18,12 @@ export function CreateListDialog({
   onCreateList,
   onOpenChange,
   hasInitialItems,
+  isCreatingSprint,
   ...dialogProps
 }: {
   onCreateList: SubmitHandler<CreateListSechemaType>;
   hasInitialItems: boolean;
+  isCreatingSprint: boolean;
 } & DialogProps) {
   const { register, handleSubmit, reset } = useForm<CreateListSechemaType>({
     resolver: zodResolver(CreateListSchema),
@@ -47,7 +49,7 @@ export function CreateListDialog({
     >
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Create new list</DialogTitle>
+          <DialogTitle>Create new {isCreatingSprint ? "sprint" : "list"}</DialogTitle>
           <DialogDescription>
             {hasInitialItems
               ? "Create a new list initialized with the chosen items."

@@ -3,10 +3,11 @@ import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
 import { CreateListSchema } from "~/utils/apischemas";
 
 export const listsRouter = createTRPCRouter({
-  getUserLists: protectedProcedure.query(({ ctx }) => {
+  getBacklog: protectedProcedure.query(({ ctx }) => {
     return ctx.prisma.list.findMany({
       where: {
         createdById: ctx.session.user.id,
+        isSprint: false,
       },
     });
   }),
@@ -31,9 +32,11 @@ export const listsRouter = createTRPCRouter({
               item: { connect: { id } },
             })),
           },
+          isSprint: input.isSprint,
         },
       });
 
+      // Creating list from existing items
       if (input.initialItemsIds && input.originListId) {
         await ctx.prisma.itemsInLists.deleteMany({
           where: {
@@ -48,6 +51,15 @@ export const listsRouter = createTRPCRouter({
   deleteList: protectedProcedure.input(z.string()).mutation(({ ctx, input }) => {
     return ctx.prisma.list.delete({
       where: { id: input },
+    });
+  }),
+
+  getSprints: protectedProcedure.query(({ ctx }) => {
+    return ctx.prisma.list.findMany({
+      where: {
+        createdById: ctx.session.user.id,
+        isSprint: true,
+      },
     });
   }),
 });

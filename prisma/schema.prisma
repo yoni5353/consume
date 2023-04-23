@@ -65,6 +65,8 @@ model List {
 
   title String
 
+  isSprint Boolean @default(false)
+
   items ItemsInLists[]
 }
 

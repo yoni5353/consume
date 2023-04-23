@@ -13,11 +13,13 @@ export function ItemsList({
   onItemSelected,
   onMoveItemsToNewList,
   layout,
+  isSprint,
 }: {
   listId: string;
   onItemSelected: (itemId: string) => void;
   onMoveItemsToNewList?: (originListId: string, itemIds: string[]) => void;
   layout: "list" | "grid";
+  isSprint?: boolean;
 }) {
   const [selectedItems, setSelectedItems] = useState<string[]>([]);
   const [lastSelectedItem, setLastSelectedItem] = useState<string>();
@@ -81,9 +83,13 @@ export function ItemsList({
 
   return (
     <div className="items-list relative flex flex-col gap-3">
-      <div className="item-creation-field absolute z-10 w-full">
-        <ItemCreationInput listId={listId} />
-      </div>
+      {isSprint ? (
+        <h2 className="font-bold uppercase">{listWithItems.title}</h2>
+      ) : (
+        <div className="item-creation-field absolute z-10 w-full">
+          <ItemCreationInput listId={listId} />
+        </div>
+      )}
       <div className="h-12" />
       <ContextMenu modal={false}>
         <ContextMenuTrigger>
