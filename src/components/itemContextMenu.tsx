@@ -31,7 +31,7 @@ export function ItemContextMenu({
 }) {
   const singleItem = itemsAmount === 1;
 
-  const lists = api.lists.getUserLists
+  const lists = api.lists.getBacklog
     .useQuery()
     .data?.filter((list) => list.id !== listId);
 

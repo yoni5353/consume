@@ -83,13 +83,10 @@ export function ItemsList({
 
   return (
     <div className="items-list relative flex flex-col gap-3">
-      {isSprint ? (
-        <h2 className="font-bold uppercase">{listWithItems.title}</h2>
-      ) : (
-        <div className="item-creation-field absolute z-10 w-full">
-          <ItemCreationInput listId={listId} />
-        </div>
-      )}
+      {isSprint && <h2 className="font-bold uppercase">{listWithItems.title}</h2>}
+      <div className="item-creation-field absolute z-10 mt-8 w-full">
+        <ItemCreationInput listId={listId} />
+      </div>
       <div className="h-12" />
       <ContextMenu modal={false}>
         <ContextMenuTrigger>

@@ -1,4 +1,4 @@
-import { Layout, ListIcon, PlusCircleIcon, Trash2 } from "lucide-react";
+import { BikeIcon, Layout, ListIcon, PlusCircleIcon, Trash2 } from "lucide-react";
 import { type NextPage } from "next";
 import { useCallback, useState } from "react";
 import { ItemDisplay } from "~/components/itemDisplay";
@@ -80,78 +80,82 @@ const BoardPage: NextPage = () => {
             <h1 className="align-center mb-2 flex flex-row px-2 text-2xl font-extrabold tracking-tight">
               CONSUME
             </h1>
-            <div className="overflow-auto px-2">
-              <h2 className="align-center mb-2 flex flex-row px-2 text-lg font-semibold tracking-tight">
-                Sprints
-              </h2>
-              <div className="space-y-2 pb-1">
-                <div className="sprints-list space-y-2" ref={sprintsRef}>
-                  {sprints?.map((sprint) => (
+            <div className="space-y-12 overflow-auto px-2">
+              <div>
+                <h2 className="align-center mb-2 flex flex-row px-2 text-lg font-semibold tracking-tight">
+                  Sprints
+                </h2>
+                <div className="space-y-2 pb-1">
+                  <div className="sprints-list space-y-2" ref={sprintsRef}>
+                    {sprints?.map((sprint) => (
+                      <Button
+                        key={sprint.id}
+                        variant={currentLists.includes(sprint.id) ? "subtle" : "ghost"}
+                        size="sm"
+                        className="w-full justify-start text-xs font-extrabold"
+                        onClick={() => selectSprint(sprint.id)}
+                        onAuxClick={() => selectSprint(sprint.id)}
+                      >
+                        <BikeIcon className="mr-2 h-4 w-4" />
+                        <span className="uppercase">{sprint.title}</span>
+                      </Button>
+                    ))}
                     <Button
-                      key={sprint.id}
-                      variant={currentLists.includes(sprint.id) ? "subtle" : "ghost"}
+                      variant="ghost"
                       size="sm"
-                      className="w-full justify-start text-xs font-extrabold"
-                      onClick={() => selectSprint(sprint.id)}
-                      onAuxClick={() => selectSprint(sprint.id)}
+                      className="w-full justify-start"
+                      onClick={() => openListCreation({ isSprint: true })}
                     >
-                      <ListIcon className="mr-2 h-4 w-4" />
-                      <span className="uppercase">{sprint.title}</span>
+                      <PlusCircleIcon className="mr-2 h-4 w-4" />
+                      New Sprint
                     </Button>
-                  ))}
+                  </div>
+                </div>
+              </div>
+              <div>
+                <h2 className="align-center mb-2 flex flex-row px-2 text-lg font-semibold tracking-tight">
+                  Backlog
+                </h2>
+                <div className="space-y-2 pb-1">
+                  <ContextMenu modal={false}>
+                    <ContextMenuTrigger>
+                      <div className="lists-list space-y-2" ref={backlogRef}>
+                        {lists?.map((list) => (
+                          <Button
+                            key={list.id}
+                            variant={currentLists.includes(list.id) ? "subtle" : "ghost"}
+                            size="sm"
+                            className="w-full justify-start text-xs font-extrabold"
+                            onClick={() => moveToList(list.id)}
+                            onAuxClick={() => moveToList(list.id)}
+                          >
+                            <ListIcon className="mr-2 h-4 w-4" />
+                            <span className="uppercase">{list.title}</span>
+                          </Button>
+                        ))}
+                      </div>
+                    </ContextMenuTrigger>
+                    <ContextMenuContent>
+                      <ContextMenuItem
+                        onSelect={() => {
+                          const lastList = currentLists.at(-1);
+                          lastList && deleteList(lastList);
+                        }}
+                      >
+                        <Trash2 className="mr-2 h-4 w-4" /> Delete List
+                      </ContextMenuItem>
+                    </ContextMenuContent>
+                  </ContextMenu>
                   <Button
                     variant="ghost"
                     size="sm"
                     className="w-full justify-start"
-                    onClick={() => openListCreation({ isSprint: true })}
+                    onClick={() => openListCreation()}
                   >
                     <PlusCircleIcon className="mr-2 h-4 w-4" />
-                    New Sprint
+                    New List
                   </Button>
                 </div>
-              </div>
-              <h2 className="align-center mb-2 flex flex-row px-2 text-lg font-semibold tracking-tight">
-                Backlog
-              </h2>
-              <div className="space-y-2 pb-1">
-                <ContextMenu modal={false}>
-                  <ContextMenuTrigger>
-                    <div className="lists-list space-y-2" ref={backlogRef}>
-                      {lists?.map((list) => (
-                        <Button
-                          key={list.id}
-                          variant={currentLists.includes(list.id) ? "subtle" : "ghost"}
-                          size="sm"
-                          className="w-full justify-start text-xs font-extrabold"
-                          onClick={() => moveToList(list.id)}
-                          onAuxClick={() => moveToList(list.id)}
-                        >
-                          <ListIcon className="mr-2 h-4 w-4" />
-                          <span className="uppercase">{list.title}</span>
-                        </Button>
-                      ))}
-                    </div>
-                  </ContextMenuTrigger>
-                  <ContextMenuContent>
-                    <ContextMenuItem
-                      onSelect={() => {
-                        const lastList = currentLists.at(-1);
-                        lastList && deleteList(lastList);
-                      }}
-                    >
-                      <Trash2 className="mr-2 h-4 w-4" /> Delete List
-                    </ContextMenuItem>
-                  </ContextMenuContent>
-                </ContextMenu>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="w-full justify-start"
-                  onClick={() => openListCreation()}
-                >
-                  <PlusCircleIcon className="mr-2 h-4 w-4" />
-                  New List
-                </Button>
               </div>
             </div>
           </aside>
