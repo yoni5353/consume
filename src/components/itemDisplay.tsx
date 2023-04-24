@@ -6,11 +6,14 @@ import {
   SelectTrigger,
   SelectValue,
 } from "./ui/select";
-import moment from "moment";
 import { Label } from "./ui/label";
 import { ProgressType } from "~/utils/progress";
 import { Input } from "./ui/input";
 import { MediaTypeIcon } from "./resources/mediaTypeIcon";
+import dayjs from "dayjs";
+
+import relativeTime from "dayjs/plugin/relativeTime";
+dayjs.extend(relativeTime);
 
 export function ItemDisplay({ itemId }: { itemId: string }) {
   const { data: item, refetch } = api.items.getItem.useQuery(itemId, {
@@ -143,7 +146,7 @@ export function ItemDisplay({ itemId }: { itemId: string }) {
           </div>
         )}
       </div>
-      <p className="text-slate-500">Created {moment(item.createdAt).fromNow()}</p>
+      <p className="text-slate-500">Created {dayjs(item.createdAt).fromNow()}</p>
     </div>
   );
 }
