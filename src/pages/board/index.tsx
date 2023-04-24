@@ -28,7 +28,16 @@ const BoardPage: NextPage = () => {
 
   const { data: lists, refetch } = api.lists.getBacklog.useQuery();
 
-  const { data: sprints, refetch: refetchSprints } = api.lists.getSprints.useQuery();
+  const { data: sprints, refetch: refetchSprints } = api.lists.getSprints.useQuery(
+    undefined,
+    {
+      onSuccess: (newSprints) => {
+        if (!currentCreationList && newSprints.length) {
+          setCurrentCreationList(newSprints[0]?.id);
+        }
+      },
+    }
+  );
 
   const { mutate: createList } = api.lists.createList.useMutation({
     onSuccess: (newList) => {
