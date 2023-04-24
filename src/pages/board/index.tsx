@@ -16,13 +16,15 @@ import { type CreateListSechemaType } from "~/utils/apischemas";
 import { cn } from "~/utils/ui/cn";
 import { useAutoAnimate } from "@formkit/auto-animate/react";
 import { Toggle } from "~/components/ui/toggle";
+import { ItemCreationInput } from "~/components/itemCreationInput";
 
 const BoardPage: NextPage = () => {
   const [currentLayout, setCurrentLayout] = useState<"list" | "grid">("list");
   const [currentLists, setCurrentLists] = useState<string[]>([]);
-  const [selectedItemId, setSelectedItemId] = useState<string | undefined>(undefined);
+  const [selectedItemId, setSelectedItemId] = useState<string>();
   const [sprintsRef] = useAutoAnimate<HTMLDivElement>();
   const [backlogRef] = useAutoAnimate<HTMLDivElement>();
+  const [currentCreationList, setCurrentCreationList] = useState<string>();
 
   const { data: lists, refetch } = api.lists.getBacklog.useQuery();
 
@@ -48,12 +50,17 @@ const BoardPage: NextPage = () => {
   const moveToList = useCallback((listId: string | undefined) => {
     setCurrentLists(listId ? [listId] : []);
     setSelectedItemId(undefined);
+    setCurrentCreationList(listId);
   }, []);
 
-  const selectSprint = useCallback((sprintId: string) => {
-    setCurrentLists([]);
-    setSelectedItemId(undefined);
-  }, []);
+  const selectSprint = useCallback(
+    (sprintId: string) => {
+      setCurrentLists([]);
+      setSelectedItemId(undefined);
+      setCurrentCreationList(sprints?.[0]?.id);
+    },
+    [sprints]
+  );
 
   const [_isCreateListOpen, _setIsCreateListOpen] = useState(false);
   const [hasInitialItems, _setHasInitialItems] = useState(false);
@@ -170,10 +177,16 @@ const BoardPage: NextPage = () => {
             <div className="lists items-top container grid h-full w-full grid-cols-1 grid-rows-3 justify-center overflow-auto p-4">
               <div
                 className={cn(
-                  "flex h-full flex-col overflow-auto px-10 pt-2",
+                  "relative flex h-full w-full flex-col space-y-5 overflow-y-auto overflow-x-hidden px-10 pt-2",
                   !!selectedItemId ? "row-span-2" : "row-span-3"
                 )}
               >
+                <div className="item-creation-field absolute z-10 w-full pr-20">
+                  {currentCreationList && (
+                    <ItemCreationInput listId={currentCreationList} />
+                  )}
+                </div>
+                <div className="h-8"></div>
                 {currentLists[0] && (
                   <ItemsList
                     layout={currentLayout}
