@@ -10,7 +10,8 @@ const config = {
   images: {
     domains: [
       "cdn.myanimelist.net",
-      "occ-0-1853-1167.1.nflxso.net" // Netflix
+      "occ-0-1853-1167.1.nflxso.net", // Netflix
+      "cdn.akamai.steamstatic.com", // Steam
     ]
   },
 
