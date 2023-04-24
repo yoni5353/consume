@@ -4,8 +4,7 @@ import { Button } from "./ui/button";
 import { cn } from "~/utils/ui/cn";
 import { MediaTypeIcon } from "./resources/mediaTypeIcon";
 import Image from "next/image";
-import { HoverCard, HoverCardContent, HoverCardTrigger } from "./ui/hover-card";
-import { ProgressBar } from "./ui/progress";
+import { CircleProgress } from "./progress/circleProgress";
 
 export function ItemCard({
   itemId,
@@ -54,22 +53,12 @@ export function ItemCard({
         )}
         <div className="vertical h-min text-center font-medium">{item.title}</div>
         <div className="flex w-full flex-row justify-between">
-          <div></div>
-          <HoverCard>
-            <HoverCardTrigger>
-              <ProgressBar
-                value={(item.progress.currentValue / item.progress.maxValue) * 100}
-                className="h-7 w-7 border-[1px] border-slate-700"
-                isDone={item.progress.currentValue >= item.progress.maxValue}
-                isCircular
-              />
-            </HoverCardTrigger>
-            <HoverCardContent
-              className={cn("w-min dark:bg-slate-700", selected && "dark:bg-slate-400")}
-            >
-              <ProgressNode progress={item.progress} itemId={item.id} />
-            </HoverCardContent>
-          </HoverCard>
+          <div />
+          <CircleProgress
+            className={cn("dark:bg-slate-700", selected && "dark:bg-slate-400")}
+            progress={item.progress}
+            itemId={item.id}
+          />
         </div>
       </div>
     );
