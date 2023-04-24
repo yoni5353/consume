@@ -22,7 +22,8 @@ export function ProgressNode({
   const ctx = api.useContext();
 
   const { mutate: updateProgress } = api.items.updateProgress.useMutation({
-    onMutate({ newProgress }) {
+    async onMutate({ newProgress }) {
+      await ctx.items.getItem.cancel();
       ctx.items.getItem.setData(itemId, (prevItem) => {
         if (prevItem) {
           return {

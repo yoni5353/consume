@@ -13,7 +13,14 @@ import { Input } from "./ui/input";
 import { MediaTypeIcon } from "./resources/mediaTypeIcon";
 
 export function ItemDisplay({ itemId }: { itemId: string }) {
-  const { data: item, refetch } = api.items.getItem.useQuery(itemId);
+  const { data: item, refetch } = api.items.getItem.useQuery(itemId, {
+    /*
+     * Prevent refetching when selecting different items. Caused a problem where it would
+     * override the progress optimistic update when clicking the check of a different
+     * item. (Updating and selecting it at once.)
+     */
+    staleTime: Infinity,
+  });
 
   const { data: mediaTypes } = api.mediaTypes.getAll.useQuery();
 
