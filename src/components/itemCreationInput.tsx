@@ -70,7 +70,7 @@ export function ItemCreationInput({ listId }: { listId: string }) {
     matchingScraperLists.length === 0;
 
   return (
-    <Command className="h-min w-full border-2 dark:border-slate-950" shouldFilter={false}>
+    <Command className="h-min w-full rounded-lg border shadow-md" shouldFilter={false}>
       <CommandInput
         placeholder="Enter item title or paste a link..."
         value={term}

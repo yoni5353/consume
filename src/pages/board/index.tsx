@@ -91,7 +91,7 @@ const BoardPage: NextPage = () => {
   return (
     <>
       <main className="flex min-h-screen flex-row bg-gradient-to-b from-rose-500 to-indigo-700">
-        <div className="main-grid m-3 grid w-full grid-cols-4 overflow-hidden rounded-md bg-slate-900 p-5 xl:grid-cols-5 ">
+        <div className="main-grid m-3 grid w-full grid-cols-4 overflow-hidden rounded-md bg-background p-5 xl:grid-cols-5 ">
           <aside className="sidebar space-y-5 pr-10">
             <h1 className="align-center mb-2 flex flex-row px-2 text-2xl font-extrabold tracking-tight">
               CONSUME
@@ -106,7 +106,7 @@ const BoardPage: NextPage = () => {
                     {sprints?.map((sprint) => (
                       <Button
                         key={sprint.id}
-                        variant={currentLists.includes(sprint.id) ? "subtle" : "ghost"}
+                        variant={currentLists.includes(sprint.id) ? "secondary" : "ghost"}
                         size="sm"
                         className="w-full justify-start text-xs font-extrabold"
                         onClick={() => selectSprint(sprint.id)}
@@ -139,7 +139,9 @@ const BoardPage: NextPage = () => {
                         {lists?.map((list) => (
                           <Button
                             key={list.id}
-                            variant={currentLists.includes(list.id) ? "subtle" : "ghost"}
+                            variant={
+                              currentLists.includes(list.id) ? "secondary" : "ghost"
+                            }
                             size="sm"
                             className="w-full justify-start text-xs font-extrabold"
                             onClick={() => moveToList(list.id)}
