@@ -71,10 +71,7 @@ export function ItemCard({
         onContextMenu={onAuxClick} // For context menu with keyboard
         className={cn(
           "bg-secondary p-2 text-primary hover:bg-accent",
-          selected && "bg-primary/80 text-secondary hover:bg-primary/70",
-          // !selected &&
-          // "dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700 dark:hover:text-slate-100",
-          // !selected && "hover:bg-primary/90",
+          selected && "bg-primary/70 text-secondary hover:bg-primary/80",
           layout === "inline" && "h-10",
           layout === "card" && "h-56"
         )}
