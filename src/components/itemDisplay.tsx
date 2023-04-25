@@ -13,9 +13,12 @@ import { MediaTypeIcon } from "./resources/mediaTypeIcon";
 import dayjs from "dayjs";
 
 import relativeTime from "dayjs/plugin/relativeTime";
+import { useState } from "react";
 dayjs.extend(relativeTime);
 
 export function ItemDisplay({ itemId }: { itemId: string }) {
+  const [sliderValue, setSliderValue] = useState<number>();
+
   const { data: item, refetch } = api.items.getItem.useQuery(itemId, {
     /*
      * Prevent refetching when selecting different items. Caused a problem where it would
@@ -137,10 +140,13 @@ export function ItemDisplay({ itemId }: { itemId: string }) {
               min={0}
               max={1000}
               id="sliderAmount"
-              value={item.progress.maxValue}
+              value={sliderValue ?? item.progress.maxValue}
+              onBlur={() => {
+                switchProgress({ itemId, newMaxValue: sliderValue });
+              }}
               onChange={(event) => {
                 const newValue = parseInt(event.target.value);
-                switchProgress({ itemId, newMaxValue: newValue });
+                setSliderValue(newValue);
               }}
             />
           </div>
