@@ -1,11 +1,16 @@
 /* eslint-disable @typescript-eslint/no-misused-promises */
 import { api } from "~/utils/api";
 import { ItemCard } from "./itemCard";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { ContextMenu, ContextMenuTrigger } from "~/components/ui/context-menu";
 import { ItemContextMenu } from "./itemContextMenu";
 import { useAutoAnimate } from "@formkit/auto-animate/react";
 import { cn } from "~/utils/ui/cn";
+import { Calendar } from "./ui/calendar";
+import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
+import { type DateRange } from "react-day-picker";
+import { format, formatDistance } from "date-fns";
+import { CalendarIcon } from "lucide-react";
 
 export function ItemsList({
   listId,
@@ -32,6 +37,10 @@ export function ItemsList({
     },
   });
 
+  const { mutate: editList } = api.lists.editList.useMutation({
+    onSuccess: () => refetch(),
+  });
+
   const { mutate: deleteItems } = api.items.deleteItems.useMutation({
     onSuccess: () => refetch(),
   });
@@ -41,6 +50,16 @@ export function ItemsList({
   });
 
   const items = listWithItems?.items;
+
+  const [date, setDate] = useState<DateRange>();
+
+  const onSetDate = useCallback(
+    (date?: DateRange) => {
+      setDate(date);
+      editList({ id: listId, startDate: date?.from, dueDate: date?.to ?? null });
+    },
+    [editList, listId]
+  );
 
   if (!items) return null;
 
@@ -82,7 +101,40 @@ export function ItemsList({
 
   return (
     <div className="items-list flex flex-col gap-3">
-      {isSprint && <h2 className="font-bold uppercase">{listWithItems.title}</h2>}
+      <div className="space-y-1">
+        <h2 className="font-bold uppercase">{listWithItems.title}</h2>
+        <div className="flex flex-row text-gray-500">
+          {isSprint && (
+            <Popover>
+              <PopoverTrigger className="flex flex-row text-xs hover:cursor-pointer hover:underline">
+                <CalendarIcon className="mr-1 h-4 w-4" />
+                {listWithItems.dueDate ? (
+                  <div>
+                    {format(listWithItems.startDate, "LLL dd, y")} -{" "}
+                    {format(listWithItems.dueDate, "LLL dd, y")}
+                    {listWithItems.dueDate > new Date() ? (
+                      <> ({formatDistance(listWithItems.dueDate, new Date())} left)</>
+                    ) : (
+                      <> ({formatDistance(listWithItems.dueDate, new Date())} overdue)</>
+                    )}
+                  </div>
+                ) : (
+                  <div>No due date</div>
+                )}
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0" align="end">
+                <Calendar
+                  initialFocus
+                  mode="range"
+                  selected={date}
+                  onSelect={onSetDate}
+                  numberOfMonths={2}
+                />
+              </PopoverContent>
+            </Popover>
+          )}
+        </div>
+      </div>
       <ContextMenu modal={false}>
         <ContextMenuTrigger>
           <div

@@ -54,6 +54,24 @@ export const listsRouter = createTRPCRouter({
     });
   }),
 
+  editList: protectedProcedure
+    .input(
+      z.object({
+        id: z.string(),
+        startDate: z.date().optional(),
+        dueDate: z.date().optional().nullable(),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      await ctx.prisma.list.update({
+        where: { id: input.id },
+        data: {
+          startDate: input.startDate,
+          dueDate: input.dueDate,
+        },
+      });
+    }),
+
   getSprints: protectedProcedure.query(({ ctx }) => {
     return ctx.prisma.list.findMany({
       where: {

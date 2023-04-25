@@ -63,9 +63,12 @@ model List {
   createdBy   User     @relation(fields: [createdById], references: [id])
   createdById String
 
-  title String
+  title       String
+  description String @default("")
 
-  isSprint Boolean @default(false)
+  isSprint  Boolean   @default(false)
+  startDate DateTime  @default(now())
+  dueDate   DateTime?
 
   items ItemsInLists[]
 }
