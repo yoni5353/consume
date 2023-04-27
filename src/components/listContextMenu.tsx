@@ -3,18 +3,20 @@ import { ContextMenuContent, ContextMenuItem } from "./ui/context-menu";
 import { api } from "~/utils/api";
 
 export function ListContextMenu({
+  isSprint,
   selectedListId,
   onDelete,
 }: {
+  isSprint?: boolean;
   selectedListId?: string;
-  onDelete: () => void;
+  onDelete?: () => void;
 }) {
   const ctx = api.useContext();
 
   const { mutate: deleteList } = api.lists.deleteList.useMutation({
     onSuccess: () => {
       void ctx.lists.invalidate();
-      onDelete();
+      onDelete?.();
     },
   });
 
@@ -25,7 +27,7 @@ export function ListContextMenu({
           selectedListId && deleteList(selectedListId);
         }}
       >
-        <Trash2 className="mr-2 h-4 w-4" /> Delete List
+        <Trash2 className="mr-2 h-4 w-4" /> Delete {isSprint ? "Sprint" : "List"}
       </ContextMenuItem>
     </ContextMenuContent>
   );

@@ -17,6 +17,7 @@ import { ListContextMenu } from "~/components/listContextMenu";
 const BoardPage: NextPage = () => {
   const [currentLayout, setCurrentLayout] = useState<"list" | "grid">("list");
   const [currentLists, setCurrentLists] = useState<string[]>([]);
+  const [currentContextMenuSprint, setCurrentContextMenuSprint] = useState<string>();
   const [selectedItemId, setSelectedItemId] = useState<string>();
   const [sprintsRef] = useAutoAnimate<HTMLDivElement>();
   const [backlogRef] = useAutoAnimate<HTMLDivElement>();
@@ -96,30 +97,43 @@ const BoardPage: NextPage = () => {
                   Sprints
                 </h2>
                 <div className="space-y-2 pb-1">
-                  <div className="sprints-list space-y-2" ref={sprintsRef}>
-                    {sprints?.map((sprint) => (
-                      <Button
-                        key={sprint.id}
-                        variant={currentLists.includes(sprint.id) ? "secondary" : "ghost"}
-                        size="sm"
-                        className="w-full justify-start text-xs font-extrabold"
-                        onClick={() => selectSprint(sprint.id)}
-                        onAuxClick={() => selectSprint(sprint.id)}
-                      >
-                        <BikeIcon className="mr-2 h-4 w-4" />
-                        <span className="uppercase">{sprint.title}</span>
-                      </Button>
-                    ))}
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="w-full justify-start"
-                      onClick={() => openListCreation({ isSprint: true })}
-                    >
-                      <PlusCircleIcon className="mr-2 h-4 w-4" />
-                      New Sprint
-                    </Button>
-                  </div>
+                  <ContextMenu modal={false}>
+                    <ContextMenuTrigger>
+                      <div className="sprints-list space-y-2" ref={sprintsRef}>
+                        {sprints?.map((sprint) => (
+                          <Button
+                            key={sprint.id}
+                            variant={
+                              currentLists.includes(sprint.id) ? "secondary" : "ghost"
+                            }
+                            size="sm"
+                            className="w-full justify-start text-xs font-extrabold"
+                            onClick={() => {
+                              selectSprint(sprint.id);
+                              setCurrentContextMenuSprint(sprint.id);
+                            }}
+                            onAuxClick={() => {
+                              selectSprint(sprint.id); // do not fly to sprint here
+                              setCurrentContextMenuSprint(sprint.id);
+                            }}
+                          >
+                            <BikeIcon className="mr-2 h-4 w-4" />
+                            <span className="uppercase">{sprint.title}</span>
+                          </Button>
+                        ))}
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="w-full justify-start"
+                          onClick={() => openListCreation({ isSprint: true })}
+                        >
+                          <PlusCircleIcon className="mr-2 h-4 w-4" />
+                          New Sprint
+                        </Button>
+                      </div>
+                    </ContextMenuTrigger>
+                    <ListContextMenu selectedListId={currentContextMenuSprint} isSprint />
+                  </ContextMenu>
                 </div>
               </div>
               <div>
