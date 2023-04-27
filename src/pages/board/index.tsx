@@ -24,6 +24,7 @@ const BoardPage: NextPage = () => {
   const [selectedItemId, setSelectedItemId] = useState<string>();
   const [sprintsRef] = useAutoAnimate<HTMLDivElement>();
   const [backlogRef] = useAutoAnimate<HTMLDivElement>();
+  const [sprintsViewRef] = useAutoAnimate<HTMLDivElement>();
   const [currentCreationList, setCurrentCreationList] = useState<string>();
 
   const { data: lists, refetch } = api.lists.getBacklog.useQuery();
@@ -44,7 +45,12 @@ const BoardPage: NextPage = () => {
       closeListCreation();
       void refetch();
       void refetchSprints();
-      moveToList(newList.id);
+
+      if (newList.isSprint) {
+        selectSprint(newList.id);
+      } else {
+        moveToList(newList.id);
+      }
     },
   });
 
@@ -208,19 +214,29 @@ const BoardPage: NextPage = () => {
                     }}
                   />
                 )}
-                {!currentLists[0] &&
-                  sprints?.map((sprint) => (
-                    <ItemsList
-                      key={sprint.id}
-                      layout={currentLayout}
-                      listId={sprint.id}
-                      isSprint={true}
-                      onItemSelected={(id) => setSelectedItemId(id)}
-                      onMoveItemsToNewList={(originListId, itemIds) => {
-                        openListCreation({ originListId, initialItemsIds: itemIds });
-                      }}
-                    />
-                  ))}
+                {!currentLists[0] && (
+                  <div className="space-y-3" ref={sprintsViewRef}>
+                    {sprints?.map((sprint) => (
+                      <ItemsList
+                        key={sprint.id}
+                        layout={currentLayout}
+                        listId={sprint.id}
+                        isSprint={true}
+                        onItemSelected={(id) => setSelectedItemId(id)}
+                        onMoveItemsToNewList={(originListId, itemIds) => {
+                          openListCreation({ originListId, initialItemsIds: itemIds });
+                        }}
+                      />
+                    ))}
+                    <Button
+                      variant="ghost"
+                      onClick={() => openListCreation({ isSprint: true })}
+                    >
+                      <PlusCircleIcon className="mr-2 h-4 w-4" />
+                      New Sprint
+                    </Button>
+                  </div>
+                )}
               </div>
               <div className="item-display px-10">
                 {selectedItemId && <ItemDisplay itemId={selectedItemId} />}
