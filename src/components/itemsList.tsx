@@ -11,6 +11,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 import { type DateRange } from "react-day-picker";
 import { format, formatDistance } from "date-fns";
 import { CalendarIcon } from "lucide-react";
+import { ListContextMenu } from "./listContextMenu";
 
 export function ItemsList({
   listId,
@@ -100,41 +101,49 @@ export function ItemsList({
   };
 
   return (
-    <div className="items-list flex flex-col gap-3">
-      <div className="space-y-1">
-        <h2 className="font-bold uppercase">{listWithItems.title}</h2>
-        <div className="flex flex-row text-gray-500">
-          {isSprint && (
-            <Popover>
-              <PopoverTrigger className="flex flex-row text-xs hover:cursor-pointer hover:underline">
-                <CalendarIcon className="mr-1 h-4 w-4" />
-                {listWithItems.dueDate ? (
-                  <div>
-                    {format(listWithItems.startDate, "LLL dd, y")} -{" "}
-                    {format(listWithItems.dueDate, "LLL dd, y")}
-                    {listWithItems.dueDate > new Date() ? (
-                      <> ({formatDistance(listWithItems.dueDate, new Date())} left)</>
+    <div className="items-list flex flex-col">
+      <ContextMenu>
+        <ContextMenuTrigger asChild>
+          <div className="space-y-1 pb-3">
+            <h2 className="font-bold uppercase">{listWithItems.title}</h2>
+            <div className="flex flex-row text-gray-500">
+              {isSprint && (
+                <Popover>
+                  <PopoverTrigger className="flex flex-row text-xs hover:cursor-pointer hover:underline">
+                    <CalendarIcon className="mr-1 h-4 w-4" />
+                    {listWithItems.dueDate ? (
+                      <div>
+                        {format(listWithItems.startDate, "LLL dd, y")} -{" "}
+                        {format(listWithItems.dueDate, "LLL dd, y")}
+                        {listWithItems.dueDate > new Date() ? (
+                          <> ({formatDistance(listWithItems.dueDate, new Date())} left)</>
+                        ) : (
+                          <>
+                            {" "}
+                            ({formatDistance(listWithItems.dueDate, new Date())} overdue)
+                          </>
+                        )}
+                      </div>
                     ) : (
-                      <> ({formatDistance(listWithItems.dueDate, new Date())} overdue)</>
+                      <div>No due date</div>
                     )}
-                  </div>
-                ) : (
-                  <div>No due date</div>
-                )}
-              </PopoverTrigger>
-              <PopoverContent className="w-auto p-0" align="end">
-                <Calendar
-                  initialFocus
-                  mode="range"
-                  selected={date}
-                  onSelect={onSetDate}
-                  numberOfMonths={2}
-                />
-              </PopoverContent>
-            </Popover>
-          )}
-        </div>
-      </div>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0" align="end">
+                    <Calendar
+                      initialFocus
+                      mode="range"
+                      selected={date}
+                      onSelect={onSetDate}
+                      numberOfMonths={2}
+                    />
+                  </PopoverContent>
+                </Popover>
+              )}
+            </div>
+          </div>
+        </ContextMenuTrigger>
+        <ListContextMenu selectedListId={listId} isSprint={isSprint} />
+      </ContextMenu>
       <ContextMenu modal={false}>
         <ContextMenuTrigger>
           <div

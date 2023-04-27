@@ -3,12 +3,12 @@ import { ContextMenuContent, ContextMenuItem } from "./ui/context-menu";
 import { api } from "~/utils/api";
 
 export function ListContextMenu({
-  isSprint,
   selectedListId,
+  isSprint,
   onDelete,
 }: {
+  selectedListId: string | null;
   isSprint?: boolean;
-  selectedListId?: string;
   onDelete?: () => void;
 }) {
   const ctx = api.useContext();

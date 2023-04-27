@@ -132,7 +132,10 @@ const BoardPage: NextPage = () => {
                         </Button>
                       </div>
                     </ContextMenuTrigger>
-                    <ListContextMenu selectedListId={currentContextMenuSprint} isSprint />
+                    <ListContextMenu
+                      selectedListId={currentContextMenuSprint ?? null}
+                      isSprint
+                    />
                   </ContextMenu>
                 </div>
               </div>
@@ -162,7 +165,7 @@ const BoardPage: NextPage = () => {
                       </div>
                     </ContextMenuTrigger>
                     <ListContextMenu
-                      selectedListId={currentLists[0]}
+                      selectedListId={currentLists[0] ?? null}
                       onDelete={() => {
                         moveToList(lists?.[0]?.id);
                       }}
