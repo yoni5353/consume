@@ -59,6 +59,7 @@ model MediaType {
   name String
 
   Item Item[]
+  Goal Goal[]
 
   @@index([createdById])
 }
@@ -114,6 +115,24 @@ model ItemTemplate {
   @@index([createdById])
 }
 
+model Goal {
+  id          String   @id @default(cuid())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  createdBy   User     @relation(fields: [createdById], references: [id])
+  createdById String
+
+  dueDate     DateTime?
+  description String    @default("")
+
+  targetValue       Int
+  targetMediaType   MediaType? @relation(fields: [targetMediaTypeId], references: [id])
+  targetMediaTypeId Int?
+
+  @@index([createdById])
+  @@index([targetMediaTypeId])
+}
+
 // Necessary for Next auth
 model Account {
   id                String  @id @default(cuid())
@@ -158,6 +177,7 @@ model User {
   ItemsInLists ItemsInLists[]
   ItemTemplate ItemTemplate[]
   MediaType    MediaType[]
+  Goal         Goal[]
 }
 
 model VerificationToken {

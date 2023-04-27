@@ -8,3 +8,11 @@ export const CreateListSchema = z.object({
 });
 
 export type CreateListSechemaType = z.infer<typeof CreateListSchema>;
+
+export const CreateGoalSchema = z.object({
+  description: z.optional(z.string()),
+  targetValue: z.optional(z.number()),
+  mediaTypeId: z.optional(z.number()),
+});
+
+export type CreateGoalSchemaType = z.infer<typeof CreateGoalSchema>;
