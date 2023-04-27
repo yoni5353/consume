@@ -1,4 +1,4 @@
-import { BikeIcon, Layout, ListIcon, PlusCircleIcon, Trash2 } from "lucide-react";
+import { BikeIcon, Layout, ListIcon, PlusCircleIcon } from "lucide-react";
 import { type NextPage } from "next";
 import { useCallback, useState } from "react";
 import { ItemDisplay } from "~/components/itemDisplay";
@@ -13,6 +13,7 @@ import { useAutoAnimate } from "@formkit/auto-animate/react";
 import { Toggle } from "~/components/ui/toggle";
 import { ItemCreationInput } from "~/components/itemCreationInput";
 import { ListContextMenu } from "~/components/listContextMenu";
+import { CreateGoalDialog } from "~/components/createGoalDialog";
 
 const BoardPage: NextPage = () => {
   const [currentLayout, setCurrentLayout] = useState<"list" | "grid">("list");
@@ -23,6 +24,7 @@ const BoardPage: NextPage = () => {
   const [backlogRef] = useAutoAnimate<HTMLDivElement>();
   const [sprintsViewRef] = useAutoAnimate<HTMLDivElement>();
   const [currentCreationList, setCurrentCreationList] = useState<string>();
+  const [isCreatingGoal, setIsCreatingGoal] = useState<boolean>();
 
   const { data: lists, refetch } = api.lists.getBacklog.useQuery();
 
@@ -178,7 +180,23 @@ const BoardPage: NextPage = () => {
                     onClick={() => openListCreation()}
                   >
                     <PlusCircleIcon className="mr-2 h-4 w-4" />
-                    New List
+                    Create List
+                  </Button>
+                </div>
+              </div>
+              <div>
+                <h2 className="align-center mb-2 flex flex-row px-2 text-lg font-semibold tracking-tight">
+                  Goals
+                </h2>
+                <div className="space-y-2 pb-1">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="w-full justify-start"
+                    onClick={() => setIsCreatingGoal(true)}
+                  >
+                    <PlusCircleIcon className="mr-2 h-4 w-4" />
+                    Set Goal
                   </Button>
                 </div>
               </div>
@@ -234,7 +252,7 @@ const BoardPage: NextPage = () => {
                       onClick={() => openListCreation({ isSprint: true })}
                     >
                       <PlusCircleIcon className="mr-2 h-4 w-4" />
-                      New Sprint
+                      Create Sprint
                     </Button>
                   </div>
                 )}
@@ -252,6 +270,10 @@ const BoardPage: NextPage = () => {
         onCreateList={(data) => createList({ ...data, ...nextListCreation })}
         hasInitialItems={hasInitialItems}
         isCreatingSprint={isCreatingSprint}
+      />
+      <CreateGoalDialog
+        open={isCreatingGoal}
+        onOpenChange={() => setIsCreatingGoal(false)}
       />
     </>
   );
