@@ -6,17 +6,13 @@ import { ItemsList } from "~/components/itemsList";
 import { CreateListDialog } from "~/components/createListDialog";
 import { Button } from "~/components/ui/button";
 import { api } from "~/utils/api";
-import {
-  ContextMenu,
-  ContextMenuItem,
-  ContextMenuTrigger,
-  ContextMenuContent,
-} from "~/components/ui/context-menu";
+import { ContextMenu, ContextMenuTrigger } from "~/components/ui/context-menu";
 import { type CreateListSechemaType } from "~/utils/apischemas";
 import { cn } from "~/utils/ui/cn";
 import { useAutoAnimate } from "@formkit/auto-animate/react";
 import { Toggle } from "~/components/ui/toggle";
 import { ItemCreationInput } from "~/components/itemCreationInput";
+import { ListContextMenu } from "~/components/listContextMenu";
 
 const BoardPage: NextPage = () => {
   const [currentLayout, setCurrentLayout] = useState<"list" | "grid">("list");
@@ -51,14 +47,6 @@ const BoardPage: NextPage = () => {
       } else {
         moveToList(newList.id);
       }
-    },
-  });
-
-  const { mutate: deleteList } = api.lists.deleteList.useMutation({
-    onSuccess: () => {
-      closeListCreation();
-      void refetch();
-      moveToList(lists?.[0]?.id);
     },
   });
 
@@ -159,16 +147,12 @@ const BoardPage: NextPage = () => {
                         ))}
                       </div>
                     </ContextMenuTrigger>
-                    <ContextMenuContent>
-                      <ContextMenuItem
-                        onSelect={() => {
-                          const lastList = currentLists.at(-1);
-                          lastList && deleteList(lastList);
-                        }}
-                      >
-                        <Trash2 className="mr-2 h-4 w-4" /> Delete List
-                      </ContextMenuItem>
-                    </ContextMenuContent>
+                    <ListContextMenu
+                      selectedListId={currentLists[0]}
+                      onDelete={() => {
+                        moveToList(lists?.[0]?.id);
+                      }}
+                    />
                   </ContextMenu>
                   <Button
                     variant="ghost"
