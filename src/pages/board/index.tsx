@@ -20,6 +20,7 @@ import { ItemCreationInput } from "~/components/itemCreationInput";
 import { ListContextMenu } from "~/components/listContextMenu";
 import { CreateGoalDialog } from "~/components/createGoalDialog";
 import { MediaTypeIcon } from "~/components/resources/mediaTypeIcon";
+import { Consume } from "~/components/ui/con-sume";
 
 const BoardPage: NextPage = () => {
   const [currentLayout, setCurrentLayout] = useState<"list" | "grid">("list");
@@ -104,11 +105,11 @@ const BoardPage: NextPage = () => {
 
   return (
     <>
-      <main className="flex min-h-screen flex-row bg-gradient-to-b from-rose-500 to-indigo-700">
+      <main className="flex min-h-screen flex-row bg-gradient-to-t from-blue-500 to-[#76b9ce]">
         <div className="main-grid m-3 grid w-full grid-cols-4 overflow-hidden rounded-md bg-background p-5 xl:grid-cols-5 ">
           <aside className="sidebar space-y-5 pr-10">
             <h1 className="align-center mb-2 flex flex-row px-2 text-2xl font-extrabold tracking-tight">
-              CONSUME
+              <Consume />
             </h1>
             <div className="space-y-12 overflow-auto px-2">
               <div>

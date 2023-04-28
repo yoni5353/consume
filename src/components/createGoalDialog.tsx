@@ -21,6 +21,7 @@ import {
 } from "./ui/select";
 import { MediaTypeIcon } from "./resources/mediaTypeIcon";
 import { api } from "~/utils/api";
+import { Consume } from "./ui/con-sume";
 
 export function CreateGoalDialog({ onOpenChange, ...dialogProps }: DialogProps) {
   const ctx = api.useContext();
@@ -65,7 +66,9 @@ export function CreateGoalDialog({ onOpenChange, ...dialogProps }: DialogProps) 
           <div className="flex flex-row items-center space-x-4">
             <div className="flex flex-row space-x-2">
               <div>I want to</div>
-              <div className="font-extrabold uppercase">consume</div>
+              <div className="font-extrabold uppercase">
+                <Consume />
+              </div>
             </div>
             <Input
               className="w-20"
