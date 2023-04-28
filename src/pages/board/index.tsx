@@ -14,6 +14,7 @@ import { Toggle } from "~/components/ui/toggle";
 import { ItemCreationInput } from "~/components/itemCreationInput";
 import { ListContextMenu } from "~/components/listContextMenu";
 import { CreateGoalDialog } from "~/components/createGoalDialog";
+import { MediaTypeIcon } from "~/components/resources/mediaTypeIcon";
 
 const BoardPage: NextPage = () => {
   const [currentLayout, setCurrentLayout] = useState<"list" | "grid">("list");
@@ -38,6 +39,8 @@ const BoardPage: NextPage = () => {
       },
     }
   );
+
+  const { data: goals } = api.goals.getGoals.useQuery();
 
   const { mutate: createList } = api.lists.createList.useMutation({
     onSuccess: (newList) => {
@@ -185,10 +188,35 @@ const BoardPage: NextPage = () => {
                 </div>
               </div>
               <div>
-                <h2 className="align-center mb-2 flex flex-row px-2 text-lg font-semibold tracking-tight">
+                <h2 className="mb-2 flex flex-row items-center px-2 text-lg font-semibold tracking-tight">
                   Goals
                 </h2>
                 <div className="space-y-2 pb-1">
+                  <ContextMenu modal={false}>
+                    <ContextMenuTrigger>
+                      <div className="lists-list space-y-2" ref={backlogRef}>
+                        {goals?.map((goal) => (
+                          <Button
+                            key={goal.id}
+                            variant="ghost"
+                            size="sm"
+                            className="flex w-full flex-row justify-start space-x-2 text-xs font-extrabold"
+                            // onClick={() => moveToList(list.id)}
+                            // onAuxClick={() => moveToList(list.id)}
+                          >
+                            <span className="uppercase">1/{goal.targetValue}</span>
+                            <div className="flex items-center space-x-2 rounded-lg bg-secondary/70 p-1">
+                              <MediaTypeIcon
+                                mediaType={goal.targetMediaType ?? undefined}
+                                className="mr-2"
+                              />
+                              {goal.targetMediaType?.name ?? "Item"}
+                            </div>
+                          </Button>
+                        ))}
+                      </div>
+                    </ContextMenuTrigger>
+                  </ContextMenu>
                   <Button
                     variant="ghost"
                     size="sm"

@@ -18,4 +18,11 @@ export const goalsRouter = createTRPCRouter({
       },
     });
   }),
+
+  getGoals: protectedProcedure.query(({ ctx }) => {
+    return ctx.prisma.goal.findMany({
+      where: { createdById: ctx.session.user.id },
+      include: { targetMediaType: true },
+    });
+  }),
 });
