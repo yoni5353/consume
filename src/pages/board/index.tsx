@@ -1,4 +1,4 @@
-import { BikeIcon, Layout, ListIcon, PlusCircleIcon } from "lucide-react";
+import { BikeIcon, Layout, ListIcon, PlusCircleIcon, Trash2 } from "lucide-react";
 import { type NextPage } from "next";
 import { useCallback, useState } from "react";
 import { ItemDisplay } from "~/components/itemDisplay";
@@ -6,7 +6,12 @@ import { ItemsList } from "~/components/itemsList";
 import { CreateListDialog } from "~/components/createListDialog";
 import { Button } from "~/components/ui/button";
 import { api } from "~/utils/api";
-import { ContextMenu, ContextMenuTrigger } from "~/components/ui/context-menu";
+import {
+  ContextMenu,
+  ContextMenuItem,
+  ContextMenuTrigger,
+  ContextMenuContent,
+} from "~/components/ui/context-menu";
 import { type CreateListSechemaType } from "~/utils/apischemas";
 import { cn } from "~/utils/ui/cn";
 import { useAutoAnimate } from "@formkit/auto-animate/react";
@@ -26,6 +31,9 @@ const BoardPage: NextPage = () => {
   const [sprintsViewRef] = useAutoAnimate<HTMLDivElement>();
   const [currentCreationList, setCurrentCreationList] = useState<string>();
   const [isCreatingGoal, setIsCreatingGoal] = useState<boolean>();
+  const [selectedGoal, setSelectedGoal] = useState<string>();
+
+  const ctx = api.useContext();
 
   const { data: lists, refetch } = api.lists.getBacklog.useQuery();
 
@@ -41,6 +49,12 @@ const BoardPage: NextPage = () => {
   );
 
   const { data: goals } = api.goals.getGoals.useQuery();
+
+  const { mutate: deleteGoal } = api.goals.delete.useMutation({
+    onSuccess: () => {
+      void ctx.goals.getGoals.invalidate();
+    },
+  });
 
   const { mutate: createList } = api.lists.createList.useMutation({
     onSuccess: (newList) => {
@@ -201,8 +215,8 @@ const BoardPage: NextPage = () => {
                             variant="ghost"
                             size="sm"
                             className="flex w-full flex-row justify-start space-x-2 text-xs font-extrabold"
-                            // onClick={() => moveToList(list.id)}
-                            // onAuxClick={() => moveToList(list.id)}
+                            onClick={() => setSelectedGoal(goal.id)}
+                            onAuxClick={() => setSelectedGoal(goal.id)}
                           >
                             <span className="uppercase">1/{goal.targetValue}</span>
                             <div className="flex items-center space-x-2 rounded-lg bg-secondary/70 p-1">
@@ -216,6 +230,16 @@ const BoardPage: NextPage = () => {
                         ))}
                       </div>
                     </ContextMenuTrigger>
+                    <ContextMenuContent>
+                      <ContextMenuItem
+                        onSelect={() => {
+                          selectedGoal && deleteGoal(selectedGoal);
+                        }}
+                      >
+                        <Trash2 className="mr-2 h-4 w-4" />
+                        Delete Goal
+                      </ContextMenuItem>
+                    </ContextMenuContent>
                   </ContextMenu>
                   <Button
                     variant="ghost"

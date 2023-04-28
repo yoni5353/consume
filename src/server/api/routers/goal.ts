@@ -25,4 +25,10 @@ export const goalsRouter = createTRPCRouter({
       include: { targetMediaType: true },
     });
   }),
+
+  delete: protectedProcedure.input(z.string()).mutation(({ ctx, input }) => {
+    return ctx.prisma.goal.delete({
+      where: { id: input },
+    });
+  }),
 });

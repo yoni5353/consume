@@ -86,6 +86,7 @@ export function CreateGoalDialog({ onOpenChange, ...dialogProps }: DialogProps) 
               defaultValue={-1}
               render={({ field }) => {
                 // Filter out ref for Radix's forwardRef (causes error)
+                // eslint-disable-next-line @typescript-eslint/no-unused-vars
                 const { ref, ...filteredField } = field;
 
                 return (
