@@ -52,8 +52,10 @@ export function ItemCard({
           <div />
         )}
         <div className="vertical h-min text-center font-medium">{item.title}</div>
-        <div className="flex w-full flex-row justify-between">
-          <div />
+        <div className="flex w-full flex-row items-center justify-between">
+          <div className="ml-2">
+            <MediaTypeIcon mediaType={item.mediaType ?? undefined} />
+          </div>
           <CircleProgress
             className={cn("dark:bg-slate-700", selected && "dark:bg-slate-400")}
             progress={item.progress}
