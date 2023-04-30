@@ -12,6 +12,7 @@ const config = {
       "cdn.myanimelist.net",
       "occ-0-1853-1167.1.nflxso.net", // Netflix
       "cdn.akamai.steamstatic.com", // Steam
+      "shortstoryproject.com" // Short Story Project
     ]
   },
 
