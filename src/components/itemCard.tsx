@@ -5,6 +5,7 @@ import { cn } from "~/utils/ui/cn";
 import { MediaTypeIcon } from "./resources/mediaTypeIcon";
 import Image from "next/image";
 import { CircleProgress } from "./progress/circleProgress";
+import { Badge } from "./ui/badge";
 
 export function ItemCard({
   itemId,
@@ -34,6 +35,13 @@ export function ItemCard({
             <div className="w-[20px]" />
           )} */}
           <div className="truncate font-medium">{item.title}</div>
+          <div className="space-x-2">
+            {item.tags.map((tag) => (
+              <Badge key={tag.name} className="px-[5px] py-0">
+                {tag.name}
+              </Badge>
+            ))}
+          </div>
         </div>
         <ProgressNode className="max-w-fit" progress={item.progress} itemId={item.id} />
       </div>
@@ -53,8 +61,15 @@ export function ItemCard({
         )}
         <div className="vertical h-min text-center font-medium">{item.title}</div>
         <div className="flex w-full flex-row items-center justify-between">
-          <div className="ml-2">
+          <div className="ml-2 flex flex-row items-center space-x-1">
             <MediaTypeIcon mediaType={item.mediaType ?? undefined} />
+            <div className="flex flex-wrap gap-1">
+              {item.tags.map((tag) => (
+                <Badge key={tag.name} className="px-[5px] py-0">
+                  {tag.name}
+                </Badge>
+              ))}
+            </div>
           </div>
           <CircleProgress
             className={cn("dark:bg-slate-700", selected && "dark:bg-slate-400")}
