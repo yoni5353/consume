@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-misused-promises */
 import { api } from "~/utils/api";
 import {
   Select,
@@ -11,9 +12,9 @@ import { ProgressType } from "~/utils/progress";
 import { Input } from "./ui/input";
 import { MediaTypeIcon } from "./resources/mediaTypeIcon";
 import dayjs from "dayjs";
-
 import relativeTime from "dayjs/plugin/relativeTime";
 import { useState } from "react";
+import { useForm } from "react-hook-form";
 dayjs.extend(relativeTime);
 
 export function ItemDisplay({ itemId }: { itemId: string }) {
@@ -129,6 +130,9 @@ export function ItemDisplay({ itemId }: { itemId: string }) {
           </SelectContent>
         </Select>
       </div>
+
+      <TagSelection itemId={item.id} />
+
       <div className="flex flex-col items-center">
         {item.progress.type === ProgressType.SLIDER && (
           <div className="mx-5 flex flex-row items-center space-x-10">
@@ -154,5 +158,44 @@ export function ItemDisplay({ itemId }: { itemId: string }) {
       </div>
       <p className="text-slate-500">Created {dayjs(item.createdAt).fromNow()}</p>
     </div>
+  );
+}
+
+function TagSelection({ itemId }: { itemId: string }) {
+  const { register, handleSubmit, reset } = useForm<{ newTag: string }>({});
+
+  const { data: item } = api.items.getItem.useQuery(itemId);
+
+  const ctx = api.useContext();
+
+  const { mutate: editItem } = api.items.editItem.useMutation({
+    onSettled: () => {
+      void ctx.items.getItem.invalidate(itemId);
+    },
+  });
+
+  return (
+    <form
+      onSubmit={handleSubmit(({ newTag }) => {
+        if (item) {
+          const prevTags = item.tags.map((tag) => tag.name);
+          editItem({ itemId, tags: [...prevTags, newTag] });
+          reset();
+        }
+      })}
+      className="space-y-5"
+    >
+      <div className="mx-10 flex flex-row items-center space-x-4">
+        <Label htmlFor="newTag" className="items-center text-right uppercase">
+          Add Tag
+        </Label>
+        <Input
+          className="w-32"
+          type="text"
+          id="newTag"
+          {...register("newTag", { required: true, maxLength: 32 })}
+        />
+      </div>
+    </form>
   );
 }

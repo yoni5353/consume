@@ -12,6 +12,7 @@ export const itemsRouter = createTRPCRouter({
       include: {
         progress: true,
         mediaType: true,
+        tags: true,
       },
     });
   }),
@@ -201,6 +202,7 @@ export const itemsRouter = createTRPCRouter({
         title: z.optional(z.string().min(1)),
         description: z.optional(z.string()),
         mediaTypeId: z.optional(z.number().nullable()),
+        tags: z.optional(z.array(z.string())),
       })
     )
     .mutation(async ({ ctx, input }) => {
@@ -217,6 +219,12 @@ export const itemsRouter = createTRPCRouter({
           title: input.title || undefined,
           description: input.description || undefined,
           mediaType: mediaTypeConnection,
+          tags: {
+            connectOrCreate: input.tags?.map((tag) => ({
+              where: { name: tag },
+              create: { name: tag },
+            })),
+          },
         },
       });
     }),

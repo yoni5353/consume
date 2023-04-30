@@ -27,6 +27,7 @@ model Item {
   description String @default("")
   link        String @default("")
   image       String @default("")
+  tags        Tag[]
 
   progress   Progress @relation(fields: [progressId], references: [id], onDelete: Cascade)
   progressId String   @unique
@@ -131,6 +132,15 @@ model Goal {
 
   @@index([createdById])
   @@index([targetMediaTypeId])
+}
+
+model Tag {
+  name String @unique
+
+  Item   Item?   @relation(fields: [itemId], references: [id])
+  itemId String?
+
+  @@index([itemId])
 }
 
 // Necessary for Next auth
