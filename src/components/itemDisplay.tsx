@@ -15,6 +15,7 @@ import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
+import { Badge } from "./ui/badge";
 dayjs.extend(relativeTime);
 
 export function ItemDisplay({ itemId }: { itemId: string }) {
@@ -169,8 +170,18 @@ function TagSelection({ itemId }: { itemId: string }) {
   const ctx = api.useContext();
 
   const { mutate: editItem } = api.items.editItem.useMutation({
-    onSettled: () => {
-      void ctx.items.getItem.invalidate(itemId);
+    onMutate: ({ tags: newTags }) => {
+      void ctx.items.getItem.cancel(itemId);
+      ctx.items.getItem.setData(itemId, (prevItem) => {
+        if (prevItem && newTags) {
+          return {
+            ...prevItem,
+            tags: [...new Set(newTags)]
+              .sort()
+              .map((tag) => ({ name: tag, itemId: prevItem.id })),
+          };
+        }
+      });
     },
   });
 
@@ -195,6 +206,26 @@ function TagSelection({ itemId }: { itemId: string }) {
           id="newTag"
           {...register("newTag", { required: true, maxLength: 32 })}
         />
+      </div>
+      <div className="mx-10 flex flex-row items-center space-x-4">
+        <Label htmlFor="newTag" className="items-center text-right uppercase">
+          Remove Tag
+        </Label>
+        {item?.tags.map((tag) => (
+          <Badge
+            key={tag.name}
+            className="hover:cursor-pointer"
+            onClick={() => {
+              if (item) {
+                const prevTags = item.tags.map((t) => t.name);
+                editItem({ itemId, tags: prevTags.filter((t) => t !== tag.name) });
+                reset();
+              }
+            }}
+          >
+            {tag.name}
+          </Badge>
+        ))}
       </div>
     </form>
   );

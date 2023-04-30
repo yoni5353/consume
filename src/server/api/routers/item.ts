@@ -213,6 +213,17 @@ export const itemsRouter = createTRPCRouter({
           ? { disconnect: true }
           : { connect: { id: input.mediaTypeId } };
 
+      const item = await ctx.prisma.item.findUnique({
+        where: { id: input.itemId },
+        select: { tags: { select: { name: true } } },
+      });
+
+      const removedTags = item?.tags
+        .map((tag) => tag.name)
+        .filter((tag) => {
+          return !input.tags?.includes(tag);
+        });
+
       return ctx.prisma.item.update({
         where: { id: input.itemId },
         data: {
@@ -220,6 +231,7 @@ export const itemsRouter = createTRPCRouter({
           description: input.description || undefined,
           mediaType: mediaTypeConnection,
           tags: {
+            disconnect: removedTags?.map((tag) => ({ name: tag })),
             connectOrCreate: input.tags?.map((tag) => ({
               where: { name: tag },
               create: { name: tag },
