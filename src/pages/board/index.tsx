@@ -87,76 +87,76 @@ const BoardPage: NextPage = () => {
   return (
     <>
       <main className="flex min-h-screen flex-row bg-gradient-to-t from-blue-500 to-[#76b9ce]">
-        <div className="main-grid m-3 grid w-full grid-cols-5 overflow-hidden rounded-md bg-background p-5 xl:grid-cols-6">
-          <div className="flex flex-col justify-center">
-            <div className="flex flex-row items-center">
-              {isNavbarOpen && <NavBar />}
-              <Toggle onPressedChange={(pressed) => setIsNavbarOpen(pressed)}>
-                <ArrowBigRight className="h-4 w-4" />
+        <div className="m-3 flex w-full flex-col overflow-hidden rounded-md bg-background">
+          <div className="flex w-full flex-row items-center justify-between p-2">
+            <div />
+            <Consume className="text-2xl" />
+            <div className="flex flex-row-reverse">
+              <Toggle
+                onPressedChange={(pressed) => setCurrentLayout(pressed ? "grid" : "list")}
+              >
+                <Layout className="h-4 w-4" />
               </Toggle>
             </div>
           </div>
-
-          <div className="col-span-3 overflow-hidden xl:col-span-4">
-            <div className="flex w-full flex-row justify-between">
-              <div />
-              <Consume className="text-2xl" />
-              <div className="flex flex-row-reverse">
-                <Toggle
-                  onPressedChange={(pressed) =>
-                    setCurrentLayout(pressed ? "grid" : "list")
-                  }
-                >
-                  <Layout className="h-4 w-4" />
+          <div className="main-grid grid h-full w-full grid-cols-5 px-5 xl:grid-cols-6">
+            <div className="flex flex-col justify-center">
+              <div className="flex flex-row items-center">
+                {isNavbarOpen && <NavBar />}
+                <Toggle onPressedChange={(pressed) => setIsNavbarOpen(pressed)}>
+                  <ArrowBigRight className="h-4 w-4" />
                 </Toggle>
               </div>
             </div>
-            <div className="lists items-top container grid h-full w-full grid-cols-1 grid-rows-3 justify-center overflow-auto p-4">
-              <div
-                className={cn(
-                  "relative flex h-full w-full flex-col space-y-5 overflow-y-auto overflow-x-hidden px-10 pt-2",
-                  !!selectedItemId ? "row-span-2" : "row-span-3"
-                )}
-              >
-                <div className="item-creation-field absolute z-10 w-full pr-20">
-                  {currentCreationList && (
-                    <ItemCreationInput listId={currentCreationList} />
+
+            <div className="col-span-3 overflow-hidden xl:col-span-4">
+              <div className="lists items-top container grid h-full w-full grid-cols-1 justify-center overflow-auto p-4">
+                <div
+                  className={cn(
+                    "relative flex h-full w-full flex-col space-y-5 overflow-y-auto overflow-x-hidden px-10 pt-2",
+                    !!selectedItemId ? "row-span-2" : "row-span-3"
+                  )}
+                >
+                  <div className="item-creation-field absolute z-10 w-full pr-20">
+                    {currentCreationList && (
+                      <ItemCreationInput listId={currentCreationList} />
+                    )}
+                  </div>
+                  <div className="h-8"></div>
+                  {currentLists[0] && (
+                    <ItemsList
+                      layout={currentLayout}
+                      listId={currentLists[0]}
+                      onItemSelected={(id) => setSelectedItemId(id)}
+                      onMoveItemsToNewList={(originListId, itemIds) => {
+                        openListCreation({ originListId, initialItemsIds: itemIds });
+                      }}
+                    />
+                  )}
+                  {!currentLists[0] && (
+                    <div className="space-y-3" ref={sprintsViewRef}>
+                      {sprints?.map((sprint) => (
+                        <ItemsList
+                          key={sprint.id}
+                          layout={currentLayout}
+                          listId={sprint.id}
+                          isSprint={true}
+                          onItemSelected={(id) => setSelectedItemId(id)}
+                          onMoveItemsToNewList={(originListId, itemIds) => {
+                            openListCreation({ originListId, initialItemsIds: itemIds });
+                          }}
+                        />
+                      ))}
+                      <Button
+                        variant="ghost"
+                        onClick={() => openListCreation({ isSprint: true })}
+                      >
+                        <PlusCircleIcon className="mr-2 h-4 w-4" />
+                        Create Sprint
+                      </Button>
+                    </div>
                   )}
                 </div>
-                <div className="h-8"></div>
-                {currentLists[0] && (
-                  <ItemsList
-                    layout={currentLayout}
-                    listId={currentLists[0]}
-                    onItemSelected={(id) => setSelectedItemId(id)}
-                    onMoveItemsToNewList={(originListId, itemIds) => {
-                      openListCreation({ originListId, initialItemsIds: itemIds });
-                    }}
-                  />
-                )}
-                {!currentLists[0] && (
-                  <div className="space-y-3" ref={sprintsViewRef}>
-                    {sprints?.map((sprint) => (
-                      <ItemsList
-                        key={sprint.id}
-                        layout={currentLayout}
-                        listId={sprint.id}
-                        isSprint={true}
-                        onItemSelected={(id) => setSelectedItemId(id)}
-                        onMoveItemsToNewList={(originListId, itemIds) => {
-                          openListCreation({ originListId, initialItemsIds: itemIds });
-                        }}
-                      />
-                    ))}
-                    <Button
-                      variant="ghost"
-                      onClick={() => openListCreation({ isSprint: true })}
-                    >
-                      <PlusCircleIcon className="mr-2 h-4 w-4" />
-                      Create Sprint
-                    </Button>
-                  </div>
-                )}
               </div>
             </div>
           </div>
