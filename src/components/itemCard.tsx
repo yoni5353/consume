@@ -6,6 +6,9 @@ import { MediaTypeIcon } from "./resources/mediaTypeIcon";
 import Image from "next/image";
 import { CircleProgress } from "./progress/circleProgress";
 import { Badge } from "./ui/badge";
+import { Dialog, DialogContent, DialogHeader } from "./ui/dialog";
+import { ItemDisplay } from "./itemDisplay";
+import { useState } from "react";
 
 export function ItemCard({
   itemId,
@@ -20,6 +23,8 @@ export function ItemCard({
   selected: boolean;
   layout: "inline" | "card";
 }) {
+  const [showDialog, setShowDialog] = useState(false);
+
   const { data: item } = api.items.getItem.useQuery(itemId);
 
   if (!item) return null;
@@ -86,6 +91,7 @@ export function ItemCard({
         onClick={onClick}
         onAuxClick={onAuxClick}
         onContextMenu={onAuxClick} // For context menu with keyboard
+        onDoubleClick={() => setShowDialog(true)}
         className={cn(
           "bg-secondary p-2 text-primary hover:bg-accent",
           selected && "bg-primary/70 text-secondary hover:bg-primary/80",
@@ -95,6 +101,11 @@ export function ItemCard({
       >
         {content}
       </Button>
+      <Dialog open={showDialog} onOpenChange={setShowDialog}>
+        <DialogContent>
+          <ItemDisplay itemId={item.id} />
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

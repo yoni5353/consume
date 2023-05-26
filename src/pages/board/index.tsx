@@ -1,7 +1,6 @@
 import { BikeIcon, Layout, ListIcon, PlusCircleIcon, Trash2 } from "lucide-react";
 import { type NextPage } from "next";
 import { useCallback, useState } from "react";
-import { ItemDisplay } from "~/components/itemDisplay";
 import { ItemsList } from "~/components/itemsList";
 import { CreateListDialog } from "~/components/createListDialog";
 import { Button } from "~/components/ui/button";
@@ -309,9 +308,6 @@ const BoardPage: NextPage = () => {
                     </Button>
                   </div>
                 )}
-              </div>
-              <div className="item-display px-10">
-                {selectedItemId && <ItemDisplay itemId={selectedItemId} />}
               </div>
             </div>
           </div>
