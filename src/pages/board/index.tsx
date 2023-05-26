@@ -255,12 +255,18 @@ const BoardPage: NextPage = () => {
             </div>
           </aside>
           <div className="col-span-3 overflow-hidden border-l border-slate-500 xl:col-span-4">
-            <div className="flex w-full flex-row-reverse">
-              <Toggle
-                onPressedChange={(pressed) => setCurrentLayout(pressed ? "grid" : "list")}
-              >
-                <Layout className="h-4 w-4" />
-              </Toggle>
+            <div className="flex w-full flex-row justify-between">
+              <div />
+              <Consume className="text-2xl" />
+              <div className="flex flex-row-reverse">
+                <Toggle
+                  onPressedChange={(pressed) =>
+                    setCurrentLayout(pressed ? "grid" : "list")
+                  }
+                >
+                  <Layout className="h-4 w-4" />
+                </Toggle>
+              </div>
             </div>
             <div className="lists items-top container grid h-full w-full grid-cols-1 grid-rows-3 justify-center overflow-auto p-4">
               <div
