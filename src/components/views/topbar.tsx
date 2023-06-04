@@ -1,12 +1,4 @@
-import {
-  CreditCard,
-  Layout,
-  LogOut,
-  PlusCircle,
-  Settings,
-  User,
-  UserIcon,
-} from "lucide-react";
+import { Layout, LogOut, Settings, User, UserIcon } from "lucide-react";
 import { Consume } from "../ui/con-sume";
 import { Toggle } from "../ui/toggle";
 import { Avatar, AvatarImage, AvatarFallback } from "../ui/avatar";
@@ -20,7 +12,7 @@ import {
   DropdownMenuShortcut,
   DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
-import { useSession } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
 
 export function TopBar({
   onLayoutChange,
@@ -28,6 +20,10 @@ export function TopBar({
   onLayoutChange: (layout: "grid" | "list") => void;
 }) {
   const { data: sessionData } = useSession();
+
+  const logout = () => {
+    void signOut({ callbackUrl: "/" });
+  };
 
   const userName = sessionData?.user?.name;
   const userEmail = sessionData?.user?.email;
@@ -67,7 +63,7 @@ export function TopBar({
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>
+            <DropdownMenuItem onSelect={logout}>
               <LogOut className="mr-2 h-4 w-4" />
               <span>Log out</span>
               <DropdownMenuShortcut>⇧Q</DropdownMenuShortcut>
