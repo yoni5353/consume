@@ -6,6 +6,7 @@ import { api } from "~/utils/api";
 import "~/styles/globals.css";
 import { ThemeProvider } from "next-themes";
 import { useEffect } from "react";
+import { Toaster } from "~/components/ui/toaster";
 
 const MyApp: AppType<{ session: Session | null }> = ({
   Component,
@@ -22,6 +23,7 @@ const MyApp: AppType<{ session: Session | null }> = ({
         <ThemeProvider>
           <ReactQueryDevtools />
           <Component {...pageProps} />
+          <Toaster />
         </ThemeProvider>
       </SessionProvider>
     </>
