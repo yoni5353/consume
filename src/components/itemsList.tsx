@@ -22,13 +22,19 @@ export function ItemsList({
 }: {
   listId: string;
   onItemSelected: (itemId: string) => void;
-  onMoveItemsToNewList?: (originListId: string, itemIds: string[]) => void;
+  onMoveItemsToNewList?: (
+    originListId: string,
+    itemIds: string[],
+    isSprint: boolean
+  ) => void;
   layout: "list" | "grid";
   isSprint?: boolean;
 }) {
   const [selectedItems, setSelectedItems] = useState<string[]>([]);
   const [lastSelectedItem, setLastSelectedItem] = useState<string>();
   const [listRef] = useAutoAnimate<HTMLDivElement>();
+
+  const ctx = api.useContext();
 
   const { data: listWithItems, refetch } = api.lists.getWithItems.useQuery(listId, {
     onSuccess: () => {
@@ -47,7 +53,10 @@ export function ItemsList({
   });
 
   const { mutate: moveItems } = api.items.moveItems.useMutation({
-    onSuccess: () => refetch(),
+    onSuccess: (_, { targetListId }) => {
+      void ctx.lists.getWithItems.invalidate(listId);
+      void ctx.lists.getWithItems.invalidate(targetListId);
+    },
   });
 
   const items = listWithItems?.items;
@@ -174,10 +183,11 @@ export function ItemsList({
           onMoveItems={(targetListId) => {
             moveItems({ itemIds: selectedItems, targetListId });
           }}
-          onMoveItemsToNewList={(originListId) =>
+          onMoveItemsToNewList={(originListId, isSprint) =>
             onMoveItemsToNewList?.(
               originListId,
-              selectedItems.map((itemId) => itemId)
+              selectedItems.map((itemId) => itemId),
+              isSprint
             )
           }
         />

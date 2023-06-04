@@ -40,14 +40,12 @@ const BoardPage: NextPage = () => {
 
   const { mutate: createList } = api.lists.createList.useMutation({
     onSuccess: (newList) => {
-      closeListCreation();
-      void refetch();
-      void refetchSprints();
-
       if (newList.isSprint) {
         selectSprint(newList.id);
+        void ctx.lists.getSprints.invalidate();
       } else {
         moveToList(newList.id);
+        void ctx.lists.getBacklog.invalidate();
       }
     },
   });
@@ -128,8 +126,12 @@ const BoardPage: NextPage = () => {
                       layout={currentLayout}
                       listId={currentLists[0]}
                       onItemSelected={(id) => setSelectedItemId(id)}
-                      onMoveItemsToNewList={(originListId, itemIds) => {
-                        openListCreation({ originListId, initialItemsIds: itemIds });
+                      onMoveItemsToNewList={(originListId, itemIds, isSprint) => {
+                        openListCreation({
+                          originListId,
+                          initialItemsIds: itemIds,
+                          isSprint,
+                        });
                       }}
                     />
                   )}
@@ -142,8 +144,12 @@ const BoardPage: NextPage = () => {
                           listId={sprint.id}
                           isSprint={true}
                           onItemSelected={(id) => setSelectedItemId(id)}
-                          onMoveItemsToNewList={(originListId, itemIds) => {
-                            openListCreation({ originListId, initialItemsIds: itemIds });
+                          onMoveItemsToNewList={(originListId, itemIds, isSprint) => {
+                            openListCreation({
+                              originListId,
+                              initialItemsIds: itemIds,
+                              isSprint,
+                            });
                           }}
                         />
                       ))}

@@ -13,6 +13,7 @@ import {
   SplitSquareHorizontal,
   Share2,
   ClipboardCopy,
+  BikeIcon,
 } from "lucide-react";
 import { api } from "~/utils/api";
 
@@ -27,7 +28,7 @@ export function ItemContextMenu({
   listId: string;
   onDelete: () => void;
   onMoveItems: (targetListId: string) => void;
-  onMoveItemsToNewList: (originListId: string) => void;
+  onMoveItemsToNewList: (originListId: string, isSprint: boolean) => void;
 }) {
   const singleItem = itemsAmount === 1;
 
@@ -35,14 +36,38 @@ export function ItemContextMenu({
     .useQuery()
     .data?.filter((list) => list.id !== listId);
 
+  const sprints = api.lists.getSprints
+    .useQuery()
+    .data?.filter((list) => list.id !== listId);
+
   return (
     <ContextMenuContent>
       <ContextMenuSub>
         <ContextMenuSubTrigger>
-          {singleItem ? "Move to List" : `Move ${itemsAmount} Items`}
+          {singleItem ? "Move to Sprint" : `Move ${itemsAmount} Items`}
         </ContextMenuSubTrigger>
         <ContextMenuSubContent className="w-36">
-          <ContextMenuItem onClick={() => onMoveItemsToNewList(listId)}>
+          <ContextMenuItem onClick={() => onMoveItemsToNewList(listId, true)}>
+            <PlusCircle className="mr-2 h-4 w-4" />
+            New Sprint
+          </ContextMenuItem>
+          {!!sprints?.length && (
+            <>
+              <ContextMenuSeparator />
+              {sprints?.map((list) => (
+                <ContextMenuItem key={list.id} onSelect={() => onMoveItems(list.id)}>
+                  <BikeIcon className="mr-2 h-4 w-4" /> {list.title}
+                </ContextMenuItem>
+              ))}
+            </>
+          )}
+        </ContextMenuSubContent>
+      </ContextMenuSub>
+
+      <ContextMenuSub>
+        <ContextMenuSubTrigger>Move to Backlog</ContextMenuSubTrigger>
+        <ContextMenuSubContent className="w-36">
+          <ContextMenuItem onClick={() => onMoveItemsToNewList(listId, false)}>
             <PlusCircle className="mr-2 h-4 w-4" />
             New list
           </ContextMenuItem>
