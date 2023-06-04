@@ -108,6 +108,20 @@ export const itemsRouter = createTRPCRouter({
         throw new TRPCError({ code: "NOT_FOUND", message: "Template not found" });
       }
 
+      const { progressType, ...itemArgs } = template;
+
+      const newProgressType = Object.values(ProgressType).includes(
+        progressType as ProgressType
+      )
+        ? (progressType as ProgressType)
+        : ProgressType.CHECK;
+
+      const progressArgs = {
+        type: newProgressType,
+        currentValue: 0,
+        maxValue: defaultProgressMaxValues[newProgressType],
+      };
+
       return ctx.prisma.list.update({
         where: { id: input.listId },
         data: {
@@ -116,12 +130,9 @@ export const itemsRouter = createTRPCRouter({
               assignedBy: { connect: { id: ctx.session.user.id } },
               item: {
                 create: {
-                  ...template,
+                  ...itemArgs,
                   progress: {
-                    create: {
-                      currentValue: 0,
-                      maxValue: 1,
-                    },
+                    create: progressArgs,
                   },
                   createdBy: { connect: { id: ctx.session.user.id } },
                 },

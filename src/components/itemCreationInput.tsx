@@ -12,9 +12,11 @@ import { api } from "~/utils/api";
 import { scrapers } from "~/utils/scrapers/main";
 import { cn } from "~/utils/ui/cn";
 import { CommandLoading } from "cmdk";
+import { useToast } from "./ui/use-toast";
 
 export function ItemCreationInput({ listId }: { listId: string }) {
   const [term, setTerm] = useState<string>("");
+  const { toast } = useToast();
 
   const ctx = api.useContext();
 
@@ -35,6 +37,13 @@ export function ItemCreationInput({ listId }: { listId: string }) {
       onSuccess: () => {
         setTerm("");
         void ctx.lists.getWithItems.invalidate(listId);
+      },
+      onError: () => {
+        toast({
+          title: "Error",
+          description: "Failed to create item from template",
+          variant: "destructive",
+        });
       },
     }
   );
