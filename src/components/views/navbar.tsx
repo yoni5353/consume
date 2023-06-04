@@ -5,14 +5,12 @@ import { api } from "~/utils/api";
 import { ContextMenu, ContextMenuTrigger } from "~/components/ui/context-menu";
 import { useAutoAnimate } from "@formkit/auto-animate/react";
 import { ListContextMenu } from "~/components/listContextMenu";
-import { Consume } from "~/components/ui/con-sume";
 
 export function NavBar() {
   const [currentContextMenuSprint, setCurrentContextMenuSprint] = useState<string>();
   const [currentContextMenuList, setCurrentContextMenuList] = useState<string>();
   const [sprintsRef] = useAutoAnimate<HTMLDivElement>();
   const [backlogRef] = useAutoAnimate<HTMLDivElement>();
-  const [selectedGoal, setSelectedGoal] = useState<string>();
 
   const { data: lists } = api.lists.getBacklog.useQuery();
 

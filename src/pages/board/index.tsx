@@ -1,4 +1,4 @@
-import { ArrowBigRight, Layout, PlusCircleIcon } from "lucide-react";
+import { ArrowBigRight, PlusCircleIcon } from "lucide-react";
 import { type NextPage } from "next";
 import { useCallback, useState } from "react";
 import { ItemsList } from "~/components/itemsList";
@@ -11,8 +11,8 @@ import { useAutoAnimate } from "@formkit/auto-animate/react";
 import { Toggle } from "~/components/ui/toggle";
 import { ItemCreationInput } from "~/components/itemCreationInput";
 import { CreateGoalDialog } from "~/components/createGoalDialog";
-import { Consume } from "~/components/ui/con-sume";
 import { NavBar } from "~/components/views/navbar";
+import { TopBar } from "~/components/views/topbar";
 
 const BoardPage: NextPage = () => {
   const [currentLayout, setCurrentLayout] = useState<"list" | "grid">("list");
@@ -86,17 +86,8 @@ const BoardPage: NextPage = () => {
     <>
       <main className="flex min-h-screen flex-row bg-gradient-to-t from-blue-500 to-[#76b9ce]">
         <div className="m-3 flex w-full flex-col overflow-hidden rounded-md bg-background">
-          <div className="flex w-full flex-row items-center justify-between p-2">
-            <div />
-            <Consume className="text-2xl" />
-            <div className="flex flex-row-reverse">
-              <Toggle
-                onPressedChange={(pressed) => setCurrentLayout(pressed ? "grid" : "list")}
-              >
-                <Layout className="h-4 w-4" />
-              </Toggle>
-            </div>
-          </div>
+          <TopBar onLayoutChange={setCurrentLayout} />
+
           <div className="main-grid grid h-full w-full grid-cols-5 px-5 xl:grid-cols-6">
             <div className="flex flex-col justify-center">
               <div className="flex flex-row items-center">
