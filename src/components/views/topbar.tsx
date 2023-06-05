@@ -1,4 +1,4 @@
-import { Layout, LogOut, Settings, User, UserIcon } from "lucide-react";
+import { Layout, LogOut, PaletteIcon, Settings, User, UserIcon } from "lucide-react";
 import { Consume } from "../ui/con-sume";
 import { Toggle } from "../ui/toggle";
 import { Avatar, AvatarImage, AvatarFallback } from "../ui/avatar";
@@ -13,12 +13,16 @@ import {
   DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
 import { signOut, useSession } from "next-auth/react";
+import { HuePicker } from "react-color";
+import { useState } from "react";
 
 export function TopBar({
   onLayoutChange,
 }: {
   onLayoutChange: (layout: "grid" | "list") => void;
 }) {
+  const [color, setColor] = useState<string>("red");
+
   const { data: sessionData } = useSession();
 
   const logout = () => {
@@ -60,6 +64,22 @@ export function TopBar({
                 <Settings className="mr-2 h-4 w-4" />
                 <span>Settings</span>
                 <DropdownMenuShortcut>⇧S</DropdownMenuShortcut>
+              </DropdownMenuItem>
+            </DropdownMenuGroup>
+            <DropdownMenuGroup>
+              <DropdownMenuItem className="flex flex-col items-start gap-1">
+                <div className="flex flex-row">
+                  <PaletteIcon className="mr-2 h-4 w-4" />
+                  <span>Accent Color</span>
+                </div>
+                <div onClick={(e) => e.stopPropagation()} className="w-full px-2 py-1">
+                  <HuePicker
+                    color={color}
+                    onChange={({ hex }) => setColor(hex)}
+                    onChangeComplete={({ hex }) => console.log(hex)}
+                    width="100%"
+                  />
+                </div>
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
