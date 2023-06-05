@@ -3,7 +3,7 @@ import {
   DropdownMenuContent,
   DropdownMenuTrigger,
 } from "@radix-ui/react-dropdown-menu";
-import { useCallback, useState } from "react";
+import { useState } from "react";
 import { BlockPicker } from "react-color";
 import { cn } from "~/utils/ui/cn";
 
@@ -68,6 +68,7 @@ function ColorSelector({
           color={color}
           onChange={({ hex }) => onChange(hex)}
           onChangeComplete={({ hex }) => onChangeComplete?.(hex)}
+          colors={BLOCK_COLORS}
           styles={{
             default: {
               head: { border: "1D283A solid 5px" },
@@ -83,3 +84,26 @@ function ColorSelector({
     </DropdownMenu>
   );
 }
+
+const DEFAULT_REACT_COLOR_COLORS = [
+  "#D9E3F0",
+  "#F47373",
+  "#697689",
+  "#37D67A",
+  "#2CCCE4",
+  "#555555",
+  "#dce775",
+  "#ff8a65",
+  "#ba68c8",
+];
+
+const BLOCK_COLORS = DEFAULT_REACT_COLOR_COLORS.concat([
+  "#3b82f6",
+  "#76b9ce",
+  "#f59e0b",
+  "#10b981",
+  "#ef4444",
+  "#8b5cf6",
+  "#f472b6",
+  "#6b7280",
+]);

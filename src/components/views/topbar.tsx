@@ -69,13 +69,13 @@ export function TopBar({
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuGroup>
-              <DropdownMenuItem className="flex flex-col items-start gap-1">
+              <DropdownMenuItem className="flex flex-col items-start gap-2">
                 <div className="w-full" onClick={(e) => e.stopPropagation()}>
-                  <div className="flex flex-row">
+                  <div className="flex flex-row items-center">
                     <PaletteIcon className="mr-2 h-4 w-4" />
-                    <span>Accent Color</span>
+                    <span>Accent Gradient</span>
                   </div>
-                  <div className="p-1">
+                  <div className="p-1 pt-2">
                     <GradientPicker
                       value={gradientColorsState[0]}
                       onChange={gradientColorsState[1]}
