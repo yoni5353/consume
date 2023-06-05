@@ -15,6 +15,7 @@ import {
 import { signOut, useSession } from "next-auth/react";
 import { HuePicker } from "react-color";
 import { useState } from "react";
+import { GradientPicker } from "../gradientPicker";
 
 export function TopBar({
   onLayoutChange,
@@ -68,17 +69,17 @@ export function TopBar({
             </DropdownMenuGroup>
             <DropdownMenuGroup>
               <DropdownMenuItem className="flex flex-col items-start gap-1">
-                <div className="flex flex-row">
-                  <PaletteIcon className="mr-2 h-4 w-4" />
-                  <span>Accent Color</span>
-                </div>
-                <div onClick={(e) => e.stopPropagation()} className="w-full px-2 py-1">
-                  <HuePicker
-                    color={color}
-                    onChange={({ hex }) => setColor(hex)}
-                    onChangeComplete={({ hex }) => console.log(hex)}
-                    width="100%"
-                  />
+                <div className="w-full" onClick={(e) => e.stopPropagation()}>
+                  <div className="flex flex-row">
+                    <PaletteIcon className="mr-2 h-4 w-4" />
+                    <span>Accent Color</span>
+                  </div>
+                  <div className="p-1">
+                    <GradientPicker
+                      value={["red", "white"]}
+                      onChange={(v) => console.log(v)}
+                    />
+                  </div>
                 </div>
               </DropdownMenuItem>
             </DropdownMenuGroup>
