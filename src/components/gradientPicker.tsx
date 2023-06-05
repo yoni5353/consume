@@ -3,7 +3,7 @@ import {
   DropdownMenuContent,
   DropdownMenuTrigger,
 } from "@radix-ui/react-dropdown-menu";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { BlockPicker } from "react-color";
 import { cn } from "~/utils/ui/cn";
 
@@ -14,20 +14,30 @@ export function GradientPicker({
   value: [string, string];
   onChange: (value: [string, string]) => void;
 }) {
-  const [colorOne, setColorOne] = useState<string>("red");
-  const [colorTwo, setColorTwo] = useState<string>("white");
+  const [colorOne, setColorOne] = useState<string>(value[0]);
+  const [colorTwo, setColorTwo] = useState<string>(value[1]);
 
   return (
     <div className="w-full">
       <div className="flex w-full flex-row gap-1">
-        <ColorSelector color={colorOne} onChange={setColorOne} className="rounded-l" />
+        <ColorSelector
+          color={colorOne}
+          onChange={setColorOne}
+          onChangeComplete={(hex) => onChange([hex, colorTwo])}
+          className="rounded-l"
+        />
         <div
           className="h-4 w-full"
           style={{
             backgroundImage: `linear-gradient(to right, ${colorOne}, ${colorTwo})`,
           }}
         />
-        <ColorSelector color={colorTwo} onChange={setColorTwo} className="rounded-r" />
+        <ColorSelector
+          color={colorTwo}
+          onChange={setColorTwo}
+          onChangeComplete={(hex) => onChange([colorOne, hex])}
+          className="rounded-r"
+        />
       </div>
     </div>
   );
@@ -36,10 +46,12 @@ export function GradientPicker({
 function ColorSelector({
   color,
   onChange,
+  onChangeComplete,
   className,
 }: {
   color: string;
   onChange: (color: string) => void;
+  onChangeComplete: (color: string) => void;
   className?: string;
 }) {
   return (
@@ -55,6 +67,7 @@ function ColorSelector({
           width="175px"
           color={color}
           onChange={({ hex }) => onChange(hex)}
+          onChangeComplete={({ hex }) => onChangeComplete?.(hex)}
           styles={{
             default: {
               head: { border: "1D283A solid 5px" },

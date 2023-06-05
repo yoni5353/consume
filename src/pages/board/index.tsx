@@ -14,7 +14,10 @@ import { CreateGoalDialog } from "~/components/createGoalDialog";
 import { NavBar } from "~/components/views/navbar";
 import { TopBar } from "~/components/views/topbar";
 
+const DEFAULT_COLORS: [string, string] = ["#3b82f6", "#76b9ce"];
+
 const BoardPage: NextPage = () => {
+  const [gradientColors, setGradientColors] = useState<[string, string]>(DEFAULT_COLORS);
   const [currentLayout, setCurrentLayout] = useState<"list" | "grid">("list");
   const [currentLists, setCurrentLists] = useState<string[]>([]);
   const [selectedItemId, setSelectedItemId] = useState<string>();
@@ -84,9 +87,17 @@ const BoardPage: NextPage = () => {
 
   return (
     <>
-      <main className="flex min-h-screen flex-row bg-gradient-to-t from-blue-500 to-[#76b9ce]">
+      <main
+        className="flex min-h-screen flex-row"
+        style={{
+          backgroundImage: `linear-gradient(to right, ${gradientColors[0]}, ${gradientColors[1]})`,
+        }}
+      >
         <div className="m-3 flex w-full flex-col overflow-hidden rounded-md bg-background">
-          <TopBar onLayoutChange={setCurrentLayout} />
+          <TopBar
+            onLayoutChange={setCurrentLayout}
+            gradientColorsState={[gradientColors, setGradientColors]}
+          />
 
           <div className="main-grid grid h-full w-full grid-cols-5 px-5 xl:grid-cols-6">
             <div className="flex flex-col justify-center">

@@ -13,17 +13,18 @@ import {
   DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
 import { signOut, useSession } from "next-auth/react";
-import { HuePicker } from "react-color";
-import { useState } from "react";
 import { GradientPicker } from "../gradientPicker";
 
 export function TopBar({
+  gradientColorsState,
   onLayoutChange,
 }: {
   onLayoutChange: (layout: "grid" | "list") => void;
+  gradientColorsState: [
+    [string, string],
+    React.Dispatch<React.SetStateAction<[string, string]>>
+  ];
 }) {
-  const [color, setColor] = useState<string>("red");
-
   const { data: sessionData } = useSession();
 
   const logout = () => {
@@ -76,8 +77,8 @@ export function TopBar({
                   </div>
                   <div className="p-1">
                     <GradientPicker
-                      value={["red", "white"]}
-                      onChange={(v) => console.log(v)}
+                      value={gradientColorsState[0]}
+                      onChange={gradientColorsState[1]}
                     />
                   </div>
                 </div>
