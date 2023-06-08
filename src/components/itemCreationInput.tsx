@@ -13,9 +13,13 @@ import { scrapers } from "~/utils/scrapers/main";
 import { cn } from "~/utils/ui/cn";
 import { CommandLoading } from "cmdk";
 import { useToast } from "./ui/use-toast";
+import { StoryDialog } from "./storyDialog";
+import { type Story } from "@prisma/client";
 
 export function ItemCreationInput({ listId }: { listId: string }) {
   const [term, setTerm] = useState<string>("");
+  const [dialogStory, setDialogStory] = useState<Story>();
+
   const { toast } = useToast();
 
   const ctx = api.useContext();
@@ -24,6 +28,10 @@ export function ItemCreationInput({ listId }: { listId: string }) {
     term,
     { keepPreviousData: true }
   );
+
+  const { data: stories } = api.templates.searchStories.useQuery(term, {
+    keepPreviousData: true,
+  });
 
   const { mutate: createItem } = api.items.createItem.useMutation({
     onSuccess: () => {
@@ -79,63 +87,88 @@ export function ItemCreationInput({ listId }: { listId: string }) {
     matchingScraperLists.length === 0;
 
   return (
-    <Command className="h-min w-full rounded-lg border shadow-md" shouldFilter={false}>
-      <CommandInput
-        placeholder="Enter item title or paste a link..."
-        value={term}
-        onValueChange={setTerm}
-      />
-      {!!term && (
-        <CommandList>
-          <CommandGroup className={cn(!!term && !!templates?.length ? "pb-0" : "")}>
-            {matchingScraperLists.map((scraper) => (
+    <>
+      <Command className="h-min w-full rounded-lg border shadow-md" shouldFilter={false}>
+        <CommandInput
+          placeholder="Enter item title or paste a link..."
+          value={term}
+          onValueChange={setTerm}
+        />
+        {!!term && (
+          <CommandList>
+            <CommandGroup className={cn(!!term && !!templates?.length ? "pb-0" : "")}>
+              {matchingScraperLists.map((scraper) => (
+                <CommandItem
+                  key={scraper.name}
+                  onSelect={() => createItemFromLink({ listId, link: term })}
+                  title="Create an item based on the given link"
+                >
+                  <LinkIcon className="mr-2 h-4 w-4" />
+                  Create {scraper.name} Item
+                </CommandItem>
+              ))}
+              {showBaseLink && (
+                <CommandItem
+                  onSelect={onCreateNewFromLink}
+                  title="Create generic Item with the given link"
+                >
+                  <LinkIcon className="mr-2 h-4 w-4" />
+                  Create Generic Link Item
+                </CommandItem>
+              )}
               <CommandItem
-                key={scraper.name}
-                onSelect={() => createItemFromLink({ listId, link: term })}
-                title="Create an item based on the given link"
+                onSelect={onCreateNew}
+                title="Creates new Item with the give title"
               >
-                <LinkIcon className="mr-2 h-4 w-4" />
-                Create {scraper.name} Item
+                <PlusCircleIcon className="mr-2 h-4 w-4" />
+                Create Item
               </CommandItem>
-            ))}
-            {showBaseLink && (
-              <CommandItem
-                onSelect={onCreateNewFromLink}
-                title="Create generic Item with the given link"
-              >
-                <LinkIcon className="mr-2 h-4 w-4" />
-                Create Generic Link Item
-              </CommandItem>
+            </CommandGroup>
+            {!!term && !!stories?.length && (
+              <>
+                <CommandSeparator />
+                <CommandGroup heading="Stories">
+                  {/* {isLoading && <CommandLoading>Loading...</CommandLoading>} */}
+                  {stories?.map((story) => {
+                    return (
+                      <CommandItem key={story.id} onSelect={() => setDialogStory(story)}>
+                        <LayoutTemplateIcon className="mr-2 h-4 w-4" />
+                        {story.title}
+                      </CommandItem>
+                    );
+                  })}
+                </CommandGroup>
+              </>
             )}
-            <CommandItem
-              onSelect={onCreateNew}
-              title="Creates new Item with the give title"
-            >
-              <PlusCircleIcon className="mr-2 h-4 w-4" />
-              Create Item
-            </CommandItem>
-          </CommandGroup>
-          {!!term && !!templates?.length && (
-            <>
-              <CommandSeparator />
-              <CommandGroup heading="Templates">
-                {isLoading && <CommandLoading>Loading...</CommandLoading>}
-                {templates?.map((template) => {
-                  return (
-                    <CommandItem
-                      key={template.id}
-                      onSelect={() => onCreateFromTemplate(template.id)}
-                    >
-                      <LayoutTemplateIcon className="mr-2 h-4 w-4" />
-                      {template.title}
-                    </CommandItem>
-                  );
-                })}
-              </CommandGroup>
-            </>
-          )}
-        </CommandList>
+            {!!term && !!templates?.length && (
+              <>
+                <CommandSeparator />
+                <CommandGroup heading="Templates">
+                  {isLoading && <CommandLoading>Loading...</CommandLoading>}
+                  {templates?.map((template) => {
+                    return (
+                      <CommandItem
+                        key={template.id}
+                        onSelect={() => onCreateFromTemplate(template.id)}
+                      >
+                        <LayoutTemplateIcon className="mr-2 h-4 w-4" />
+                        {template.title}
+                      </CommandItem>
+                    );
+                  })}
+                </CommandGroup>
+              </>
+            )}
+          </CommandList>
+        )}
+      </Command>
+      {dialogStory && (
+        <StoryDialog
+          story={dialogStory}
+          open={true}
+          onOpenChange={() => setDialogStory(undefined)}
+        />
       )}
-    </Command>
+    </>
   );
 }
