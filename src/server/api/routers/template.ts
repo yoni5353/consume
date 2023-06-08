@@ -21,4 +21,19 @@ export const templatesRouter = createTRPCRouter({
       },
     });
   }),
+
+  getStory: publicProcedure.input(z.string()).query(({ ctx, input }) => {
+    return ctx.prisma.story.findUnique({
+      where: {
+        id: input,
+      },
+      include: {
+        series: {
+          include: {
+            templates: true,
+          },
+        },
+      },
+    });
+  }),
 });

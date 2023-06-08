@@ -18,7 +18,7 @@ import { type Story } from "@prisma/client";
 
 export function ItemCreationInput({ listId }: { listId: string }) {
   const [term, setTerm] = useState<string>("");
-  const [dialogStory, setDialogStory] = useState<Story>();
+  const [dialogStoryId, setDialogStoryId] = useState<string>();
 
   const { toast } = useToast();
 
@@ -131,7 +131,10 @@ export function ItemCreationInput({ listId }: { listId: string }) {
                   {/* {isLoading && <CommandLoading>Loading...</CommandLoading>} */}
                   {stories?.map((story) => {
                     return (
-                      <CommandItem key={story.id} onSelect={() => setDialogStory(story)}>
+                      <CommandItem
+                        key={story.id}
+                        onSelect={() => setDialogStoryId(story.id)}
+                      >
                         <LayoutTemplateIcon className="mr-2 h-4 w-4" />
                         {story.title}
                       </CommandItem>
@@ -162,11 +165,11 @@ export function ItemCreationInput({ listId }: { listId: string }) {
           </CommandList>
         )}
       </Command>
-      {dialogStory && (
+      {dialogStoryId && (
         <StoryDialog
-          story={dialogStory}
+          storyId={dialogStoryId}
           open={true}
-          onOpenChange={() => setDialogStory(undefined)}
+          onOpenChange={() => setDialogStoryId(undefined)}
         />
       )}
     </>
