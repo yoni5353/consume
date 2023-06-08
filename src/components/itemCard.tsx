@@ -6,7 +6,7 @@ import { MediaTypeIcon } from "./resources/mediaTypeIcon";
 import Image from "next/image";
 import { CircleProgress } from "./progress/circleProgress";
 import { Badge } from "./ui/badge";
-import { Dialog, DialogContent, DialogHeader } from "./ui/dialog";
+import { Dialog, DialogContent } from "./ui/dialog";
 import { ItemDisplay } from "./itemDisplay";
 import { useState } from "react";
 

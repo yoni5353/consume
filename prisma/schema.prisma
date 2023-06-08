@@ -110,10 +110,41 @@ model ItemTemplate {
   title       String
   description String @default("")
   link        String @default("")
+  image       String @default("")
 
   progressType String @default("check")
 
+  Series   Series? @relation(fields: [seriesId], references: [id])
+  seriesId String?
+
   @@index([createdById])
+  @@index([seriesId])
+}
+
+model Series {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  title       String
+  description String @default("")
+
+  templates ItemTemplate[]
+  Story     Story?         @relation(fields: [storyId], references: [id])
+  storyId   String?
+
+  @@index([storyId])
+}
+
+model Story {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  title       String
+  description String @default("")
+
+  series Series[]
 }
 
 model Goal {

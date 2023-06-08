@@ -11,4 +11,14 @@ export const templatesRouter = createTRPCRouter({
       },
     });
   }),
+
+  searchStories: publicProcedure.input(z.string()).query(({ ctx, input }) => {
+    return ctx.prisma.story.findMany({
+      where: {
+        title: {
+          contains: input,
+        },
+      },
+    });
+  }),
 });
