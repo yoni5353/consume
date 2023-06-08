@@ -14,7 +14,6 @@ import { cn } from "~/utils/ui/cn";
 import { CommandLoading } from "cmdk";
 import { useToast } from "./ui/use-toast";
 import { StoryDialog } from "./storyDialog";
-import { type Story } from "@prisma/client";
 
 export function ItemCreationInput({ listId }: { listId: string }) {
   const [term, setTerm] = useState<string>("");
@@ -170,6 +169,7 @@ export function ItemCreationInput({ listId }: { listId: string }) {
           storyId={dialogStoryId}
           open={true}
           onOpenChange={() => setDialogStoryId(undefined)}
+          onCreateItem={(templateId) => createItemFromTemplate({ listId, templateId })}
         />
       )}
     </>
