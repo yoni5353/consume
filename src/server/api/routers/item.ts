@@ -108,7 +108,7 @@ export const itemsRouter = createTRPCRouter({
         throw new TRPCError({ code: "NOT_FOUND", message: "Template not found" });
       }
 
-      const { seriesId: _, progressType, ...itemArgs } = template;
+      const { seriesId: _, progressType, mediaTypeId, ...itemArgs } = template;
 
       const newProgressType = Object.values(ProgressType).includes(
         progressType as ProgressType
@@ -134,6 +134,7 @@ export const itemsRouter = createTRPCRouter({
                   progress: {
                     create: progressArgs,
                   },
+                  mediaType: mediaTypeId ? { connect: { id: mediaTypeId } } : undefined,
                   createdBy: { connect: { id: ctx.session.user.id } },
                 },
               },

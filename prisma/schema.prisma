@@ -59,8 +59,9 @@ model MediaType {
 
   name String
 
-  Item Item[]
-  Goal Goal[]
+  Item         Item[]
+  Goal         Goal[]
+  ItemTemplate ItemTemplate[]
 
   @@index([createdById])
 }
@@ -112,6 +113,9 @@ model ItemTemplate {
   link        String @default("")
   image       String @default("")
 
+  mediaType   MediaType? @relation(fields: [mediaTypeId], references: [id])
+  mediaTypeId Int?
+
   progressType String @default("check")
 
   Series   Series? @relation(fields: [seriesId], references: [id])
@@ -119,6 +123,7 @@ model ItemTemplate {
 
   @@index([createdById])
   @@index([seriesId])
+  @@index([mediaTypeId])
 }
 
 model Series {
