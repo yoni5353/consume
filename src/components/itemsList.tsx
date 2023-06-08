@@ -137,7 +137,7 @@ export function ItemsList({
                       <div>No due date</div>
                     )}
                   </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0" align="end">
+                  <PopoverContent className="w-auto p-0" align="start" sideOffset={10}>
                     <Calendar
                       initialFocus
                       mode="range"
