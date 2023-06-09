@@ -13,6 +13,8 @@ import { useCallback, useState } from "react";
 import { PlusIcon } from "lucide-react";
 import { cn } from "~/utils/ui/cn";
 import { sortBy } from "lodash";
+import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
+import { AspectRatio } from "./ui/aspect-ratio";
 
 export function StoryDialog({
   storyId,
@@ -38,7 +40,7 @@ export function StoryDialog({
 
   return (
     <Dialog {...dialogProps} onOpenChange={onOpenChange}>
-      <DialogContent className="w-[1000px]">
+      <DialogContent style={{ maxWidth: "1000px" }}>
         <DialogHeader>
           <DialogTitle className="text-2xl">{story.title}</DialogTitle>
           <DialogDescription>{story.description}</DialogDescription>
@@ -61,14 +63,22 @@ function SeriesDisplay({
   onAddItem?: (templateId: string) => void;
 }) {
   return (
-    <div className="flex flex-col gap-2">
+    <div className="flex flex-col gap-2 overflow-hidden">
       <div className="text-md font-semibold leading-none">{series.title}</div>
-      <div className="text-sm">{series.description}</div>
-      <div className="flex flex-row gap-4">
-        {series.templates.map((template) => (
-          <TemplateDisplay key={template.id} template={template} onAddItem={onAddItem} />
-        ))}
-      </div>
+      <div className="text-sm text-muted-foreground">{series.description}</div>
+      <ScrollArea type="auto">
+        <div className="flex flex-row gap-4 pb-3">
+          {series.templates.map((template) => (
+            <TemplateDisplay
+              key={template.id}
+              template={template}
+              onAddItem={onAddItem}
+              main={series.main}
+            />
+          ))}
+        </div>
+        <ScrollBar orientation="horizontal" />
+      </ScrollArea>
     </div>
   );
 }
@@ -76,15 +86,20 @@ function SeriesDisplay({
 function TemplateDisplay({
   template,
   onAddItem,
+  main,
 }: {
   template: ItemTemplate;
   onAddItem?: (templateId: string) => void;
+  main: boolean;
 }) {
   const [isHovering, setIsHovering] = useState(false);
 
+  const width = main ? 125 : 110;
+
   return (
     <div
-      className="relative flex max-w-[125px] cursor-pointer select-all flex-col items-center gap-1 rounded-md bg-secondary/80 text-center"
+      className="relative flex cursor-pointer flex-col items-center gap-1 rounded-md bg-secondary/80 text-center"
+      style={{ width }}
       tabIndex={0}
       onMouseEnter={() => setIsHovering(true)}
       onMouseLeave={() => setIsHovering(false)}
@@ -95,14 +110,19 @@ function TemplateDisplay({
         }
       }}
     >
-      <div className="relative flex cursor-pointer items-center justify-center overflow-hidden rounded-md">
-        <Image
-          src={template.image}
-          width={125}
-          height={100}
-          alt={`'${template.title}' template image`}
-          className={cn("transition-all", isHovering && "scale-105")}
-        />
+      <div
+        className="relative flex cursor-pointer items-center justify-center overflow-hidden rounded-md"
+        style={{ width }}
+      >
+        <AspectRatio ratio={6 / 9}>
+          <Image
+            src={template.image}
+            width={width}
+            height={100}
+            alt={`'${template.title}' template image`}
+            className={cn("select-none transition-all", isHovering && "scale-105")}
+          />
+        </AspectRatio>
         {isHovering && (
           <div className="absolute flex h-10 w-10 items-center justify-center rounded-full bg-secondary">
             <PlusIcon size={24} color="lightgrey" />
