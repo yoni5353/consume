@@ -7,6 +7,7 @@ import { Search, X } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { ReactNode } from "react";
 
 const Command = React.forwardRef<
   React.ElementRef<typeof CommandPrimitive>,
@@ -41,19 +42,20 @@ const CommandInput = React.forwardRef<
   React.ElementRef<typeof CommandPrimitive.Input>,
   React.ComponentPropsWithoutRef<typeof CommandPrimitive.Input> & {
     onClear?: () => void;
+    shortcutHint?: ReactNode;
   }
->(({ className, onClear, ...props }, ref) => (
+>(({ className, onClear, shortcutHint, ...props }, ref) => (
   <div className="flex items-center border-b px-3" cmdk-input-wrapper="">
     <Search className="mr-2 h-4 w-4 shrink-0 opacity-50" />
     <CommandPrimitive.Input
       ref={ref}
       className={cn(
-        "placeholder:text-foreground-muted flex h-11 w-full rounded-md bg-transparent py-3 text-sm outline-none disabled:cursor-not-allowed disabled:opacity-50",
+        "placeholder:text-foreground-muted flex h-11 w-full rounded-md bg-transparent py-3 text-sm outline-none disabled:cursor-not-allowed disabled:opacity-50 ",
         className
       )}
       {...props}
     />
-    {!!props.value && (
+    {!!props.value ? (
       <div
         className="right-4 top-4 cursor-pointer rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
         onClick={onClear}
@@ -67,6 +69,8 @@ const CommandInput = React.forwardRef<
         <X className="h-4 w-4" />
         <span className="sr-only">Close</span>
       </div>
+    ) : (
+      <>{shortcutHint}</>
     )}
   </div>
 ));

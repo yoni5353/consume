@@ -12,7 +12,7 @@ import {
   LayoutTemplateIcon,
   LayoutDashboardIcon,
 } from "lucide-react";
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect, useRef } from "react";
 import { api } from "~/utils/api";
 import { scrapers } from "~/utils/scrapers/main";
 import { cn } from "~/utils/ui/cn";
@@ -24,6 +24,7 @@ export function ItemCreationInput({ listId }: { listId: string }) {
   const [untrimmedTerm, setTerm] = useState<string>("");
   const [dialogStoryId, setDialogStoryId] = useState<string>();
   const [open, setOpen] = useState(false);
+  const commandInputRef = useRef<HTMLInputElement>(null);
 
   const term = untrimmedTerm.trim();
 
@@ -70,6 +71,21 @@ export function ItemCreationInput({ listId }: { listId: string }) {
     },
   });
 
+  useEffect(() => {
+    function handleKeyDown(e: KeyboardEvent) {
+      if (e.ctrlKey && e.key === "/") {
+        e.preventDefault();
+        commandInputRef.current?.focus();
+      }
+    }
+
+    document.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, []);
+
   const onCreateNew = useCallback(() => {
     createItem({ listId, item: { title: term } });
   }, [createItem, listId, term]);
@@ -95,8 +111,12 @@ export function ItemCreationInput({ listId }: { listId: string }) {
 
   return (
     <>
-      <Command className="h-min w-full rounded-lg border shadow-md" shouldFilter={false}>
+      <Command
+        className="h-min w-full rounded-xl border-2 shadow-md"
+        shouldFilter={false}
+      >
         <CommandInput
+          ref={commandInputRef}
           placeholder="Enter item title or paste a link..."
           value={untrimmedTerm}
           onValueChange={setTerm}
@@ -108,6 +128,11 @@ export function ItemCreationInput({ listId }: { listId: string }) {
               setOpen(false);
             }
           }}
+          shortcutHint={
+            <div className="select-none whitespace-nowrap rounded-md border px-1 text-sm text-muted-foreground">
+              Ctrl + /
+            </div>
+          }
         />
         {!!term && open && (
           <CommandList>
