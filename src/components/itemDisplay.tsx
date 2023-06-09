@@ -16,6 +16,10 @@ import relativeTime from "dayjs/plugin/relativeTime";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { Badge } from "./ui/badge";
+import { Button } from "./ui/button";
+import { ShieldIcon } from "lucide-react";
+import { useToast } from "./ui/use-toast";
+
 dayjs.extend(relativeTime);
 
 export function ItemDisplay({ itemId }: { itemId: string }) {
@@ -33,6 +37,8 @@ export function ItemDisplay({ itemId }: { itemId: string }) {
   const { data: mediaTypes } = api.mediaTypes.getAll.useQuery();
 
   const ctx = api.useContext();
+
+  const { toast } = useToast();
 
   const { mutate: editItem } = api.items.editItem.useMutation({
     async onMutate({ mediaTypeId }) {
@@ -57,6 +63,22 @@ export function ItemDisplay({ itemId }: { itemId: string }) {
 
   const { mutate: switchProgress } = api.items.switchProgress.useMutation({
     onSuccess: () => refetch(),
+  });
+
+  const { mutate: generateTemplate } = api.templates.createTemplateFromItem.useMutation({
+    onSuccess: () => {
+      toast({
+        title: "Template created",
+        description: "A template was created from this item.",
+      });
+    },
+    onError: (error) => {
+      toast({
+        title: "Template creation failed",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
   });
 
   if (!item) return null;
@@ -158,6 +180,19 @@ export function ItemDisplay({ itemId }: { itemId: string }) {
         )}
       </div>
       <p className="text-slate-500">Created {dayjs(item.createdAt).fromNow()}</p>
+      <Button
+        onClick={() =>
+          generateTemplate({
+            ...item,
+            progressType: item.progress.type,
+            tags: item.tags.map((tag) => tag.name),
+            mediaTypeId: item.mediaType?.id ?? undefined,
+          })
+        }
+      >
+        <ShieldIcon className="mr-2" />
+        GENERATE TEMPLATE
+      </Button>
     </div>
   );
 }
