@@ -95,6 +95,7 @@ export function ItemCreationInput({ listId }: { listId: string }) {
           onValueChange={setTerm}
           onFocus={() => setOpen(true)}
           onBlur={() => setOpen(false)}
+          onClear={() => setTerm("")}
         />
         {!!term && open && (
           <CommandList>
