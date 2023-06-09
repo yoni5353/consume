@@ -9,6 +9,7 @@ import { Badge } from "./ui/badge";
 import { Dialog, DialogContent } from "./ui/dialog";
 import { ItemDisplay } from "./itemDisplay";
 import { useState } from "react";
+import { AspectRatio } from "./ui/aspect-ratio";
 
 export function ItemCard({
   itemId,
@@ -53,36 +54,45 @@ export function ItemCard({
         <ProgressNode className="max-w-fit" progress={item.progress} itemId={item.id} />
       </div>
     ) : (
-      <div className={"flex h-full w-full flex-col items-center justify-between"}>
-        {item.image ? (
-          <div className="relative h-32 w-full overflow-hidden">
-            <Image
-              src={item.image}
-              alt="Item image"
-              style={{ objectFit: "contain" }}
-              fill={true}
-            />
+      <div className="relative flex h-full w-full cursor-pointer flex-col items-center justify-between text-center">
+        {/* IMAGE */}
+        {!!item.image ? (
+          <div className="relative flex h-full w-full cursor-pointer items-center justify-center overflow-hidden rounded-t-md">
+            <AspectRatio ratio={6 / 9}>
+              <Image
+                src={item.image}
+                fill={true}
+                alt={`image for '${item.title}'`}
+                className="select-none object-cover"
+              />
+            </AspectRatio>
           </div>
         ) : (
           <div />
         )}
-        <div className="vertical h-min text-center font-medium">{item.title}</div>
-        <div className="flex w-full flex-row items-center justify-between">
-          <div className="ml-2 flex flex-row items-center space-x-1">
-            <MediaTypeIcon mediaType={item.mediaType ?? undefined} />
-            <div className="flex flex-wrap gap-1">
-              {item.tags.map((tag) => (
-                <Badge key={tag.name} className="px-[5px] py-0">
-                  {tag.name}
-                </Badge>
-              ))}
+        {/* TITLE */}
+        <div className="vertical h-min p-1 pb-0 text-center font-medium">
+          {item.title}
+        </div>
+        {/* DETAILS */}
+        <div className="flex w-full flex-col items-center gap-1 p-1">
+          <div className="flex w-full flex-row items-center justify-between px-1">
+            <div className="flex flex-row items-center space-x-1">
+              <MediaTypeIcon mediaType={item.mediaType ?? undefined} />
+              <div className="flex flex-wrap gap-1">
+                {item.tags.map((tag) => (
+                  <Badge key={tag.name} className="px-[5px] py-0">
+                    {tag.name}
+                  </Badge>
+                ))}
+              </div>
             </div>
+            <CircleProgress
+              className={cn("dark:bg-slate-700", selected && "dark:bg-slate-400")}
+              progress={item.progress}
+              itemId={item.id}
+            />
           </div>
-          <CircleProgress
-            className={cn("dark:bg-slate-700", selected && "dark:bg-slate-400")}
-            progress={item.progress}
-            itemId={item.id}
-          />
         </div>
       </div>
     );
@@ -95,10 +105,10 @@ export function ItemCard({
         onContextMenu={onAuxClick} // For context menu with keyboard
         onDoubleClick={() => setShowDialog(true)}
         className={cn(
-          "bg-secondary p-2 text-primary hover:bg-accent",
+          "bg-secondary text-primary hover:bg-accent",
           selected && "bg-primary/70 text-secondary hover:bg-primary/80",
-          layout === "inline" && "h-10",
-          layout === "card" && "h-56"
+          layout === "inline" && "h-10 p-2",
+          layout === "card" && "h-64 w-[130px] rounded-lg p-0"
         )}
       >
         {content}

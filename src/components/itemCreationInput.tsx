@@ -6,7 +6,12 @@ import {
   CommandItem,
   CommandSeparator,
 } from "~/components/ui/command";
-import { LinkIcon, PlusCircleIcon, LayoutTemplateIcon } from "lucide-react";
+import {
+  LinkIcon,
+  PlusCircleIcon,
+  LayoutTemplateIcon,
+  LayoutDashboardIcon,
+} from "lucide-react";
 import { useState, useCallback } from "react";
 import { api } from "~/utils/api";
 import { scrapers } from "~/utils/scrapers/main";
@@ -167,7 +172,7 @@ export function ItemCreationInput({ listId }: { listId: string }) {
                         key={template.id}
                         onSelect={() => onCreateFromTemplate(template.id)}
                       >
-                        <LayoutTemplateIcon className="mr-2 h-4 w-4" />
+                        <LayoutDashboardIcon className="mr-2 h-4 w-4" />
                         {template.title}
                       </CommandItem>
                     );

@@ -131,7 +131,10 @@ function TemplateDisplay({
             width={width}
             height={100}
             alt={`'${template.title}' template image`}
-            className={cn("select-none transition-all", isHovering && "scale-105")}
+            className={cn(
+              "select-none object-cover transition-all",
+              isHovering && "scale-105"
+            )}
           />
         </AspectRatio>
         {isHovering && (
