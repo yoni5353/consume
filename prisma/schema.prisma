@@ -24,7 +24,7 @@ model Item {
   createdById String
 
   title       String
-  description String @default("")
+  description String @default("") @db.Text
   link        String @default("")
   image       String @default("")
   tags        Tag[]
@@ -74,7 +74,7 @@ model List {
   createdById String
 
   title       String
-  description String @default("")
+  description String @default("") @db.Text
 
   isSprint  Boolean   @default(false)
   startDate DateTime  @default(now())
@@ -109,7 +109,7 @@ model ItemTemplate {
   createdById String?
 
   title       String
-  description String @default("")
+  description String @default("") @db.Text
   link        String @default("")
   image       String @default("")
 
@@ -132,7 +132,7 @@ model Series {
   updatedAt DateTime @updatedAt
 
   title       String
-  description String @default("")
+  description String @default("") @db.Text
 
   main Boolean @default(false)
 
@@ -149,7 +149,7 @@ model Story {
   updatedAt DateTime @updatedAt
 
   title       String
-  description String @default("")
+  description String @default("") @db.Text
 
   series Series[]
 }
@@ -162,7 +162,7 @@ model Goal {
   createdById String
 
   dueDate     DateTime?
-  description String    @default("")
+  description String    @default("") @db.Text
 
   targetValue       Int
   targetMediaType   MediaType? @relation(fields: [targetMediaTypeId], references: [id])
