@@ -29,18 +29,13 @@ const BoardPage: NextPage = () => {
 
   const ctx = api.useContext();
 
-  const { data: lists, refetch } = api.lists.getBacklog.useQuery();
-
-  const { data: sprints, refetch: refetchSprints } = api.lists.getSprints.useQuery(
-    undefined,
-    {
-      onSuccess: (newSprints) => {
-        if (!currentCreationList && newSprints.length) {
-          setCurrentCreationList(newSprints[0]?.id);
-        }
-      },
-    }
-  );
+  const { data: sprints } = api.lists.getSprints.useQuery(undefined, {
+    onSuccess: (newSprints) => {
+      if (!currentCreationList && newSprints.length) {
+        setCurrentCreationList(newSprints[0]?.id);
+      }
+    },
+  });
 
   const { mutate: createList } = api.lists.createList.useMutation({
     onSuccess: (newList) => {
@@ -100,12 +95,14 @@ const BoardPage: NextPage = () => {
         }}
       >
         <div className="m-3 flex w-full flex-col overflow-hidden rounded-md bg-background">
+          {/* TOPBAR */}
           <TopBar
             onLayoutChange={setCurrentLayout}
             gradientColorsState={[gradientColors, setGradientColors]}
           />
 
           <div className="main-grid grid h-full w-full grid-cols-5 px-5 xl:grid-cols-6">
+            {/* NAVBAR */}
             <div className="flex flex-col justify-center">
               <div className="flex flex-row items-center">
                 {isNavbarOpen && <NavBar />}
@@ -115,6 +112,7 @@ const BoardPage: NextPage = () => {
               </div>
             </div>
 
+            {/* THE LIST */}
             <div className="col-span-3 overflow-hidden xl:col-span-4">
               <div className="lists items-top container grid h-full w-full grid-cols-1 justify-center overflow-auto p-4">
                 <div
@@ -123,12 +121,14 @@ const BoardPage: NextPage = () => {
                     !!selectedItemId ? "row-span-2" : "row-span-3"
                   )}
                 >
+                  {/* CREATION COMMAND */}
                   <div className="item-creation-field absolute z-10 w-full pr-20">
                     {currentCreationList && (
                       <ItemCreationInput listId={currentCreationList} />
                     )}
                   </div>
-                  <div className="h-8"></div>
+                  <div className="h-6"></div>
+                  {/* LISTS */}
                   {currentLists[0] && (
                     <ItemsList
                       layout={currentLayout}
@@ -143,6 +143,7 @@ const BoardPage: NextPage = () => {
                       }}
                     />
                   )}
+                  {/* SPRINTS */}
                   {!currentLists[0] && (
                     <div className="space-y-3" ref={sprintsViewRef}>
                       {sprints?.map((sprint) => (
