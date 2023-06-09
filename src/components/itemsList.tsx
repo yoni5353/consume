@@ -12,6 +12,7 @@ import { type DateRange } from "react-day-picker";
 import { format, formatDistance } from "date-fns";
 import { CalendarIcon } from "lucide-react";
 import { ListContextMenu } from "./listContextMenu";
+import { useToast } from "./ui/use-toast";
 
 export function ItemsList({
   listId,
@@ -36,6 +37,8 @@ export function ItemsList({
 
   const ctx = api.useContext();
 
+  const { toast } = useToast();
+
   const { data: list, refetch } = api.lists.getList.useQuery(listId, {
     onSuccess: () => {
       if (list?.items[0] && !lastSelectedItem) {
@@ -49,7 +52,27 @@ export function ItemsList({
   });
 
   const { mutate: deleteItems } = api.items.deleteItems.useMutation({
-    onSuccess: () => refetch(),
+    async onMutate(itemIds) {
+      await ctx.lists.getList.cancel(listId);
+      ctx.lists.getList.setData(listId, (prevList) => {
+        if (prevList) {
+          return {
+            ...prevList,
+            items: prevList.items.filter((item) => !itemIds.includes(item.itemId)),
+          };
+        }
+      });
+    },
+    onError: (err) => {
+      toast({
+        title: "Failed to delete items",
+        description: err.message,
+        variant: "destructive",
+      });
+    },
+    onSettled: () => {
+      void ctx.lists.getList.invalidate(listId);
+    },
   });
 
   const { mutate: moveItems } = api.items.moveItems.useMutation({
