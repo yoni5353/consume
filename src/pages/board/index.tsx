@@ -13,6 +13,7 @@ import { ItemCreationInput } from "~/components/itemCreationInput";
 import { CreateGoalDialog } from "~/components/createGoalDialog";
 import { NavBar } from "~/components/views/navbar";
 import { TopBar } from "~/components/views/topbar";
+import Head from "next/head";
 
 const DEFAULT_COLORS: [string, string] = ["#3b82f6", "#76b9ce"];
 
@@ -87,6 +88,11 @@ const BoardPage: NextPage = () => {
 
   return (
     <>
+      <Head>
+        <title>CONSUME</title>
+        <meta name="description" content="Consume Board" />
+        {/* <link rel="icon" href="/favicon.ico" /> */}
+      </Head>
       <main
         className="flex min-h-screen flex-row"
         style={{
