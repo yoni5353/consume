@@ -12,6 +12,7 @@ import Image from "next/image";
 import { useCallback, useState } from "react";
 import { PlusIcon } from "lucide-react";
 import { cn } from "~/utils/ui/cn";
+import { sortBy } from "lodash";
 
 export function StoryDialog({
   storyId,
@@ -33,6 +34,8 @@ export function StoryDialog({
     return null;
   }
 
+  const sortedSeries = sortBy(story.series, [(series) => (series.main ? 0 : 1)]);
+
   return (
     <Dialog {...dialogProps} onOpenChange={onOpenChange}>
       <DialogContent className="w-[1000px]">
@@ -40,7 +43,7 @@ export function StoryDialog({
           <DialogTitle className="text-2xl">{story.title}</DialogTitle>
           <DialogDescription>{story.description}</DialogDescription>
         </DialogHeader>
-        {story.series.map((series) => (
+        {sortedSeries.map((series) => (
           <SeriesDisplay key={series.id} series={series} onAddItem={onAddItem} />
         ))}
       </DialogContent>
@@ -81,10 +84,16 @@ function TemplateDisplay({
 
   return (
     <div
-      className="relative flex max-w-[125px] cursor-pointer flex-col items-center gap-1 rounded-md bg-secondary/80 text-center"
+      className="relative flex max-w-[125px] cursor-pointer select-all flex-col items-center gap-1 rounded-md bg-secondary/80 text-center"
+      tabIndex={0}
       onMouseEnter={() => setIsHovering(true)}
       onMouseLeave={() => setIsHovering(false)}
       onClick={() => onAddItem?.(template.id)}
+      onKeyDown={(e) => {
+        if (e.key === "Enter") {
+          onAddItem?.(template.id);
+        }
+      }}
     >
       <div className="relative flex cursor-pointer items-center justify-center overflow-hidden rounded-md">
         <Image
