@@ -3,7 +3,7 @@
 import * as React from "react";
 import { DialogProps } from "@radix-ui/react-dialog";
 import { Command as CommandPrimitive } from "cmdk";
-import { Search, XIcon } from "lucide-react";
+import { Search, X } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
@@ -54,10 +54,19 @@ const CommandInput = React.forwardRef<
       {...props}
     />
     {!!props.value && (
-      <XIcon
-        className="right-0 mr-2 h-4 w-4 shrink-0 cursor-pointer opacity-50"
+      <div
+        className="right-4 top-4 cursor-pointer rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
         onClick={onClear}
-      />
+        tabIndex={0}
+        onKeyDown={(e) => {
+          if (e.key === "Enter") {
+            onClear?.();
+          }
+        }}
+      >
+        <X className="h-4 w-4" />
+        <span className="sr-only">Close</span>
+      </div>
     )}
   </div>
 ));
