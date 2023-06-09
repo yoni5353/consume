@@ -16,9 +16,11 @@ import { useToast } from "./ui/use-toast";
 import { StoryDialog } from "./storyDialog";
 
 export function ItemCreationInput({ listId }: { listId: string }) {
-  const [term, setTerm] = useState<string>("");
+  const [untrimmedTerm, setTerm] = useState<string>("");
   const [dialogStoryId, setDialogStoryId] = useState<string>();
   const [open, setOpen] = useState(false);
+
+  const term = untrimmedTerm.trim();
 
   const { toast } = useToast();
 
@@ -91,7 +93,7 @@ export function ItemCreationInput({ listId }: { listId: string }) {
       <Command className="h-min w-full rounded-lg border shadow-md" shouldFilter={false}>
         <CommandInput
           placeholder="Enter item title or paste a link..."
-          value={term}
+          value={untrimmedTerm}
           onValueChange={setTerm}
           onFocus={() => setOpen(true)}
           onBlur={() => setOpen(false)}
