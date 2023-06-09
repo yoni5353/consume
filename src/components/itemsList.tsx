@@ -36,10 +36,10 @@ export function ItemsList({
 
   const ctx = api.useContext();
 
-  const { data: listWithItems, refetch } = api.lists.getWithItems.useQuery(listId, {
+  const { data: list, refetch } = api.lists.getList.useQuery(listId, {
     onSuccess: () => {
-      if (listWithItems?.items[0] && !lastSelectedItem) {
-        setLastSelectedItem(listWithItems.items[0].itemId);
+      if (list?.items[0] && !lastSelectedItem) {
+        setLastSelectedItem(list.items[0].itemId);
       }
     },
   });
@@ -54,12 +54,12 @@ export function ItemsList({
 
   const { mutate: moveItems } = api.items.moveItems.useMutation({
     onSuccess: (_, { targetListId }) => {
-      void ctx.lists.getWithItems.invalidate(listId);
-      void ctx.lists.getWithItems.invalidate(targetListId);
+      void ctx.lists.getList.invalidate(listId);
+      void ctx.lists.getList.invalidate(targetListId);
     },
   });
 
-  const items = listWithItems?.items;
+  const items = list?.items;
 
   const [date, setDate] = useState<DateRange>();
 
@@ -114,23 +114,20 @@ export function ItemsList({
       <ContextMenu>
         <ContextMenuTrigger asChild>
           <div className="space-y-1 pb-3">
-            <h2 className="font-bold uppercase">{listWithItems.title}</h2>
+            <h2 className="font-bold uppercase">{list.title}</h2>
             <div className="flex flex-row text-gray-500">
               {isSprint && (
                 <Popover>
                   <PopoverTrigger className="flex flex-row text-xs hover:cursor-pointer hover:underline">
                     <CalendarIcon className="mr-1 h-4 w-4" />
-                    {listWithItems.dueDate ? (
+                    {list.dueDate ? (
                       <div>
-                        {format(listWithItems.startDate, "LLL dd, y")} -{" "}
-                        {format(listWithItems.dueDate, "LLL dd, y")}
-                        {listWithItems.dueDate > new Date() ? (
-                          <> ({formatDistance(listWithItems.dueDate, new Date())} left)</>
+                        {format(list.startDate, "LLL dd, y")} -{" "}
+                        {format(list.dueDate, "LLL dd, y")}
+                        {list.dueDate > new Date() ? (
+                          <> ({formatDistance(list.dueDate, new Date())} left)</>
                         ) : (
-                          <>
-                            {" "}
-                            ({formatDistance(listWithItems.dueDate, new Date())} overdue)
-                          </>
+                          <> ({formatDistance(list.dueDate, new Date())} overdue)</>
                         )}
                       </div>
                     ) : (

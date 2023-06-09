@@ -35,7 +35,7 @@ export function ItemCreationInput({ listId }: { listId: string }) {
   const { mutate: createItem } = api.items.createItem.useMutation({
     onSuccess: () => {
       setTerm("");
-      void ctx.lists.getWithItems.invalidate(listId);
+      void ctx.lists.getList.invalidate(listId);
     },
   });
 
@@ -43,7 +43,7 @@ export function ItemCreationInput({ listId }: { listId: string }) {
     {
       onSuccess: () => {
         setTerm("");
-        void ctx.lists.getWithItems.invalidate(listId);
+        void ctx.lists.getList.invalidate(listId);
       },
       onError: () => {
         toast({
@@ -58,7 +58,7 @@ export function ItemCreationInput({ listId }: { listId: string }) {
   const { mutate: createItemFromLink } = api.items.createItemFromLink.useMutation({
     onSuccess: () => {
       setTerm("");
-      void ctx.lists.getWithItems.invalidate(listId);
+      void ctx.lists.getList.invalidate(listId);
     },
   });
 

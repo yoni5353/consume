@@ -12,10 +12,10 @@ export const listsRouter = createTRPCRouter({
     });
   }),
 
-  getWithItems: protectedProcedure.input(z.string()).query(({ ctx, input }) => {
+  getList: protectedProcedure.input(z.string()).query(({ ctx, input }) => {
     return ctx.prisma.list.findFirst({
       where: { id: input },
-      include: { items: { include: { item: true } } },
+      include: { items: true },
     });
   }),
 
