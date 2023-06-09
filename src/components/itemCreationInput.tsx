@@ -95,9 +95,14 @@ export function ItemCreationInput({ listId }: { listId: string }) {
           placeholder="Enter item title or paste a link..."
           value={untrimmedTerm}
           onValueChange={setTerm}
-          onFocus={() => setOpen(true)}
-          onBlur={() => setOpen(false)}
           onClear={() => setTerm("")}
+          onFocus={() => setOpen(true)}
+          onBlur={(e) => {
+            // If not caused by mouse click
+            if (e.relatedTarget) {
+              setOpen(false);
+            }
+          }}
         />
         {!!term && open && (
           <CommandList>
@@ -138,7 +143,10 @@ export function ItemCreationInput({ listId }: { listId: string }) {
                     return (
                       <CommandItem
                         key={story.id}
-                        onSelect={() => setDialogStoryId(story.id)}
+                        onSelect={() => {
+                          setDialogStoryId(story.id);
+                          setTerm("");
+                        }}
                       >
                         <LayoutTemplateIcon className="mr-2 h-4 w-4" />
                         {story.title}
