@@ -25,7 +25,9 @@ export function ItemCard({
 }) {
   const [showDialog, setShowDialog] = useState(false);
 
-  const { data: item } = api.items.getItem.useQuery(itemId);
+  const { data: item } = api.items.getItem.useQuery(itemId, {
+    refetchOnWindowFocus: false,
+  });
 
   if (!item) return null;
 

@@ -45,6 +45,7 @@ export function ItemsList({
         setLastSelectedItem(list.items[0].itemId);
       }
     },
+    refetchOnWindowFocus: false,
   });
 
   const { mutate: editList } = api.lists.editList.useMutation({
