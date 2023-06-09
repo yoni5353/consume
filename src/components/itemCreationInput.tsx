@@ -18,6 +18,7 @@ import { StoryDialog } from "./storyDialog";
 export function ItemCreationInput({ listId }: { listId: string }) {
   const [term, setTerm] = useState<string>("");
   const [dialogStoryId, setDialogStoryId] = useState<string>();
+  const [open, setOpen] = useState(false);
 
   const { toast } = useToast();
 
@@ -92,8 +93,10 @@ export function ItemCreationInput({ listId }: { listId: string }) {
           placeholder="Enter item title or paste a link..."
           value={term}
           onValueChange={setTerm}
+          onFocus={() => setOpen(true)}
+          onBlur={() => setOpen(false)}
         />
-        {!!term && (
+        {!!term && open && (
           <CommandList>
             <CommandGroup className={cn(!!term && !!templates?.length ? "pb-0" : "")}>
               {matchingScraperLists.map((scraper) => (
