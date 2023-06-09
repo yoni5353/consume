@@ -40,14 +40,25 @@ export function StoryDialog({
 
   return (
     <Dialog {...dialogProps} onOpenChange={onOpenChange}>
-      <DialogContent style={{ maxWidth: "1000px" }}>
+      <DialogContent className="overflow-hidden" style={{ maxWidth: "1000px" }}>
         <DialogHeader>
           <DialogTitle className="text-2xl">{story.title}</DialogTitle>
-          <DialogDescription>{story.description}</DialogDescription>
         </DialogHeader>
-        {sortedSeries.map((series) => (
-          <SeriesDisplay key={series.id} series={series} onAddItem={onAddItem} />
-        ))}
+        <div className="reverse flex h-full w-full flex-row-reverse gap-6 overflow-hidden">
+          {!!story.description && (
+            <div className="h-min w-[25%] rounded-lg bg-secondary p-2">
+              <div className="text-xl font-semibold">About</div>
+              <DialogDescription className="text-xs">
+                {story.description}
+              </DialogDescription>
+            </div>
+          )}
+          <div className="flex w-full flex-col gap-2 overflow-hidden">
+            {sortedSeries.map((series) => (
+              <SeriesDisplay key={series.id} series={series} onAddItem={onAddItem} />
+            ))}
+          </div>
+        </div>
       </DialogContent>
     </Dialog>
   );
@@ -67,7 +78,7 @@ function SeriesDisplay({
       <div className="text-md font-semibold leading-none">{series.title}</div>
       <div className="text-sm text-muted-foreground">{series.description}</div>
       <ScrollArea type="auto">
-        <div className="flex flex-row gap-4 pb-3">
+        <div className="flex flex-row gap-4 p-1 pb-3">
           {series.templates.map((template) => (
             <TemplateDisplay
               key={template.id}
