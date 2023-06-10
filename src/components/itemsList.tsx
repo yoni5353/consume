@@ -3,7 +3,6 @@ import { api } from "~/utils/api";
 import { ItemCard } from "./itemCard";
 import { useCallback, useState } from "react";
 import { ContextMenu, ContextMenuTrigger } from "~/components/ui/context-menu";
-import { ItemContextMenu } from "./itemContextMenu";
 import { useAutoAnimate } from "@formkit/auto-animate/react";
 import { cn } from "~/utils/ui/cn";
 import { Calendar } from "./ui/calendar";
@@ -18,11 +17,15 @@ export function ItemsList({
   listId,
   onItemSelected,
   onMoveItemsToNewList,
+  onCardClick,
+  selectedItems,
   layout,
   isSprint,
 }: {
   listId: string;
   onItemSelected: (itemId: string) => void;
+  onCardClick: (e: React.MouseEvent, itemId: string, auxClick: boolean) => void;
+  selectedItems: string[];
   onMoveItemsToNewList?: (
     originListId: string,
     itemIds: string[],
@@ -31,8 +34,6 @@ export function ItemsList({
   layout: "list" | "grid";
   isSprint?: boolean;
 }) {
-  const [selectedItems, setSelectedItems] = useState<string[]>([]);
-  const [lastSelectedItem, setLastSelectedItem] = useState<string>();
   const [listRef] = useAutoAnimate<HTMLDivElement>();
 
   const ctx = api.useContext();
@@ -40,11 +41,6 @@ export function ItemsList({
   const { toast } = useToast();
 
   const { data: list, refetch } = api.lists.getList.useQuery(listId, {
-    onSuccess: () => {
-      if (list?.items[0] && !lastSelectedItem) {
-        setLastSelectedItem(list.items[0].itemId);
-      }
-    },
     refetchOnWindowFocus: false,
   });
 
@@ -97,42 +93,6 @@ export function ItemsList({
 
   if (!items) return null;
 
-  const onCardClick = (e: React.MouseEvent, itemId: string, auxClick = false) => {
-    onItemSelected(itemId);
-
-    // Selection logic
-    const newSelectedItem = itemId;
-    if (e.ctrlKey) {
-      setSelectedItems((prev) => {
-        if (prev.includes(itemId)) {
-          return prev.filter((id) => id !== itemId);
-        } else {
-          return [...prev, itemId];
-        }
-      });
-    } else if (e.shiftKey) {
-      if (lastSelectedItem) {
-        const index = items.findIndex((item) => item.itemId === itemId);
-        const firstIndex = items.findIndex((item) => item.itemId === lastSelectedItem);
-        if (~index && ~firstIndex) {
-          const start = Math.min(index, firstIndex);
-          const end = Math.max(index, firstIndex);
-          const newSelectedItems = items.slice(start, end + 1).map((item) => item.itemId);
-          setSelectedItems((prev) => {
-            return [...new Set([...prev, ...newSelectedItems])];
-          });
-        }
-      }
-    } else {
-      if (!(auxClick && selectedItems.includes(itemId))) {
-        setSelectedItems([itemId]);
-      }
-    }
-    if (!e.shiftKey) {
-      setLastSelectedItem(newSelectedItem);
-    }
-  };
-
   return (
     <div className="items-list flex flex-col">
       <ContextMenu>
@@ -174,45 +134,24 @@ export function ItemsList({
         </ContextMenuTrigger>
         <ListContextMenu selectedListId={listId} isSprint={isSprint} />
       </ContextMenu>
-      <ContextMenu modal={false}>
-        <ContextMenuTrigger>
-          <div
-            className={cn(
-              "items flex flex-col gap-2",
-              layout === "grid" && "grid grid-cols-3 gap-5 xl:grid-cols-6"
-            )}
-            ref={listRef}
-          >
-            {items?.map((item) => (
-              <ItemCard
-                key={item.itemId}
-                itemId={item.itemId}
-                layout={layout === "grid" ? "card" : "inline"}
-                selected={selectedItems.includes(item.itemId)}
-                onClick={(e) => onCardClick(e, item.itemId)}
-                onAuxClick={(e) => onCardClick(e, item.itemId, true)}
-              />
-            ))}
-          </div>
-        </ContextMenuTrigger>
-        <ItemContextMenu
-          listId={listId}
-          itemsAmount={selectedItems.length}
-          onDelete={() => {
-            deleteItems(selectedItems);
-          }}
-          onMoveItems={(targetListId) => {
-            moveItems({ itemIds: selectedItems, targetListId });
-          }}
-          onMoveItemsToNewList={(originListId, isSprint) =>
-            onMoveItemsToNewList?.(
-              originListId,
-              selectedItems.map((itemId) => itemId),
-              isSprint
-            )
-          }
-        />
-      </ContextMenu>
+      <div
+        className={cn(
+          "items flex flex-col gap-2",
+          layout === "grid" && "grid grid-cols-3 gap-5 xl:grid-cols-6"
+        )}
+        ref={listRef}
+      >
+        {items?.map((item) => (
+          <ItemCard
+            key={item.itemId}
+            itemId={item.itemId}
+            layout={layout === "grid" ? "card" : "inline"}
+            selected={selectedItems.includes(item.itemId)}
+            onClick={(e) => onCardClick(e, item.itemId, false)}
+            onAuxClick={(e) => onCardClick(e, item.itemId, true)}
+          />
+        ))}
+      </div>
     </div>
   );
 }

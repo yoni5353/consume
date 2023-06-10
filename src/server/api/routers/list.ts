@@ -78,6 +78,7 @@ export const listsRouter = createTRPCRouter({
         createdById: ctx.session.user.id,
         isSprint: true,
       },
+      include: { items: true },
     });
   }),
 });
