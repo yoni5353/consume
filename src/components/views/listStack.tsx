@@ -3,7 +3,7 @@ import { PlusCircleIcon } from "lucide-react";
 import { Button } from "../ui/button";
 import { ItemsList } from "../itemsList";
 import { api } from "~/utils/api";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { ContextMenu, ContextMenuTrigger } from "../ui/context-menu";
 import { ItemContextMenu } from "../itemContextMenu";
 import { useToast } from "../ui/use-toast";
@@ -68,11 +68,43 @@ export function ListStack({
   });
 
   const { mutate: moveItems } = api.items.moveItems.useMutation({
-    onSuccess: (_, { targetListId }) => {
-      // void ctx.lists.getList.invalidate(listId);
-      // void ctx.lists.getList.invalidate(targetListId);
+    onMutate: () => {
+      const originListId = items.find((item) => item.itemId === selectedItems[0])?.listId;
+      return { originListId };
+    },
+    onSuccess: (_, { targetListId }, context) => {
+      void ctx.lists.getList.invalidate(context?.originListId);
+      void ctx.lists.getList.invalidate(targetListId);
     },
   });
+
+  const onMoveItems = useCallback(
+    (targetListId: string) => {
+      const originListsIds = [
+        ...new Set(
+          items
+            .filter((item) => selectedItems.includes(item.itemId))
+            .map((item) => item.listId)
+        ),
+      ];
+
+      if (originListsIds.length > 1) {
+        // TODO
+        toast({
+          title: "Not implemented",
+          description: "Cannot move items from different lists",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      moveItems({
+        targetListId,
+        itemIds: selectedItems,
+      });
+    },
+    [items, moveItems, selectedItems, toast]
+  );
 
   if (!lastSelectedItem && items[0]) {
     setLastSelectedItem(items[0].itemId);
@@ -140,10 +172,13 @@ export function ListStack({
         onDelete={() => {
           deleteItems(selectedItems);
         }}
-        onMoveItems={(targetListId) => {
-          // moveItems({ itemIds: selectedItems, targetListId });
-        }}
+        onMoveItems={onMoveItems}
         onMoveItemsToNewList={(originListId, isSprint) => {
+          toast({
+            title: "Not implemented",
+            description: "Turning this off as originListId needs to change",
+            variant: "destructive",
+          });
           // return onMoveItemsToNewList?.(
           //   originListId,
           //   selectedItems.map((itemId) => itemId),
