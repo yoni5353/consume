@@ -4,6 +4,7 @@ import { getMalItem } from "./mal";
 import { getNetflixItem } from "./netflix";
 import { getSteamItem } from "./steam";
 import { getShoryStoryProject } from "./shortstoryproject";
+import { getAudibleItem } from "./audible";
 
 export type PartialItem = {
   title: string;
@@ -56,5 +57,10 @@ export const scrapers: {
     name: "פרויקט הסיפור הקצר",
     regex: /shortstoryproject\.com\/he\/stories\//,
     func: getShoryStoryProject,
+  },
+  {
+    name: "Audible",
+    regex: /audible\.com\/pd\//,
+    func: getAudibleItem,
   },
 ];
