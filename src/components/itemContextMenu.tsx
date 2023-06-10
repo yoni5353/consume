@@ -19,13 +19,13 @@ import { api } from "~/utils/api";
 
 export function ItemContextMenu({
   itemsAmount,
-  listId,
+  singleListId,
   onDelete,
   onMoveItems,
   onMoveItemsToNewList,
 }: {
   itemsAmount: number;
-  listId: string;
+  singleListId?: string;
   onDelete: () => void;
   onMoveItems: (targetListId: string) => void;
   onMoveItemsToNewList: (originListId: string, isSprint: boolean) => void;
@@ -34,11 +34,11 @@ export function ItemContextMenu({
 
   const lists = api.lists.getBacklog
     .useQuery()
-    .data?.filter((list) => list.id !== listId);
+    .data?.filter((list) => list.id !== singleListId);
 
   const sprints = api.lists.getSprints
     .useQuery()
-    .data?.filter((list) => list.id !== listId);
+    .data?.filter((list) => list.id !== singleListId);
 
   return (
     <ContextMenuContent>
@@ -47,7 +47,7 @@ export function ItemContextMenu({
           {singleItem ? "Move to Sprint" : `Move ${itemsAmount} Items`}
         </ContextMenuSubTrigger>
         <ContextMenuSubContent className="w-36">
-          <ContextMenuItem onClick={() => onMoveItemsToNewList(listId, true)}>
+          <ContextMenuItem onClick={() => onMoveItemsToNewList(singleListId ?? "", true)}>
             <PlusCircle className="mr-2 h-4 w-4" />
             New Sprint
           </ContextMenuItem>
@@ -67,7 +67,9 @@ export function ItemContextMenu({
       <ContextMenuSub>
         <ContextMenuSubTrigger>Move to Backlog</ContextMenuSubTrigger>
         <ContextMenuSubContent className="w-36">
-          <ContextMenuItem onClick={() => onMoveItemsToNewList(listId, false)}>
+          <ContextMenuItem
+            onClick={() => onMoveItemsToNewList(singleListId ?? "", false)}
+          >
             <PlusCircle className="mr-2 h-4 w-4" />
             New list
           </ContextMenuItem>

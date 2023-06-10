@@ -78,16 +78,16 @@ export function ListStack({
     },
   });
 
+  const originListsIds = [
+    ...new Set(
+      items
+        .filter((item) => selectedItems.includes(item.itemId))
+        .map((item) => item.listId)
+    ),
+  ];
+
   const onMoveItems = useCallback(
     (targetListId: string) => {
-      const originListsIds = [
-        ...new Set(
-          items
-            .filter((item) => selectedItems.includes(item.itemId))
-            .map((item) => item.listId)
-        ),
-      ];
-
       if (originListsIds.length > 1) {
         // TODO
         toast({
@@ -103,7 +103,7 @@ export function ListStack({
         itemIds: selectedItems,
       });
     },
-    [items, moveItems, selectedItems, toast]
+    [moveItems, originListsIds.length, selectedItems, toast]
   );
 
   if (!lastSelectedItem && items[0]) {
@@ -166,7 +166,7 @@ export function ListStack({
         </div>
       </ContextMenuTrigger>
       <ItemContextMenu
-        listId={""}
+        singleListId={originListsIds.length === 1 ? originListsIds[0] : undefined}
         // listId={listId}
         itemsAmount={selectedItems.length}
         onDelete={() => {
