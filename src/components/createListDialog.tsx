@@ -13,6 +13,7 @@ import { Label } from "./ui/label";
 import { Input } from "./ui/input";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { CreateListSchema, type CreateListSechemaType } from "~/utils/apischemas";
+import { format } from "date-fns";
 
 export function CreateListDialog({
   onCreateList,
@@ -64,6 +65,7 @@ export function CreateListDialog({
             <Input
               type="text"
               id="listName"
+              placeholder={format(new Date(), "MMMM yyyy")}
               {...register("listTitle", { required: true, maxLength: 256 })}
             />
           </div>
