@@ -6,6 +6,7 @@ import { api } from "~/utils/api";
 import { useState } from "react";
 import { ContextMenu, ContextMenuTrigger } from "../ui/context-menu";
 import { ItemContextMenu } from "../itemContextMenu";
+import { useToast } from "../ui/use-toast";
 
 export function ListStack({
   layout,
@@ -18,7 +19,42 @@ export function ListStack({
   const [lastSelectedItem, setLastSelectedItem] = useState<string>();
   const [sprintsViewRef] = useAutoAnimate<HTMLDivElement>();
 
+  const ctx = api.useContext();
+
+  const { toast } = useToast();
+
   const { data: sprints } = api.lists.getSprints.useQuery();
+
+  const { mutate: deleteItems } = api.items.deleteItems.useMutation({
+    async onMutate(itemIds) {
+      // await ctx.lists.getList.cancel(listId);
+      // ctx.lists.getList.setData(listId, (prevList) => {
+      //   if (prevList) {
+      //     return {
+      //       ...prevList,
+      //       items: prevList.items.filter((item) => !itemIds.includes(item.itemId)),
+      //     };
+      //   }
+      // });
+    },
+    onError: (err) => {
+      toast({
+        title: "Failed to delete items",
+        description: err.message,
+        variant: "destructive",
+      });
+    },
+    onSettled: () => {
+      // void ctx.lists.getList.invalidate(listId);
+    },
+  });
+
+  const { mutate: moveItems } = api.items.moveItems.useMutation({
+    onSuccess: (_, { targetListId }) => {
+      // void ctx.lists.getList.invalidate(listId);
+      // void ctx.lists.getList.invalidate(targetListId);
+    },
+  });
 
   if (!sprints) return null;
 
@@ -74,13 +110,6 @@ export function ListStack({
               listId={sprint.id}
               isSprint={true}
               selectedItems={selectedItems}
-              onMoveItemsToNewList={(originListId, itemIds, isSprint) => {
-                // openListCreation({
-                //   originListId,
-                //   initialItemsIds: itemIds,
-                //   isSprint,
-                // });
-              }}
               onCardClick={onCardClick}
             />
           ))}

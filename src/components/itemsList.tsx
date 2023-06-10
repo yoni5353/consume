@@ -11,11 +11,9 @@ import { type DateRange } from "react-day-picker";
 import { format, formatDistance } from "date-fns";
 import { CalendarIcon } from "lucide-react";
 import { ListContextMenu } from "./listContextMenu";
-import { useToast } from "./ui/use-toast";
 
 export function ItemsList({
   listId,
-  onMoveItemsToNewList,
   onCardClick,
   selectedItems,
   layout,
@@ -24,19 +22,10 @@ export function ItemsList({
   listId: string;
   onCardClick: (e: React.MouseEvent, itemId: string) => void;
   selectedItems: string[];
-  onMoveItemsToNewList?: (
-    originListId: string,
-    itemIds: string[],
-    isSprint: boolean
-  ) => void;
   layout: "list" | "grid";
   isSprint?: boolean;
 }) {
   const [listRef] = useAutoAnimate<HTMLDivElement>();
-
-  const ctx = api.useContext();
-
-  const { toast } = useToast();
 
   const { data: list, refetch } = api.lists.getList.useQuery(listId, {
     refetchOnWindowFocus: false,
@@ -44,37 +33,6 @@ export function ItemsList({
 
   const { mutate: editList } = api.lists.editList.useMutation({
     onSuccess: () => refetch(),
-  });
-
-  const { mutate: deleteItems } = api.items.deleteItems.useMutation({
-    async onMutate(itemIds) {
-      await ctx.lists.getList.cancel(listId);
-      ctx.lists.getList.setData(listId, (prevList) => {
-        if (prevList) {
-          return {
-            ...prevList,
-            items: prevList.items.filter((item) => !itemIds.includes(item.itemId)),
-          };
-        }
-      });
-    },
-    onError: (err) => {
-      toast({
-        title: "Failed to delete items",
-        description: err.message,
-        variant: "destructive",
-      });
-    },
-    onSettled: () => {
-      void ctx.lists.getList.invalidate(listId);
-    },
-  });
-
-  const { mutate: moveItems } = api.items.moveItems.useMutation({
-    onSuccess: (_, { targetListId }) => {
-      void ctx.lists.getList.invalidate(listId);
-      void ctx.lists.getList.invalidate(targetListId);
-    },
   });
 
   const items = list?.items;
