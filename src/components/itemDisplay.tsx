@@ -12,15 +12,12 @@ import { ProgressType } from "~/utils/progress";
 import { Input } from "./ui/input";
 import { MediaTypeIcon } from "./resources/mediaTypeIcon";
 import dayjs from "dayjs";
-import relativeTime from "dayjs/plugin/relativeTime";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { Badge } from "./ui/badge";
 import { Button } from "./ui/button";
 import { ShieldIcon } from "lucide-react";
 import { useToast } from "./ui/use-toast";
-
-dayjs.extend(relativeTime);
 
 export function ItemDisplay({ itemId }: { itemId: string }) {
   const [sliderValue, setSliderValue] = useState<number>();

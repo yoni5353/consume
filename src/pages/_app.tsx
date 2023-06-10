@@ -7,6 +7,10 @@ import "~/styles/globals.css";
 import { ThemeProvider } from "next-themes";
 import { useEffect } from "react";
 import { Toaster } from "~/components/ui/toaster";
+import dayjs from "dayjs";
+import relativeTime from "dayjs/plugin/relativeTime";
+
+dayjs.extend(relativeTime);
 
 const MyApp: AppType<{ session: Session | null }> = ({
   Component,

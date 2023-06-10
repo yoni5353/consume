@@ -326,4 +326,19 @@ export const itemsRouter = createTRPCRouter({
         },
       });
     }),
+
+  getRecentItems: protectedProcedure.query(async ({ ctx }) => {
+    return ctx.prisma.item.findMany({
+      where: {
+        createdBy: { id: ctx.session.user.id },
+      },
+      orderBy: { createdAt: "desc" },
+      take: 10,
+      include: {
+        progress: true,
+        mediaType: true,
+        tags: true,
+      },
+    });
+  }),
 });

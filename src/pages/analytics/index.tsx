@@ -32,7 +32,7 @@ const AnalyticsPage: NextPage = () => {
             {/* NAVBAR */}
             <div></div>
 
-            {/* <RecentItems /> */}
+            <RecentItems />
           </div>
         </div>
       </main>
