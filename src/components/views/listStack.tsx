@@ -25,17 +25,32 @@ export function ListStack({
 
   const { data: sprints } = api.lists.getSprints.useQuery();
 
+  const items = sprints?.flatMap((sprint) => sprint.items) ?? [];
+
   const { mutate: deleteItems } = api.items.deleteItems.useMutation({
     async onMutate(itemIds) {
-      // await ctx.lists.getList.cancel(listId);
-      // ctx.lists.getList.setData(listId, (prevList) => {
-      //   if (prevList) {
-      //     return {
-      //       ...prevList,
-      //       items: prevList.items.filter((item) => !itemIds.includes(item.itemId)),
-      //     };
-      //   }
-      // });
+      const relatedLists = [
+        ...new Set<string>(
+          itemIds.flatMap((itemId) => {
+            return items.find((item) => item.itemId === itemId)?.listId ?? [];
+          })
+        ),
+      ];
+
+      await Promise.all(relatedLists.map((listId) => ctx.lists.getList.cancel(listId)));
+
+      relatedLists.forEach((listId) => {
+        ctx.lists.getList.setData(listId, (prevList) => {
+          if (prevList) {
+            return {
+              ...prevList,
+              items: prevList.items.filter((item) => !itemIds.includes(item.itemId)),
+            };
+          }
+        });
+      });
+
+      return { relatedLists };
     },
     onError: (err) => {
       toast({
@@ -44,8 +59,11 @@ export function ListStack({
         variant: "destructive",
       });
     },
-    onSettled: () => {
-      // void ctx.lists.getList.invalidate(listId);
+    onSettled: async (_, __, ___, context) => {
+      const affectedLists = context?.relatedLists ?? [];
+      await Promise.all(
+        affectedLists.map((listId) => ctx.lists.getList.invalidate(listId))
+      );
     },
   });
 
@@ -55,10 +73,6 @@ export function ListStack({
       // void ctx.lists.getList.invalidate(targetListId);
     },
   });
-
-  if (!sprints) return null;
-
-  const items = sprints.flatMap((sprint) => sprint.items);
 
   if (!lastSelectedItem && items[0]) {
     setLastSelectedItem(items[0].itemId);
@@ -124,7 +138,7 @@ export function ListStack({
         // listId={listId}
         itemsAmount={selectedItems.length}
         onDelete={() => {
-          // deleteItems(selectedItems);
+          deleteItems(selectedItems);
         }}
         onMoveItems={(targetListId) => {
           // moveItems({ itemIds: selectedItems, targetListId });
