@@ -15,7 +15,6 @@ import { useToast } from "./ui/use-toast";
 
 export function ItemsList({
   listId,
-  onItemSelected,
   onMoveItemsToNewList,
   onCardClick,
   selectedItems,
@@ -23,8 +22,7 @@ export function ItemsList({
   isSprint,
 }: {
   listId: string;
-  onItemSelected: (itemId: string) => void;
-  onCardClick: (e: React.MouseEvent, itemId: string, auxClick: boolean) => void;
+  onCardClick: (e: React.MouseEvent, itemId: string) => void;
   selectedItems: string[];
   onMoveItemsToNewList?: (
     originListId: string,
@@ -147,8 +145,8 @@ export function ItemsList({
             itemId={item.itemId}
             layout={layout === "grid" ? "card" : "inline"}
             selected={selectedItems.includes(item.itemId)}
-            onClick={(e) => onCardClick(e, item.itemId, false)}
-            onAuxClick={(e) => onCardClick(e, item.itemId, true)}
+            onClick={(e) => onCardClick(e, item.itemId)}
+            onAuxClick={(e) => onCardClick(e, item.itemId)}
           />
         ))}
       </div>

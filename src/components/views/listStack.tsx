@@ -23,14 +23,14 @@ export function ListStack({
   if (!sprints) return null;
 
   const items = sprints.flatMap((sprint) => sprint.items);
+
   if (!lastSelectedItem && items[0]) {
     setLastSelectedItem(items[0].itemId);
   }
 
-  const onCardClick = (e: React.MouseEvent, itemId: string, auxClick = false) => {
-    // onItemSelected(itemId);
+  const onCardClick = (e: React.MouseEvent, itemId: string) => {
+    const auxClick = e.button === 1 || e.button === 2;
 
-    // Selection logic
     const newSelectedItem = itemId;
     if (e.ctrlKey) {
       setSelectedItems((prev) => {
@@ -74,9 +74,6 @@ export function ListStack({
               listId={sprint.id}
               isSprint={true}
               selectedItems={selectedItems}
-              onItemSelected={(id) => {
-                /*setSelectedItemId(id)*/
-              }}
               onMoveItemsToNewList={(originListId, itemIds, isSprint) => {
                 // openListCreation({
                 //   originListId,
