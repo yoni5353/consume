@@ -35,14 +35,11 @@ export function ItemCard({
   const content =
     layout === "inline" ? (
       <div className="flex w-full flex-row justify-between px-2">
-        <div className="flex items-center space-x-2">
+        <div className="flex items-center space-x-2 overflow-hidden">
           <MediaTypeIcon mediaType={item.mediaType ?? undefined} />
-          {/* {item.image ? (
-            <Image src={item.image} alt="Item image" width={20} height={30} />
-          ) : (
-            <div className="w-[20px]" />
-          )} */}
-          <div className="truncate font-medium">{item.title}</div>
+          <div className="truncate text-ellipsis font-medium" title={item.title}>
+            {item.title}
+          </div>
           <div className="space-x-2">
             {item.tags.map((tag) => (
               <Badge key={tag.name} className="px-[5px] py-0">
@@ -98,7 +95,7 @@ export function ItemCard({
     );
 
   return (
-    <div className="flex flex-col gap-5">
+    <div className="flex flex-col gap-5 overflow-hidden">
       <Button
         onClick={onClick}
         onAuxClick={onAuxClick}

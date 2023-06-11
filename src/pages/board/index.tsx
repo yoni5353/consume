@@ -78,7 +78,7 @@ const BoardPage: NextPage = () => {
             gradientColorsState={[gradientColors, setGradientColors]}
           />
 
-          <div className="main-grid grid h-full w-full grid-cols-5 px-5 xl:grid-cols-6">
+          <div className="main-grid grid h-full w-full grid-cols-8 px-5 xl:grid-cols-6">
             {/* NAVBAR */}
             <div className="flex flex-col justify-center">
               <div className="flex flex-row items-center">
@@ -90,7 +90,7 @@ const BoardPage: NextPage = () => {
             </div>
 
             {/* THE LIST */}
-            <div className="col-span-3 overflow-hidden xl:col-span-4">
+            <div className="col-span-6 overflow-hidden xl:col-span-4">
               <div className="lists items-top container grid h-full w-full grid-cols-1 justify-center overflow-auto p-4">
                 <div className="relative flex h-full w-full flex-col space-y-5 overflow-y-auto overflow-x-hidden px-10 pt-2">
                   {/* CREATION COMMAND */}
