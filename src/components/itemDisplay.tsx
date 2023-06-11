@@ -12,12 +12,13 @@ import { ProgressType } from "~/utils/progress";
 import { Input } from "./ui/input";
 import { MediaTypeIcon } from "./resources/mediaTypeIcon";
 import dayjs from "dayjs";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { useForm } from "react-hook-form";
 import { Badge } from "./ui/badge";
 import { Button } from "./ui/button";
 import { ShieldIcon } from "lucide-react";
 import { useToast } from "./ui/use-toast";
+import { throttle } from "lodash";
 
 export function ItemDisplay({ itemId }: { itemId: string }) {
   const [sliderValue, setSliderValue] = useState<number>();
@@ -38,18 +39,26 @@ export function ItemDisplay({ itemId }: { itemId: string }) {
   const { toast } = useToast();
 
   const { mutate: editItem } = api.items.editItem.useMutation({
-    async onMutate({ mediaTypeId }) {
+    async onMutate({ mediaTypeId, title, description, link, image }) {
       await ctx.items.getItem.cancel(itemId);
       ctx.items.getItem.setData(itemId, (prevItem) => {
         if (prevItem) {
+          const newItem = {
+            ...prevItem,
+            ...(title && { title }),
+            ...(description && { description }),
+            ...(link && { link }),
+            ...(image && { image }),
+          };
+
           const newMediaType = mediaTypes?.find((mt) => mt.id === mediaTypeId);
 
           if (!mediaTypeId || !newMediaType) {
-            return { ...prevItem, mediaTypeId: null, mediaType: null };
+            return { ...newItem, mediaTypeId: null, mediaType: null };
           }
 
           return {
-            ...prevItem,
+            ...newItem,
             mediaTypeId,
             mediaType: { ...prevItem.mediaType, ...newMediaType },
           };
@@ -78,6 +87,18 @@ export function ItemDisplay({ itemId }: { itemId: string }) {
     },
   });
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const onDescriptionCommit = useCallback(
+    throttle(
+      (description: string) => {
+        editItem({ itemId, description });
+      },
+      500,
+      { leading: false, trailing: true }
+    ),
+    [editItem, itemId]
+  );
+
   if (!item) return null;
 
   return (
@@ -90,7 +111,17 @@ export function ItemDisplay({ itemId }: { itemId: string }) {
           {item.link}
         </a>
       )}
-      {item.description && <p>{item.description}</p>}
+
+      {/* DESCRIPTION */}
+      <Input
+        type="text"
+        id="description"
+        className="font-light tracking-wide"
+        defaultValue={item.description}
+        onChange={(e) => onDescriptionCommit(e.target.value)}
+      />
+
+      {/* MEDIA TYPE */}
       <div className="mx-5 flex flex-row items-center space-x-10">
         <Label className="items-center text-right uppercase">Media Type</Label>
         <Select
@@ -129,6 +160,8 @@ export function ItemDisplay({ itemId }: { itemId: string }) {
           </SelectContent>
         </Select>
       </div>
+
+      {/* PROGRESS */}
       <div className="mx-5 flex flex-row items-center space-x-10">
         <Label htmlFor="progressType" className="items-center text-right uppercase">
           Progress Type
@@ -150,8 +183,6 @@ export function ItemDisplay({ itemId }: { itemId: string }) {
           </SelectContent>
         </Select>
       </div>
-
-      <TagSelection itemId={item.id} />
 
       <div className="flex flex-col items-center">
         {item.progress.type === ProgressType.SLIDER && (
@@ -176,6 +207,10 @@ export function ItemDisplay({ itemId }: { itemId: string }) {
           </div>
         )}
       </div>
+
+      {/* TAGS */}
+      <TagSelection itemId={item.id} />
+
       <p className="text-slate-500">Created {dayjs(item.createdAt).fromNow()}</p>
       <Button
         onClick={() =>

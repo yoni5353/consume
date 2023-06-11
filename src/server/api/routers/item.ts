@@ -215,6 +215,8 @@ export const itemsRouter = createTRPCRouter({
         description: z.optional(z.string()),
         mediaTypeId: z.optional(z.number().nullable()),
         tags: z.optional(z.array(z.string())),
+        link: z.optional(z.string()),
+        image: z.optional(z.string()),
       })
     )
     .mutation(async ({ ctx, input }) => {
@@ -241,6 +243,8 @@ export const itemsRouter = createTRPCRouter({
         data: {
           title: input.title || undefined,
           description: input.description || undefined,
+          link: input.link || undefined,
+          image: input.image || undefined,
           mediaType: mediaTypeConnection,
           tags: {
             disconnect: removedTags?.map((tag) => ({ name: tag })),
