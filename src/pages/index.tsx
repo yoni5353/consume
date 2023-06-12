@@ -2,9 +2,10 @@ import { type NextPage } from "next";
 import Head from "next/head";
 import Link from "next/link";
 import { signIn, signOut, useSession } from "next-auth/react";
-import { Button } from "~/components/ui/button";
+import { buttonVariants } from "~/components/ui/button";
 import { ArrowBigRight } from "lucide-react";
 import { Consume } from "~/components/ui/con-sume";
+import { cn } from "~/utils/ui/cn";
 
 const DEFAULT_COLORS: [string, string] = ["#3b82f6", "#76b9ce"];
 const gradientColors = DEFAULT_COLORS;
@@ -36,23 +37,24 @@ const Home: NextPage = () => {
             </div>
 
             {/* RIGHT */}
-            <Link href="/board">
-              <Button
-                className="flex h-72 w-[35vw] flex-col justify-around p-16"
-                variant="secondary"
-              >
-                <div className="flex flex-row items-center gap-4">
-                  <strong className="text-6xl">
-                    <Consume />
-                  </strong>
-                  <ArrowBigRight
-                    className="mt-2"
-                    size="3.5rem"
-                    style={{ color: "#66AADA" }}
-                  />
-                </div>
-                <div className="text-2xl font-black">Go to your consume board</div>
-              </Button>
+            <Link
+              href="/board"
+              className={cn(
+                buttonVariants({ variant: "secondary" }),
+                "flex h-72 w-[35vw] flex-col justify-around p-16"
+              )}
+            >
+              <div className="flex flex-row items-center gap-4">
+                <strong className="text-6xl">
+                  <Consume />
+                </strong>
+                <ArrowBigRight
+                  className="mt-2"
+                  size="3.5rem"
+                  style={{ color: "#66AADA" }}
+                />
+              </div>
+              <div className="text-2xl font-black">Go to your consume board</div>
             </Link>
           </div>
         </div>
