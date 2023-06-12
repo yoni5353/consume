@@ -6,7 +6,7 @@ export function Consume({ className }: { className?: string }) {
       <Link
         href="/"
         className={
-          "bg-gradient-to-br from-blue-300 to-[hsl(202,62%,80%)] bg-clip-text font-extrabold text-transparent " +
+          "bg-gradient-to-br from-[#3b82f6] to-[#76b9ce] bg-clip-text font-extrabold text-transparent " +
           className
         }
       >
