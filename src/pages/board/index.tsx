@@ -1,6 +1,6 @@
-import { ArrowBigRight } from "lucide-react";
+import { ArrowBigRight, Loader2Icon } from "lucide-react";
 import { type NextPage } from "next";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { CreateListDialog } from "~/components/createListDialog";
 import { api } from "~/utils/api";
 import { type CreateListSechemaType } from "~/utils/apischemas";
@@ -11,10 +11,27 @@ import { NavBar } from "~/components/views/navbar";
 import { TopBar } from "~/components/views/topbar";
 import Head from "next/head";
 import { ListStack } from "~/components/views/listStack";
+import { signIn, useSession } from "next-auth/react";
+
+const BoardPage: NextPage = () => {
+  const { data: sessionData, status } = useSession();
+
+  useEffect(() => {
+    if (status === "unauthenticated") {
+      void signIn(undefined, { callbackUrl: "/board" });
+    }
+  }, []);
+
+  if (!sessionData) {
+    return <Loader2Icon className="m-auto min-h-screen animate-spin" />;
+  }
+
+  return <BoardPageContent />;
+};
 
 const DEFAULT_COLORS: [string, string] = ["#3b82f6", "#76b9ce"];
 
-const BoardPage: NextPage = () => {
+const BoardPageContent: React.FC = () => {
   const [gradientColors, setGradientColors] = useState<[string, string]>(DEFAULT_COLORS);
   const [currentLayout, setCurrentLayout] = useState<"list" | "grid">("list");
   const [isNavbarOpen, setIsNavbarOpen] = useState(false);
@@ -23,7 +40,7 @@ const BoardPage: NextPage = () => {
 
   const ctx = api.useContext();
 
-  const { data: sprints } = api.lists.getSprints.useQuery(undefined, {
+  api.lists.getSprints.useQuery(undefined, {
     onSuccess: (newSprints) => {
       if (!itemCreationList && newSprints.length) {
         setItemCreationList(newSprints[0]?.id);
