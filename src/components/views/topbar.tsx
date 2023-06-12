@@ -14,6 +14,7 @@ import {
 } from "../ui/dropdown-menu";
 import { signOut, useSession } from "next-auth/react";
 import { GradientPicker } from "../gradientPicker";
+import Link from "next/link";
 
 export function TopBar({
   gradientColorsState,
@@ -37,7 +38,9 @@ export function TopBar({
   return (
     <div className="flex w-full flex-row items-center justify-between p-2">
       <div />
-      <Consume className="text-2xl" />
+      <Link href="/">
+        <Consume className="text-2xl" />
+      </Link>
       <div className="mr-1 flex flex-row-reverse gap-2">
         <DropdownMenu>
           <DropdownMenuTrigger>
