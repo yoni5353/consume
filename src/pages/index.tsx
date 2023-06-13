@@ -75,8 +75,11 @@ const BackgroundMediaTypes = dynamic(
           {Array(20)
             .fill(0)
             .map((_, i) => {
-              const randomMediaType =
+              const RandomIcon =
                 mediaTypeIcons[Math.floor(Math.random() * mediaTypeIcons.length)];
+              if (!RandomIcon) {
+                return null;
+              }
               return (
                 <div
                   key={i}
@@ -87,7 +90,7 @@ const BackgroundMediaTypes = dynamic(
                     left: `${Math.random() * 95}%`,
                   }}
                 >
-                  {randomMediaType?.({})}
+                  <RandomIcon size={64} />
                 </div>
               );
             })}

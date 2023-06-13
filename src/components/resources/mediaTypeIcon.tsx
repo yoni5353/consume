@@ -5,9 +5,9 @@ import {
   BoxIcon,
   CatIcon,
   ClapperboardIcon,
+  type LucideProps,
   TvIcon,
 } from "lucide-react";
-import { type ReactNode } from "react";
 import { cn } from "~/utils/ui/cn";
 
 export function MediaTypeIcon({
@@ -17,21 +17,27 @@ export function MediaTypeIcon({
   mediaType?: MediaType;
   className?: string;
 }) {
-  const icon =
+  const Icon =
     (mediaType && defaultIconByNames[mediaType.name.toLowerCase()]) ?? defaultIcon;
-  return <div className={cn("h-4 w-4", className)}>{icon({})}</div>;
+  return (
+    <div className={cn("h-4 w-4", className)}>
+      <Icon size={16} />
+    </div>
+  );
 }
 
-const defaultIconByNames: { [name: string]: React.FC } = {
-  book: () => <BookIcon size={16} />,
-  "tv series": () => <TvIcon size={16} />,
-  movie: () => <ClapperboardIcon size={16} />,
-  anime: () => <AxeIcon size={16} />,
+type IconProps = LucideProps;
+
+const defaultIconByNames: { [name: string]: (props: IconProps) => JSX.Element } = {
+  book: BookIcon,
+  "tv series": TvIcon,
+  movie: ClapperboardIcon,
+  anime: AxeIcon,
 };
 
-const defaultIcon: React.FC = () => <BoxIcon size={16} />;
+const defaultIcon = BoxIcon;
 
 export const mediaTypeIcons = Object.values(defaultIconByNames).concat([
-  defaultIcon,
-  () => <CatIcon size={16} />,
+  BoxIcon,
+  CatIcon,
 ]);
