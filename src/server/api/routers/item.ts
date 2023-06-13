@@ -136,6 +136,7 @@ export const itemsRouter = createTRPCRouter({
                   },
                   mediaType: mediaTypeId ? { connect: { id: mediaTypeId } } : undefined,
                   createdBy: { connect: { id: ctx.session.user.id } },
+                  template: { connect: { id: input.templateId } },
                 },
               },
             },

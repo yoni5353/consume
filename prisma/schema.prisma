@@ -35,10 +35,14 @@ model Item {
   mediaType   MediaType? @relation(fields: [mediaTypeId], references: [id])
   mediaTypeId Int?
 
+  template   ItemTemplate? @relation(fields: [templateId], references: [id])
+  templateId String?
+
   lists ItemsInLists[]
 
   @@index([createdById])
   @@index([mediaTypeId])
+  @@index([templateId])
 }
 
 model Progress {
@@ -120,6 +124,7 @@ model ItemTemplate {
 
   Series   Series? @relation(fields: [seriesId], references: [id])
   seriesId String?
+  Item     Item[]
 
   @@index([createdById])
   @@index([seriesId])
