@@ -1,11 +1,12 @@
 import { type NextPage } from "next";
 import Head from "next/head";
 import Link from "next/link";
-import { signIn, signOut, useSession } from "next-auth/react";
 import { buttonVariants } from "~/components/ui/button";
 import { ArrowBigRight } from "lucide-react";
 import { Consume } from "~/components/ui/con-sume";
 import { cn } from "~/utils/ui/cn";
+import { mediaTypeIcons } from "~/components/resources/mediaTypeIcon";
+import dynamic from "next/dynamic";
 
 const DEFAULT_COLORS: [string, string] = ["#3b82f6", "#76b9ce"];
 const gradientColors = DEFAULT_COLORS;
@@ -26,8 +27,11 @@ const Home: NextPage = () => {
       >
         <div className="m-3 flex min-h-full w-full rounded-md bg-background">
           <div className="m-auto flex flex-row gap-32">
+            {/* BACKGROUND */}
+            <BackgroundMediaTypes />
+
             {/* LEFT */}
-            <div className="mb-8 flex w-[25vw] flex-col justify-center gap-4">
+            <div className="z-10 mb-8 flex w-[25vw] flex-col justify-center gap-4">
               <div className="font-mono text-sm text-muted-foreground">
                 Made by @yonisku
               </div>
@@ -41,7 +45,7 @@ const Home: NextPage = () => {
               href="/board"
               className={cn(
                 buttonVariants({ variant: "secondary" }),
-                "flex h-72 w-[35vw] flex-col justify-around p-16"
+                "z-10 flex h-72 w-[35vw] flex-col justify-around p-16"
               )}
             >
               <div className="flex flex-row items-center gap-4">
@@ -62,5 +66,37 @@ const Home: NextPage = () => {
     </>
   );
 };
+
+const BackgroundMediaTypes = dynamic(
+  () =>
+    Promise.resolve(() => {
+      return (
+        <div>
+          {Array(20)
+            .fill(0)
+            .map((_, i) => {
+              const randomMediaType =
+                mediaTypeIcons[Math.floor(Math.random() * mediaTypeIcons.length)];
+              return (
+                <div
+                  key={i}
+                  className="absolute z-0 h-24 w-24 rounded-full object-contain"
+                  style={{
+                    opacity: 0.15,
+                    top: `${Math.random() * 95}%`,
+                    left: `${Math.random() * 95}%`,
+                  }}
+                >
+                  {randomMediaType?.({})}
+                </div>
+              );
+            })}
+        </div>
+      );
+    }),
+  {
+    ssr: false,
+  }
+);
 
 export default Home;
