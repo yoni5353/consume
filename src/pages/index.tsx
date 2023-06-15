@@ -85,7 +85,7 @@ const BackgroundMediaTypes = dynamic(
                   key={i}
                   className="absolute z-0 h-24 w-24 rounded-full object-contain"
                   style={{
-                    opacity: 0.15,
+                    opacity: 0.1,
                     top: `${Math.random() * 95}%`,
                     left: `${Math.random() * 95}%`,
                   }}

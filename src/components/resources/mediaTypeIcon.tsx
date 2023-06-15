@@ -7,6 +7,14 @@ import {
   ClapperboardIcon,
   type LucideProps,
   TvIcon,
+  AlbumIcon,
+  BinaryIcon,
+  DicesIcon,
+  Gamepad2Icon,
+  VideoIcon,
+  PuzzleIcon,
+  MusicIcon,
+  NewspaperIcon,
 } from "lucide-react";
 import { cn } from "~/utils/ui/cn";
 
@@ -40,4 +48,12 @@ const defaultIcon = BoxIcon;
 export const mediaTypeIcons = Object.values(defaultIconByNames).concat([
   BoxIcon,
   CatIcon,
+  AlbumIcon,
+  BinaryIcon,
+  DicesIcon,
+  Gamepad2Icon,
+  VideoIcon,
+  PuzzleIcon,
+  MusicIcon,
+  NewspaperIcon,
 ]);
