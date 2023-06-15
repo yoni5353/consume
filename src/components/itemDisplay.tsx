@@ -256,8 +256,9 @@ function TagSelection({ itemId }: { itemId: string }) {
     <form
       onSubmit={handleSubmit(({ newTag }) => {
         if (item) {
+          const trimmedTag = newTag.trim();
           const prevTags = item.tags.map((tag) => tag.name);
-          editItem({ itemId, tags: [...prevTags, newTag] });
+          editItem({ itemId, tags: [...prevTags, trimmedTag] });
           reset();
         }
       })}
