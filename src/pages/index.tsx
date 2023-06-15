@@ -36,7 +36,7 @@ const Home: NextPage = () => {
                 Made by @yonisku
               </div>
               <div className="tracking-light text-3xl font-semibold">
-                A list that helps you <strong>consume</strong> your favorite content
+                A list that helps you <strong>consume</strong> your favorite media
               </div>
             </div>
 
