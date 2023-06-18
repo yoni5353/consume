@@ -14,6 +14,7 @@ const config = {
       "cdn.akamai.steamstatic.com", // Steam
       "shortstoryproject.com", // Short Story Project
       "wiki.abidanarchive.com", // Abidan Archive wiki
+      "img.youtube.com", // Youtube
     ]
   },
 

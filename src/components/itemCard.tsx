@@ -51,14 +51,15 @@ export function ItemCard({
         <ProgressNode className="max-w-fit" progress={item.progress} itemId={item.id} />
       </div>
     ) : (
-      <div className="relative flex h-full w-full cursor-pointer flex-col items-center justify-between text-center">
+      <div className="flex h-full w-full cursor-pointer flex-col items-center justify-between text-center">
         {/* IMAGE */}
         {!!item.image ? (
-          <div className="relative flex h-full w-full cursor-pointer items-center justify-center overflow-hidden rounded-t-md">
+          <div className="flex h-full w-full cursor-pointer items-center justify-center overflow-hidden rounded-t-md">
             <AspectRatio ratio={6 / 9}>
               <Image
                 src={item.image}
                 fill={true}
+                style={{ objectFit: "contain" }}
                 alt={`image for '${item.title}'`}
                 className="select-none object-cover"
               />
