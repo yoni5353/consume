@@ -8,11 +8,10 @@ import {
   SelectValue,
 } from "./ui/select";
 import { Label } from "./ui/label";
-import { ProgressType } from "~/utils/progress";
 import { Input } from "./ui/input";
 import { MediaTypeIcon } from "./resources/mediaTypeIcon";
 import dayjs from "dayjs";
-import { useCallback, useState } from "react";
+import { useCallback } from "react";
 import { useForm } from "react-hook-form";
 import { Badge } from "./ui/badge";
 import { Button } from "./ui/button";
@@ -20,11 +19,10 @@ import { ShieldIcon } from "lucide-react";
 import { useToast } from "./ui/use-toast";
 import { throttle } from "lodash";
 import { Textarea } from "./ui/textarea";
+import { ProgressEditor } from "./itemDialog/progressEditor";
 
 export function ItemDisplay({ itemId }: { itemId: string }) {
-  const [sliderValue, setSliderValue] = useState<number>();
-
-  const { data: item, refetch } = api.items.getItem.useQuery(itemId, {
+  const { data: item } = api.items.getItem.useQuery(itemId, {
     /*
      * Prevent refetching when selecting different items. Caused a problem where it would
      * override the progress optimistic update when clicking the check of a different
@@ -66,10 +64,6 @@ export function ItemDisplay({ itemId }: { itemId: string }) {
         }
       });
     },
-  });
-
-  const { mutate: switchProgress } = api.items.switchProgress.useMutation({
-    onSuccess: () => refetch(),
   });
 
   const { mutate: generateTemplate } = api.templates.createTemplateFromItem.useMutation({
@@ -162,51 +156,7 @@ export function ItemDisplay({ itemId }: { itemId: string }) {
       </div>
 
       {/* PROGRESS */}
-      <div className="mx-5 flex flex-row items-center space-x-10">
-        <Label htmlFor="progressType" className="items-center text-right uppercase">
-          Progress Type
-        </Label>
-        <Select
-          value={item.progress.type}
-          onValueChange={(newValue) => {
-            const newType = newValue as ProgressType;
-            switchProgress({ itemId, newProgressType: newType });
-          }}
-        >
-          <SelectTrigger className="w-32">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value={ProgressType.CHECK}>Check</SelectItem>
-            <SelectItem value={ProgressType.SLIDER}>Slider</SelectItem>
-            <SelectItem value={ProgressType.PERCENTAGE}>Precentage</SelectItem>
-          </SelectContent>
-        </Select>
-      </div>
-
-      <div className="flex flex-col items-center">
-        {item.progress.type === ProgressType.SLIDER && (
-          <div className="mx-5 flex flex-row items-center space-x-10">
-            <Label htmlFor="sliderAmount" className="items-center text-right uppercase">
-              Slider Max Value
-            </Label>
-            <Input
-              type="number"
-              min={0}
-              max={1000}
-              id="sliderAmount"
-              value={sliderValue ?? item.progress.maxValue}
-              onBlur={() => {
-                switchProgress({ itemId, newMaxValue: sliderValue });
-              }}
-              onChange={(event) => {
-                const newValue = parseInt(event.target.value);
-                setSliderValue(newValue);
-              }}
-            />
-          </div>
-        )}
-      </div>
+      <ProgressEditor item={item} />
 
       {/* TAGS */}
       <TagSelection itemId={item.id} />
