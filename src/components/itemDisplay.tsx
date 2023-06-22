@@ -19,6 +19,7 @@ import { Button } from "./ui/button";
 import { ShieldIcon } from "lucide-react";
 import { useToast } from "./ui/use-toast";
 import { throttle } from "lodash";
+import { Textarea } from "./ui/textarea";
 
 export function ItemDisplay({ itemId }: { itemId: string }) {
   const [sliderValue, setSliderValue] = useState<number>();
@@ -113,8 +114,7 @@ export function ItemDisplay({ itemId }: { itemId: string }) {
       )}
 
       {/* DESCRIPTION */}
-      <Input
-        type="text"
+      <Textarea
         id="description"
         className="font-light tracking-wide"
         defaultValue={item.description}
