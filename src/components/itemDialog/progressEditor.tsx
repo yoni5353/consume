@@ -28,7 +28,9 @@ export function ProgressEditor({ item }: { item: Item & { progress: Progress } }
     <div className="flex flex-col gap-4 rounded-md bg-secondary/50 p-4">
       <div className="flex flex-row items-center space-x-5">
         <Label className="items-center text-right uppercase">PROGRESS</Label>
-        <ProgressNode progress={item.progress} itemId={itemId} />
+        <div className="rounded-md bg-secondary/50 p-2">
+          <ProgressNode progress={item.progress} itemId={itemId} />
+        </div>
       </div>
 
       <div className="flex flex-row items-center space-x-5">
@@ -57,7 +59,7 @@ export function ProgressEditor({ item }: { item: Item & { progress: Progress } }
         {item.progress.type === ProgressType.SLIDER && (
           <div className="mx-5 flex flex-row items-center space-x-10">
             <Label htmlFor="sliderAmount" className="items-center text-right uppercase">
-              Slider Max Value
+              Max Value
             </Label>
             <Input
               type="number"
