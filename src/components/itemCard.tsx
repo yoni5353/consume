@@ -7,7 +7,7 @@ import Image from "next/image";
 import { CircleProgress } from "./progress/circleProgress";
 import { Badge } from "./ui/badge";
 import { Dialog, DialogContent } from "./ui/dialog";
-import { ItemDisplay } from "./itemDisplay";
+import { ItemDialog } from "./itemDialog/itemDialog";
 import { useState } from "react";
 import { AspectRatio } from "./ui/aspect-ratio";
 
@@ -113,7 +113,7 @@ export function ItemCard({
       </Button>
       <Dialog open={showDialog} onOpenChange={setShowDialog}>
         <DialogContent>
-          <ItemDisplay itemId={item.id} />
+          <ItemDialog itemId={item.id} />
         </DialogContent>
       </Dialog>
     </div>

@@ -6,22 +6,21 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "./ui/select";
-import { Label } from "./ui/label";
-import { Input } from "./ui/input";
-import { MediaTypeIcon } from "./resources/mediaTypeIcon";
+} from "../ui/select";
+import { Label } from "../ui/label";
+import { Input } from "../ui/input";
+import { MediaTypeIcon } from "../resources/mediaTypeIcon";
 import dayjs from "dayjs";
 import { useCallback } from "react";
 import { useForm } from "react-hook-form";
-import { Badge } from "./ui/badge";
+import { Badge } from "../ui/badge";
 import { throttle } from "lodash";
-import { Textarea } from "./ui/textarea";
-import { ProgressEditor } from "./itemDialog/progressEditor";
-import { ItemDialogDropdown } from "./itemDialog/itemDialogDropdown";
-import { Button } from "./ui/button";
+import { Textarea } from "../ui/textarea";
+import { ProgressEditor } from "./progressEditor";
+import { ItemDialogDropdown } from "./itemDialogDropdown";
 import { format } from "date-fns";
 
-export function ItemDisplay({ itemId }: { itemId: string }) {
+export function ItemDialog({ itemId }: { itemId: string }) {
   const { data: item } = api.items.getItem.useQuery(itemId, {
     /*
      * Prevent refetching when selecting different items. Caused a problem where it would
@@ -86,11 +85,9 @@ export function ItemDisplay({ itemId }: { itemId: string }) {
       </div>
 
       {/* TITLE */}
-      <div className="flex w-full flex-row justify-between pr-4">
-        <h3 className="mb-2 mt-0 scroll-m-20 truncate text-2xl font-semibold tracking-tight">
-          {item.title}
-        </h3>
-      </div>
+      <h3 className="mb-2 mt-0 scroll-m-20 truncate text-2xl font-semibold tracking-tight">
+        {item.title}
+      </h3>
 
       {/* LINK */}
       {item.link && (
