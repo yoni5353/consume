@@ -39,8 +39,8 @@ export function ItemDialogDropdown({
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="outline" className="p-2">
-          <Settings2Icon className="h-5 w-5" />
+        <Button variant="dialog" className="h-min w-min p-0">
+          <Settings2Icon className="h-4 w-4" />
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent>

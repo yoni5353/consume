@@ -18,6 +18,7 @@ import { throttle } from "lodash";
 import { Textarea } from "./ui/textarea";
 import { ProgressEditor } from "./itemDialog/progressEditor";
 import { ItemDialogDropdown } from "./itemDialog/itemDialogDropdown";
+import { Button } from "./ui/button";
 
 export function ItemDisplay({ itemId }: { itemId: string }) {
   const { data: item } = api.items.getItem.useQuery(itemId, {
@@ -77,13 +78,17 @@ export function ItemDisplay({ itemId }: { itemId: string }) {
   if (!item) return null;
 
   return (
-    <div className="flex h-full flex-col gap-3 overflow-hidden p-2">
+    <div className="flex h-full flex-col gap-3 overflow-hidden">
+      {/* SETTINGS  */}
+      <div className="absolute right-10 top-3.5">
+        <ItemDialogDropdown item={item} />
+      </div>
+
       {/* TITLE */}
-      <div className="flex w-full flex-row justify-between">
+      <div className="flex w-full flex-row justify-between pr-4">
         <h3 className="mb-2 mt-0 scroll-m-20 truncate text-2xl font-semibold tracking-tight">
           {item.title}
         </h3>
-        <ItemDialogDropdown item={item} />
       </div>
 
       {/* LINK */}
