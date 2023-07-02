@@ -11,6 +11,7 @@ import { ProgressType } from "~/utils/progress";
 import { useState } from "react";
 import { api } from "~/utils/api";
 import { Input } from "../ui/input";
+import { ProgressNode } from "../progress/progressNode";
 
 export function ProgressEditor({ item }: { item: Item & { progress: Progress } }) {
   const [sliderValue, setSliderValue] = useState<number>();
@@ -24,10 +25,15 @@ export function ProgressEditor({ item }: { item: Item & { progress: Progress } }
   const itemId = item.id;
 
   return (
-    <div>
-      <div className="mx-5 flex flex-row items-center space-x-10">
+    <div className="flex flex-col gap-4 rounded-md bg-secondary/50 p-4">
+      <div className="flex flex-row items-center space-x-5">
+        <Label className="items-center text-right uppercase">PROGRESS</Label>
+        <ProgressNode progress={item.progress} itemId={itemId} />
+      </div>
+
+      <div className="flex flex-row items-center space-x-5">
         <Label htmlFor="progressType" className="items-center text-right uppercase">
-          Progress Type
+          Type
         </Label>
         <Select
           value={item.progress.type}
