@@ -7,6 +7,8 @@ import { Consume } from "~/components/ui/con-sume";
 import { cn } from "~/utils/ui/cn";
 import { mediaTypeIcons } from "~/components/resources/mediaTypeIcon";
 import dynamic from "next/dynamic";
+import { generateRandomSquarePositions } from "~/utils/ui/generateRandomPositions";
+import { useEffect, useRef, useState } from "react";
 
 const DEFAULT_COLORS: [string, string] = ["#3b82f6", "#76b9ce"];
 const gradientColors = DEFAULT_COLORS;
@@ -26,10 +28,10 @@ const Home: NextPage = () => {
         style={{ backgroundImage: gradientStyle }}
       >
         <div className="m-3 flex min-h-full w-full rounded-md bg-background">
-          <div className="m-auto flex flex-row gap-32">
-            {/* BACKGROUND */}
-            <BackgroundMediaTypes />
+          {/* BACKGROUND */}
+          <BackgroundMediaTypes />
 
+          <div className="m-auto flex flex-row gap-32">
             {/* LEFT */}
             <div className="z-10 mb-8 flex w-[25vw] flex-col justify-center gap-4">
               <div className="font-mono text-sm text-muted-foreground">
@@ -70,30 +72,46 @@ const Home: NextPage = () => {
 const BackgroundMediaTypes = dynamic(
   () =>
     Promise.resolve(() => {
+      const containerRef = useRef<HTMLDivElement>(null);
+      const [randomPositions, setRandomPositions] = useState<{ x: number; y: number }[]>(
+        []
+      );
+
+      useEffect(() => {
+        if (containerRef.current) {
+          setRandomPositions(
+            generateRandomSquarePositions({
+              amount: 30,
+              size: 64,
+              containerWidth: containerRef.current.clientWidth,
+              containerHeight: containerRef.current.clientHeight,
+            })
+          );
+        }
+      }, [containerRef]);
+
       return (
-        <div>
-          {Array(20)
-            .fill(0)
-            .map((_, i) => {
-              const RandomIcon =
-                mediaTypeIcons[Math.floor(Math.random() * mediaTypeIcons.length)];
-              if (!RandomIcon) {
-                return null;
-              }
-              return (
-                <div
-                  key={i}
-                  className="absolute z-0 h-24 w-24 rounded-full object-contain"
-                  style={{
-                    opacity: 0.1,
-                    top: `${Math.random() * 95}%`,
-                    left: `${Math.random() * 95}%`,
-                  }}
-                >
-                  <RandomIcon size={64} />
-                </div>
-              );
-            })}
+        <div className="absolute m-auto h-[97%] w-[98%]" ref={containerRef}>
+          {randomPositions.map(({ x, y }, i) => {
+            const RandomIcon =
+              mediaTypeIcons[Math.floor(Math.random() * mediaTypeIcons.length)];
+            if (!RandomIcon) {
+              return null;
+            }
+            return (
+              <div
+                key={i}
+                className="absolute z-0 rounded-full object-contain"
+                style={{
+                  opacity: 0.15,
+                  top: y,
+                  left: x,
+                }}
+              >
+                <RandomIcon size={64} />
+              </div>
+            );
+          })}
         </div>
       );
     }),
