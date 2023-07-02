@@ -19,6 +19,7 @@ import { Textarea } from "./ui/textarea";
 import { ProgressEditor } from "./itemDialog/progressEditor";
 import { ItemDialogDropdown } from "./itemDialog/itemDialogDropdown";
 import { Button } from "./ui/button";
+import { format } from "date-fns";
 
 export function ItemDisplay({ itemId }: { itemId: string }) {
   const { data: item } = api.items.getItem.useQuery(itemId, {
@@ -158,7 +159,9 @@ export function ItemDisplay({ itemId }: { itemId: string }) {
       </div>
 
       {/* FOOTER */}
-      <p className="text-slate-500">Created {dayjs(item.createdAt).fromNow()}</p>
+      <p className="text-slate-500" title={format(item.createdAt, "'Created at' P H:mm")}>
+        Created {dayjs(item.createdAt).fromNow()}
+      </p>
     </div>
   );
 }
