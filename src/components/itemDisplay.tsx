@@ -14,12 +14,10 @@ import dayjs from "dayjs";
 import { useCallback } from "react";
 import { useForm } from "react-hook-form";
 import { Badge } from "./ui/badge";
-import { Button } from "./ui/button";
-import { ShieldIcon } from "lucide-react";
-import { useToast } from "./ui/use-toast";
 import { throttle } from "lodash";
 import { Textarea } from "./ui/textarea";
 import { ProgressEditor } from "./itemDialog/progressEditor";
+import { ItemDialogDropdown } from "./itemDialog/itemDialogDropdown";
 
 export function ItemDisplay({ itemId }: { itemId: string }) {
   const { data: item } = api.items.getItem.useQuery(itemId, {
@@ -34,8 +32,6 @@ export function ItemDisplay({ itemId }: { itemId: string }) {
   const { data: mediaTypes } = api.mediaTypes.getAll.useQuery();
 
   const ctx = api.useContext();
-
-  const { toast } = useToast();
 
   const { mutate: editItem } = api.items.editItem.useMutation({
     async onMutate({ mediaTypeId, title, description, link, image }) {
@@ -66,22 +62,6 @@ export function ItemDisplay({ itemId }: { itemId: string }) {
     },
   });
 
-  const { mutate: generateTemplate } = api.templates.createTemplateFromItem.useMutation({
-    onSuccess: () => {
-      toast({
-        title: "Template created",
-        description: "A template was created from this item.",
-      });
-    },
-    onError: (error) => {
-      toast({
-        title: "Template creation failed",
-        description: error.message,
-        variant: "destructive",
-      });
-    },
-  });
-
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const onDescriptionCommit = useCallback(
     throttle(
@@ -98,9 +78,15 @@ export function ItemDisplay({ itemId }: { itemId: string }) {
 
   return (
     <div className="flex h-full flex-col gap-3 overflow-hidden p-2">
-      <h3 className="mb-2 mt-0 scroll-m-20 truncate text-2xl font-semibold tracking-tight">
-        {item.title}
-      </h3>
+      {/* TITLE */}
+      <div className="flex w-full flex-row justify-between">
+        <h3 className="mb-2 mt-0 scroll-m-20 truncate text-2xl font-semibold tracking-tight">
+          {item.title}
+        </h3>
+        <ItemDialogDropdown item={item} />
+      </div>
+
+      {/* LINK */}
       {item.link && (
         <a href={item.link} target="_blank" className="italic">
           {item.link}
@@ -168,19 +154,6 @@ export function ItemDisplay({ itemId }: { itemId: string }) {
 
       {/* FOOTER */}
       <p className="text-slate-500">Created {dayjs(item.createdAt).fromNow()}</p>
-      <Button
-        onClick={() =>
-          generateTemplate({
-            ...item,
-            progressType: item.progress.type,
-            tags: item.tags.map((tag) => tag.name),
-            mediaTypeId: item.mediaType?.id ?? undefined,
-          })
-        }
-      >
-        <ShieldIcon className="mr-2" />
-        GENERATE TEMPLATE
-      </Button>
     </div>
   );
 }
