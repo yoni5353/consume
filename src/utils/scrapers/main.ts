@@ -14,7 +14,13 @@ export type PartialItem = {
 } & Partial<
   Omit<
     Item,
-    "id" | "createdById" | "createdAt" | "createdBy" | "progressId" | "mediaTypeId"
+    | "id"
+    | "createdById"
+    | "createdAt"
+    | "createdBy"
+    | "progressId"
+    | "mediaTypeId"
+    | "templateId"
   >
 >;
 
