@@ -26,16 +26,21 @@ export function ProgressEditor({ item }: { item: Item & { progress: Progress } }
 
   return (
     <div className="flex flex-col gap-4 rounded-md bg-secondary/50 p-4">
-      <div className="flex flex-row items-center space-x-5">
-        <Label className="items-center text-right uppercase">PROGRESS</Label>
-        <div className="rounded-md bg-secondary/50 p-2">
-          <ProgressNode progress={item.progress} itemId={itemId} />
-        </div>
+      {/* HEADER */}
+      <Label className="w-min items-center text-right uppercase">PROGRESS</Label>
+
+      {/* PROGRESS NODE */}
+      <div className="mx-auto w-min rounded-md bg-secondary/60 p-2">
+        <ProgressNode progress={item.progress} itemId={itemId} />
       </div>
 
-      <div className="flex flex-row items-center space-x-5">
-        <Label htmlFor="progressType" className="items-center text-right uppercase">
-          Type
+      {/* TYPE */}
+      <div className="flex flex-row items-center gap-5">
+        <Label
+          htmlFor="progressType"
+          className="w-[25%] items-center text-center font-mono"
+        >
+          type
         </Label>
         <Select
           value={item.progress.type}
@@ -55,10 +60,14 @@ export function ProgressEditor({ item }: { item: Item & { progress: Progress } }
         </Select>
       </div>
 
+      {/* OPTIONS */}
       <div className="flex flex-col items-center">
         {item.progress.type === ProgressType.SLIDER && (
-          <div className="mx-5 flex flex-row items-center space-x-10">
-            <Label htmlFor="sliderAmount" className="items-center text-right uppercase">
+          <div className="flex flex-row items-center gap-5">
+            <Label
+              htmlFor="sliderAmount"
+              className="w-[25%] items-center text-center font-mono"
+            >
               Max Value
             </Label>
             <Input
