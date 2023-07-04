@@ -6,6 +6,7 @@ import { ProgressType } from "~/utils/progress";
 import { Label } from "../ui/label";
 import { ConSlider } from "../ui/con-slider";
 import { cn } from "~/utils/ui/cn";
+import { Checkbox } from "../ui/checkbox";
 
 export function ProgressNode({
   progress,
@@ -79,13 +80,12 @@ const progressTypeToDisplay: {
   }) => ReactNode;
 } = {
   [ProgressType.CHECK]: ({ value, onValueChange, onValueCommit }) => (
-    <input
-      className="h-6 w-6 accent-blue-600"
-      type="checkbox"
+    <Checkbox
+      className="h-6 w-6 rounded-full"
       checked={value === 1}
-      onChange={(e) => {
-        onValueChange(e.target.checked ? 1 : 0);
-        onValueCommit(e.target.checked ? 1 : 0);
+      onCheckedChange={(checked) => {
+        onValueChange(+checked);
+        onValueCommit(+checked);
       }}
     />
   ),
