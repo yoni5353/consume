@@ -34,7 +34,7 @@ export function ItemCard({
 
   const content =
     layout === "inline" ? (
-      <div className="flex w-full flex-row justify-between px-2">
+      <div className="flex h-full w-full flex-row justify-between px-2">
         <div className="flex items-center space-x-2 overflow-hidden">
           <MediaTypeIcon mediaType={item.mediaType ?? undefined} />
           <div className="truncate text-ellipsis font-medium" title={item.title}>
@@ -48,7 +48,11 @@ export function ItemCard({
             ))}
           </div>
         </div>
-        <ProgressNode className="max-w-fit" progress={item.progress} itemId={item.id} />
+        <ProgressNode
+          className="h-full max-w-fit"
+          progress={item.progress}
+          itemId={item.id}
+        />
       </div>
     ) : (
       <div className="flex h-full w-full cursor-pointer flex-col items-center justify-between text-center">

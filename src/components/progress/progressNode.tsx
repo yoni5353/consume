@@ -49,7 +49,7 @@ export function ProgressNode({
       {progressTypeToDisplay[progress.type as ProgressType]?.({
         value,
         progress,
-        isHovering: isHovering,
+        isHovering,
         isDone: value === progress.maxValue,
         onValueChange: (newValue) => setValue(newValue),
         onValueCommit: (newValue) => {
