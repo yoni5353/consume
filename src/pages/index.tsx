@@ -44,7 +44,7 @@ const Home: NextPage = () => {
 
             {/* RIGHT */}
             <Link
-              href="/board"
+              href="/list"
               className={cn(
                 buttonVariants({ variant: "secondary" }),
                 "z-10 flex h-72 w-[35vw] flex-col justify-around p-16"
@@ -60,7 +60,7 @@ const Home: NextPage = () => {
                   style={{ color: "#66AADA" }}
                 />
               </div>
-              <div className="text-2xl font-black">Go to your consume board</div>
+              <div className="text-2xl font-black">Go to your consume list</div>
             </Link>
           </div>
         </div>

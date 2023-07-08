@@ -13,12 +13,12 @@ import Head from "next/head";
 import { ListStack } from "~/components/views/listStack";
 import { signIn, useSession } from "next-auth/react";
 
-const BoardPage: NextPage = () => {
+const ListPage: NextPage = () => {
   const { data: sessionData, status } = useSession();
 
   useEffect(() => {
     if (status === "unauthenticated") {
-      void signIn(undefined, { callbackUrl: "/board" });
+      void signIn(undefined, { callbackUrl: "/list" });
     }
   }, []);
 
@@ -26,12 +26,12 @@ const BoardPage: NextPage = () => {
     return <Loader2Icon className="m-auto min-h-screen animate-spin" />;
   }
 
-  return <BoardPageContent />;
+  return <ListPageContent />;
 };
 
 const DEFAULT_COLORS: [string, string] = ["#3b82f6", "#76b9ce"];
 
-const BoardPageContent: React.FC = () => {
+const ListPageContent: React.FC = () => {
   const [gradientColors, setGradientColors] = useState<[string, string]>(DEFAULT_COLORS);
   const [currentLayout, setCurrentLayout] = useState<"list" | "grid">("list");
   const [isNavbarOpen, setIsNavbarOpen] = useState(false);
@@ -79,7 +79,7 @@ const BoardPageContent: React.FC = () => {
     <>
       <Head>
         <title>CONSUME</title>
-        <meta name="description" content="Consume Board" />
+        <meta name="description" content="Consume List" />
         {/* <link rel="icon" href="/favicon.ico" /> */}
       </Head>
       <main
@@ -141,4 +141,4 @@ const BoardPageContent: React.FC = () => {
   );
 };
 
-export default BoardPage;
+export default ListPage;
