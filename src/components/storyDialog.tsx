@@ -57,6 +57,15 @@ export function StoryDialog({
             {sortedSeries.map((series) => (
               <SeriesDisplay key={series.id} series={series} onAddItem={onAddItem} />
             ))}
+            {story.loneTemplates.map((template) => (
+              <TemplateDisplay
+                key={template.id}
+                template={template}
+                onAddItem={onAddItem}
+                main={false}
+                showMetaDescription
+              />
+            ))}
           </div>
         </div>
       </DialogContent>
@@ -98,58 +107,67 @@ function TemplateDisplay({
   template,
   onAddItem,
   main,
+  showMetaDescription,
 }: {
   template: ItemTemplate;
   onAddItem?: (templateId: string) => void;
   main: boolean;
+  showMetaDescription?: boolean;
 }) {
   const [isHovering, setIsHovering] = useState(false);
 
   const width = main ? 125 : 110;
 
   return (
-    <div
-      className="relative flex cursor-pointer flex-col items-center gap-1 rounded-md bg-secondary/80 text-center"
-      style={{ width }}
-      tabIndex={0}
-      onMouseEnter={() => setIsHovering(true)}
-      onMouseLeave={() => setIsHovering(false)}
-      onClick={() => onAddItem?.(template.id)}
-      onKeyDown={(e) => {
-        if (e.key === "Enter") {
-          onAddItem?.(template.id);
-        }
-      }}
-    >
-      <div
-        className="relative flex cursor-pointer items-center justify-center overflow-hidden rounded-md"
-        style={{ width }}
-      >
-        <AspectRatio ratio={6 / 9}>
-          <Image
-            src={template.image}
-            width={width}
-            height={100}
-            alt={`'${template.title}' template image`}
-            className={cn(
-              "select-none object-cover transition-all",
-              isHovering && "scale-105"
-            )}
-          />
-        </AspectRatio>
-        {isHovering && (
-          <div className="absolute flex h-10 w-10 items-center justify-center rounded-full bg-secondary">
-            <PlusIcon size={24} color="lightgrey" />
-          </div>
-        )}
-      </div>
-      {isHovering && (
-        <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/30" />
+    <>
+      {showMetaDescription && (
+        <div className="text-md font-semibold leading-none">
+          {template.metaDescription}
+        </div>
       )}
-      <div className="flex flex-row items-center space-x-1 p-1">
-        {/* <MediaTypeIcon mediaType={null ?? "book"} /> */}
-        <div className="text-sm font-semibold">{template.title}</div>
+      <div
+        className="relative flex cursor-pointer flex-col items-center gap-1 rounded-md bg-secondary/80 text-center"
+        style={{ width }}
+        tabIndex={0}
+        onMouseEnter={() => setIsHovering(true)}
+        onMouseLeave={() => setIsHovering(false)}
+        onClick={() => onAddItem?.(template.id)}
+        onKeyDown={(e) => {
+          if (e.key === "Enter") {
+            onAddItem?.(template.id);
+          }
+        }}
+      >
+        <div
+          className="relative flex cursor-pointer items-center justify-center overflow-hidden rounded-md"
+          style={{ width }}
+        >
+          <AspectRatio ratio={6 / 9}>
+            <Image
+              src={template.image}
+              width={width}
+              height={100}
+              alt={`'${template.title}' template image`}
+              className={cn(
+                "select-none object-cover transition-all",
+                isHovering && "scale-105"
+              )}
+            />
+          </AspectRatio>
+          {isHovering && (
+            <div className="absolute flex h-10 w-10 items-center justify-center rounded-full bg-secondary">
+              <PlusIcon size={24} color="lightgrey" />
+            </div>
+          )}
+        </div>
+        {isHovering && (
+          <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/30" />
+        )}
+        <div className="flex flex-row items-center space-x-1 p-1">
+          {/* <MediaTypeIcon mediaType={null ?? "book"} /> */}
+          <div className="text-sm font-semibold">{template.title}</div>
+        </div>
       </div>
-    </div>
+    </>
   );
 }

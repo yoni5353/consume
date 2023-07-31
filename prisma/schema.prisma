@@ -122,13 +122,18 @@ model ItemTemplate {
 
   progressType String @default("check")
 
+  metaDescription String @default("")
+
   Series   Series? @relation(fields: [seriesId], references: [id])
   seriesId String?
   Item     Item[]
+  Story    Story?  @relation(fields: [storyId], references: [id])
+  storyId  String?
 
   @@index([createdById])
   @@index([seriesId])
   @@index([mediaTypeId])
+  @@index([storyId])
 }
 
 model Series {
@@ -156,7 +161,8 @@ model Story {
   title       String
   description String @default("") @db.Text
 
-  series Series[]
+  series        Series[]
+  loneTemplates ItemTemplate[]
 }
 
 model Goal {

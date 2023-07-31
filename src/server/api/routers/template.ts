@@ -29,6 +29,7 @@ export const templatesRouter = createTRPCRouter({
         id: input,
       },
       include: {
+        loneTemplates: true,
         series: {
           include: {
             templates: true,
