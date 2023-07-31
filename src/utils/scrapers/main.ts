@@ -6,6 +6,7 @@ import { getSteamItem } from "./steam";
 import { getShoryStoryProject } from "./shortstoryproject";
 import { getAudibleItem } from "./audible";
 import { getYoutubeItem } from "./youtube";
+import { getWikiwandItem } from "./wikiwand";
 
 export type PartialItem = {
   title: string;
@@ -74,5 +75,10 @@ export const scrapers: {
     name: "Youtube",
     regex: /youtube\.com\/watch\?v=/,
     func: getYoutubeItem,
+  },
+  {
+    name: "Wikiwand",
+    regex: /wikiwand\.com\//,
+    func: getWikiwandItem,
   },
 ];

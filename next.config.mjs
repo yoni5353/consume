@@ -15,6 +15,7 @@ const config = {
       "shortstoryproject.com", // Short Story Project
       "wiki.abidanarchive.com", // Abidan Archive wiki
       "img.youtube.com", // Youtube
+      "upload.wikimedia.org", // Wikipedia
     ]
   },
 
