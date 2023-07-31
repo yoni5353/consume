@@ -108,7 +108,14 @@ export const itemsRouter = createTRPCRouter({
         throw new TRPCError({ code: "NOT_FOUND", message: "Template not found" });
       }
 
-      const { seriesId: _, progressType, mediaTypeId, ...itemArgs } = template;
+      const {
+        seriesId: _,
+        progressType,
+        mediaTypeId,
+        metaDescription: __,
+        storyId: ___,
+        ...itemArgs
+      } = template;
 
       const newProgressType = Object.values(ProgressType).includes(
         progressType as ProgressType
