@@ -116,7 +116,7 @@ export function ItemCard({
         {content}
       </Button>
       <Dialog open={showDialog} onOpenChange={setShowDialog}>
-        <DialogContent>
+        <DialogContent className="min-w-[550px]">
           <ItemDialog itemId={item.id} />
         </DialogContent>
       </Dialog>

@@ -19,6 +19,14 @@ import { Textarea } from "../ui/textarea";
 import { ProgressEditor } from "./progressEditor";
 import { ItemDialogDropdown } from "./itemDialogDropdown";
 import { format } from "date-fns";
+import { ProgressNode } from "../progress/progressNode";
+import { Button } from "../ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+} from "../ui/dropdown-menu";
+import { SettingsIcon } from "lucide-react";
 
 export function ItemDialog({ itemId }: { itemId: string }) {
   const { data: item } = api.items.getItem.useQuery(itemId, {
@@ -104,55 +112,80 @@ export function ItemDialog({ itemId }: { itemId: string }) {
         onChange={(e) => onDescriptionCommit(e.target.value)}
       />
 
-      {/* BODY */}
-      <div className="flex flex-row gap-1">
-        {/* PROGRESS */}
-        <ProgressEditor item={item} />
+      <div className="h-4"></div>
 
-        <div className="flex flex-col gap-2">
-          {/* MEDIA TYPE */}
-          <div className="mx-5 flex flex-row items-center space-x-10">
-            <Label className="items-center text-right uppercase">Media Type</Label>
-            <Select
-              value={item.mediaType?.id?.toString() ?? "0"}
-              onValueChange={(newMediaTypeId) => {
-                const mediaTypeId = parseInt(newMediaTypeId);
-                editItem({ itemId, mediaTypeId: mediaTypeId || null });
-              }}
-            >
-              <SelectTrigger className="w-32">
-                <SelectValue>
-                  <div className="flex items-center">
-                    <MediaTypeIcon
-                      mediaType={item?.mediaType ?? undefined}
-                      className="mr-2"
-                    />
-                    {item.mediaType?.name ?? "None"}
-                  </div>
-                </SelectValue>
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="0">
+      {/* BODY */}
+      <div className="relative mx-4 grid grid-cols-2 gap-2 gap-x-10">
+        <div className="absolute left-[50%] h-[100%] w-0.5 rounded-full bg-muted"></div>
+
+        {/* PROGRESS */}
+        <div className="flex flex-row items-center space-x-4">
+          <Label className="w-[25%] items-center text-right font-mono lowercase">
+            Progress
+          </Label>
+          <div className="flex h-full w-full flex-row items-center justify-between gap-1">
+            <ProgressNode
+              progress={item.progress}
+              itemId={item.id}
+              className="rounded-lg bg-accent/20 p-2"
+            />
+            <DropdownMenu>
+              <DropdownMenuTrigger>
+                <Button variant="outline" className="rounded-full p-2">
+                  <SettingsIcon className="h-4 w-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent className="p-2">
+                <ProgressEditor item={item} />
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
+        </div>
+
+        {/* MEDIA TYPE */}
+        <div className="flex flex-row items-center space-x-4">
+          <Label className="w-[25%] items-center text-right font-mono lowercase">
+            Media Type
+          </Label>
+          <Select
+            value={item.mediaType?.id?.toString() ?? "0"}
+            onValueChange={(newMediaTypeId) => {
+              const mediaTypeId = parseInt(newMediaTypeId);
+              editItem({ itemId, mediaTypeId: mediaTypeId || null });
+            }}
+          >
+            <SelectTrigger className="w-full">
+              <SelectValue>
+                <div className="flex items-center">
+                  <MediaTypeIcon
+                    mediaType={item?.mediaType ?? undefined}
+                    className="mr-2"
+                  />
+                  {item.mediaType?.name ?? "None"}
+                </div>
+              </SelectValue>
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="0">
+                <div className="flex items-center space-x-2">
+                  <MediaTypeIcon mediaType={undefined} className="mr-2" />
+                  None
+                </div>
+              </SelectItem>
+              {mediaTypes?.map((mediaType) => (
+                <SelectItem key={mediaType.id} value={mediaType.id.toString()}>
                   <div className="flex items-center space-x-2">
-                    <MediaTypeIcon mediaType={undefined} className="mr-2" />
-                    None
+                    <MediaTypeIcon mediaType={mediaType} className="mr-2" />
+                    {mediaType.name}
                   </div>
                 </SelectItem>
-                {mediaTypes?.map((mediaType) => (
-                  <SelectItem key={mediaType.id} value={mediaType.id.toString()}>
-                    <div className="flex items-center space-x-2">
-                      <MediaTypeIcon mediaType={mediaType} className="mr-2" />
-                      {mediaType.name}
-                    </div>
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-
-          {/* TAGS */}
-          <TagSelection itemId={item.id} />
+              ))}
+            </SelectContent>
+          </Select>
         </div>
+
+        {/* TAGS */}
+        <TagSelection itemId={item.id} />
       </div>
 
       {/* FOOTER */}
@@ -198,8 +231,11 @@ function TagSelection({ itemId }: { itemId: string }) {
       })}
       className="space-y-5"
     >
-      <div className="mx-10 flex flex-row items-center space-x-4">
-        <Label htmlFor="newTag" className="items-center text-right uppercase">
+      <div className="flex flex-row items-center space-x-4">
+        <Label
+          htmlFor="newTag"
+          className="w-[25%] items-center text-right font-mono lowercase"
+        >
           Add Tag
         </Label>
         <Input
@@ -209,8 +245,11 @@ function TagSelection({ itemId }: { itemId: string }) {
           {...register("newTag", { required: true, maxLength: 32 })}
         />
       </div>
-      <div className="mx-10 flex flex-row items-center space-x-4">
-        <Label htmlFor="newTag" className="items-center text-right uppercase">
+      <div className="flex flex-row items-center space-x-4">
+        <Label
+          htmlFor="newTag"
+          className="w-[25%] items-center text-right font-mono lowercase"
+        >
           Remove Tag
         </Label>
         {item?.tags.map((tag) => (
