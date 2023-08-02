@@ -7,13 +7,11 @@ export async function getWikiwandItem(link: string): Promise<PartialItem> {
 
     const title = $("title").text().replace(" - Wikiwand", "");
     const image = $("meta[property='og:image']").attr("content");
-    const description = $("meta[property='og:description']").attr("content");
 
     return {
       title,
       link,
       image,
-      description,
     };
   });
 }
