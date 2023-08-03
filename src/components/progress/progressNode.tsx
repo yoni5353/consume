@@ -7,6 +7,7 @@ import { Label } from "../ui/label";
 import { ConSlider } from "../ui/con-slider";
 import { cn } from "~/utils/ui/cn";
 import { Checkbox } from "../ui/checkbox";
+import { StepsProgress } from "./stepsProgress";
 
 export function ProgressNode({
   progress,
@@ -69,15 +70,17 @@ const defaultDisplay = ({ progress }: { progress: Progress }) => {
   );
 };
 
+export interface ProgressDisplayProps {
+  isHovering: boolean;
+  value: number;
+  progress: Progress;
+  isDone: boolean;
+  onValueChange: (newValue: number) => void;
+  onValueCommit: (newValue: number) => void;
+}
+
 const progressTypeToDisplay: {
-  [key in ProgressType]?: (props: {
-    isHovering: boolean;
-    value: number;
-    progress: Progress;
-    isDone: boolean;
-    onValueChange: (newValue: number) => void;
-    onValueCommit: (newValue: number) => void;
-  }) => ReactNode;
+  [key in ProgressType]?: (props: ProgressDisplayProps) => ReactNode;
 } = {
   [ProgressType.CHECK]: ({ value, onValueChange, onValueCommit }) => (
     <Checkbox
@@ -151,4 +154,5 @@ const progressTypeToDisplay: {
       )}
     </>
   ),
+  [ProgressType.STEPS]: StepsProgress,
 };

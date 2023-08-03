@@ -48,11 +48,13 @@ export function ItemCard({
             ))}
           </div>
         </div>
-        <ProgressNode
-          className="h-full max-w-fit"
-          progress={item.progress}
-          itemId={item.id}
-        />
+        <div onDoubleClick={(e) => e.stopPropagation()}>
+          <ProgressNode
+            className="h-full max-w-fit"
+            progress={item.progress}
+            itemId={item.id}
+          />
+        </div>
       </div>
     ) : (
       <div className="flex h-full w-full cursor-pointer flex-col items-center justify-between text-center">

@@ -49,6 +49,7 @@ export function ProgressEditor({ item }: { item: Item & { progress: Progress } }
             <SelectItem value={ProgressType.CHECK}>Check</SelectItem>
             <SelectItem value={ProgressType.SLIDER}>Slider</SelectItem>
             <SelectItem value={ProgressType.PERCENTAGE}>Precentage</SelectItem>
+            <SelectItem value={ProgressType.STEPS}>Steps</SelectItem>
           </SelectContent>
         </Select>
       </div>
