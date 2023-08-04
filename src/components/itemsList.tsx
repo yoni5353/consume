@@ -11,6 +11,7 @@ import { type DateRange } from "react-day-picker";
 import { format, formatDistance } from "date-fns";
 import { CalendarIcon } from "lucide-react";
 import { ListContextMenu } from "./listContextMenu";
+import { SortableContext, verticalListSortingStrategy } from "@dnd-kit/sortable";
 
 export function ItemsList({
   listId,
@@ -90,24 +91,29 @@ export function ItemsList({
         </ContextMenuTrigger>
         <ListContextMenu selectedListId={listId} isSprint={isSprint} />
       </ContextMenu>
-      <div
-        className={cn(
-          "items flex flex-col gap-2",
-          layout === "grid" && "grid grid-cols-3 gap-5 xl:grid-cols-6"
-        )}
-        ref={listRef}
+      <SortableContext
+        items={items.map((item) => item.itemId)}
+        strategy={verticalListSortingStrategy}
       >
-        {items?.map((item) => (
-          <ItemCard
-            key={item.itemId}
-            itemId={item.itemId}
-            layout={layout === "grid" ? "card" : "inline"}
-            selected={selectedItems.includes(item.itemId)}
-            onClick={(e) => onCardClick(e, item.itemId)}
-            onAuxClick={(e) => onCardClick(e, item.itemId)}
-          />
-        ))}
-      </div>
+        <div
+          className={cn(
+            "items flex flex-col gap-2",
+            layout === "grid" && "grid grid-cols-3 gap-5 xl:grid-cols-6"
+          )}
+          ref={listRef}
+        >
+          {items?.map((item) => (
+            <ItemCard
+              key={item.itemId}
+              itemId={item.itemId}
+              layout={layout === "grid" ? "card" : "inline"}
+              selected={selectedItems.includes(item.itemId)}
+              onClick={(e) => onCardClick(e, item.itemId)}
+              onAuxClick={(e) => onCardClick(e, item.itemId)}
+            />
+          ))}
+        </div>
+      </SortableContext>
     </div>
   );
 }
