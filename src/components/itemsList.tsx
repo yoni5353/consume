@@ -53,7 +53,7 @@ export function ItemsList({
     <div className="items-list flex flex-col">
       <ContextMenu>
         <ContextMenuTrigger asChild>
-          <div className="space-y-1 pb-3">
+          <div className="flex flex-row gap-2 space-y-1 pb-3">
             <h2 className="font-bold uppercase">{list.title}</h2>
             <div className="flex flex-row text-gray-500">
               {isSprint && (
@@ -62,8 +62,8 @@ export function ItemsList({
                     <CalendarIcon className="mr-1 h-4 w-4" />
                     {list.dueDate ? (
                       <div>
-                        {format(list.startDate, "LLL dd, y")} -{" "}
-                        {format(list.dueDate, "LLL dd, y")}
+                        {format(list.startDate, "LLL dd")} -{" "}
+                        {format(list.dueDate, "LLL dd")}
                         {list.dueDate > new Date() ? (
                           <> ({formatDistance(list.dueDate, new Date())} left)</>
                         ) : (
