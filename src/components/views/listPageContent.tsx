@@ -9,6 +9,9 @@ import { CreateListDialog } from "../createListDialog";
 import { api } from "~/utils/api";
 import {
   DndContext,
+  type DragEndEvent,
+  DragOverlay,
+  type DragStartEvent,
   KeyboardSensor,
   PointerSensor,
   closestCenter,
@@ -16,34 +19,108 @@ import {
   useSensors,
 } from "@dnd-kit/core";
 import { sortableKeyboardCoordinates } from "@dnd-kit/sortable";
+import { ItemCard } from "../itemCard";
 
 export function ListPageContent({ layout }: { layout: "list" | "grid" }) {
-  const [_isCreateListOpen, _setIsCreateListOpen] = useState(false);
-  const [hasInitialItems, _setHasInitialItems] = useState(false);
-  const [isCreatingSprint, _setIsCreatingSprint] = useState(false);
-  const [nextListCreation, _setNextListCreation] = useState<
-    Partial<CreateListSechemaType>
-  >({});
-
   const [isNavbarOpen, setIsNavbarOpen] = useState(false);
   const [itemCreationList, setItemCreationList] = useState<string>();
+  const [selectedItems, setSelectedItems] = useState<string[]>([]);
+  const [lastSelectedItem, setLastSelectedItem] = useState<string>();
 
   const ctx = api.useContext();
 
-  const sensors = useSensors(
-    useSensor(PointerSensor),
-    useSensor(KeyboardSensor, {
-      coordinateGetter: sortableKeyboardCoordinates,
-    })
-  );
-
-  api.lists.getSprints.useQuery(undefined, {
+  const { data: sprints } = api.lists.getSprints.useQuery(undefined, {
     onSuccess: (newSprints) => {
       if (!itemCreationList && newSprints.length) {
         setItemCreationList(newSprints[0]?.id);
       }
     },
   });
+
+  const items = sprints?.flatMap((sprint) => sprint.items) ?? [];
+
+  // SELECTION
+
+  const selectCardPreDrag = useCallback(
+    (itemId: string) => {
+      if (!selectedItems.includes(itemId)) {
+        setSelectedItems([itemId]);
+        setLastSelectedItem(itemId);
+      }
+    },
+    [selectedItems]
+  );
+
+  const onCardClick = (e: React.MouseEvent, itemId: string) => {
+    const auxClick = e.button === 1 || e.button === 2;
+
+    const newSelectedItem = itemId;
+    if (e.ctrlKey) {
+      setSelectedItems((prev) => {
+        if (prev.includes(itemId)) {
+          return prev.filter((id) => id !== itemId);
+        } else {
+          return [...prev, itemId];
+        }
+      });
+    } else if (e.shiftKey) {
+      if (lastSelectedItem) {
+        const index = items.findIndex((item) => item.itemId === itemId);
+        const firstIndex = items.findIndex((item) => item.itemId === lastSelectedItem);
+        if (~index && ~firstIndex) {
+          const start = Math.min(index, firstIndex);
+          const end = Math.max(index, firstIndex);
+          const newSelectedItems = items.slice(start, end + 1).map((item) => item.itemId);
+          setSelectedItems((prev) => {
+            return [...new Set([...prev, ...newSelectedItems])];
+          });
+        }
+      }
+    } else {
+      if (!(auxClick && selectedItems.includes(itemId))) {
+        setSelectedItems([itemId]);
+      }
+    }
+    if (!e.shiftKey) {
+      setLastSelectedItem(newSelectedItem);
+    }
+  };
+
+  // DRAG AND DROP
+
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 5,
+      },
+    }),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  );
+
+  const onDragStart = useCallback(
+    (event: DragStartEvent) => {
+      const { id: itemId } = event.active;
+      if (typeof itemId !== "string") return;
+
+      console.log("drag start", itemId);
+      selectCardPreDrag(itemId);
+    },
+    [selectCardPreDrag]
+  );
+
+  const onDragEnd = useCallback((event: DragEndEvent) => {
+    const { active, over } = event;
+    if (active.id !== over?.id) {
+    }
+  }, []);
+
+  if (!lastSelectedItem && items[0]) {
+    setLastSelectedItem(items[0].itemId);
+  }
+
+  // LIST CREATION
 
   const { mutate: createList } = api.lists.createList.useMutation({
     onSuccess: (newList) => {
@@ -55,6 +132,12 @@ export function ListPageContent({ layout }: { layout: "list" | "grid" }) {
     },
   });
 
+  const [_isCreateListOpen, _setIsCreateListOpen] = useState(false);
+  const [hasInitialItems, _setHasInitialItems] = useState(false);
+  const [isCreatingSprint, _setIsCreatingSprint] = useState(false);
+  const [nextListCreation, _setNextListCreation] = useState<
+    Partial<CreateListSechemaType>
+  >({});
   const openListCreation = useCallback(
     (creationPartial: Partial<CreateListSechemaType> = {}) => {
       _setNextListCreation(creationPartial);
@@ -71,7 +154,8 @@ export function ListPageContent({ layout }: { layout: "list" | "grid" }) {
       <DndContext
         sensors={sensors}
         collisionDetection={closestCenter}
-        onDragEnd={() => console.log("oh yeah")}
+        onDragStart={onDragStart}
+        onDragEnd={onDragEnd}
       >
         <div className="main-grid grid h-full w-full grid-cols-8 px-5 xl:grid-cols-6">
           {/* NAVBAR */}
@@ -97,11 +181,18 @@ export function ListPageContent({ layout }: { layout: "list" | "grid" }) {
                 <ListStack
                   layout={layout}
                   onCreateSprint={() => openListCreation({ isSprint: true })}
+                  selectedItems={selectedItems}
+                  onCardClick={onCardClick}
                 />
               </div>
             </div>
           </div>
         </div>
+        <DragOverlay>
+          {selectedItems[0] ? (
+            <ItemCard itemId={selectedItems[0]} selected={true} layout="inline" />
+          ) : null}
+        </DragOverlay>
       </DndContext>
 
       <CreateListDialog

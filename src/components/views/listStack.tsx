@@ -3,7 +3,7 @@ import { PlusCircleIcon } from "lucide-react";
 import { Button } from "../ui/button";
 import { ItemsList } from "../itemsList";
 import { api } from "~/utils/api";
-import { useCallback, useState } from "react";
+import { useCallback } from "react";
 import { ContextMenu, ContextMenuTrigger } from "../ui/context-menu";
 import { ItemContextMenu } from "../itemContextMenu";
 import { useToast } from "../ui/use-toast";
@@ -11,12 +11,14 @@ import { useToast } from "../ui/use-toast";
 export function ListStack({
   layout,
   onCreateSprint,
+  selectedItems,
+  onCardClick,
 }: {
   layout: "list" | "grid";
   onCreateSprint: () => void;
+  selectedItems: string[];
+  onCardClick: (event: React.MouseEvent, itemId: string) => void;
 }) {
-  const [selectedItems, setSelectedItems] = useState<string[]>([]);
-  const [lastSelectedItem, setLastSelectedItem] = useState<string>();
   const [sprintsViewRef] = useAutoAnimate<HTMLDivElement>();
 
   const ctx = api.useContext();
@@ -105,45 +107,6 @@ export function ListStack({
     },
     [moveItems, originListsIds.length, selectedItems, toast]
   );
-
-  if (!lastSelectedItem && items[0]) {
-    setLastSelectedItem(items[0].itemId);
-  }
-
-  const onCardClick = (e: React.MouseEvent, itemId: string) => {
-    const auxClick = e.button === 1 || e.button === 2;
-
-    const newSelectedItem = itemId;
-    if (e.ctrlKey) {
-      setSelectedItems((prev) => {
-        if (prev.includes(itemId)) {
-          return prev.filter((id) => id !== itemId);
-        } else {
-          return [...prev, itemId];
-        }
-      });
-    } else if (e.shiftKey) {
-      if (lastSelectedItem) {
-        const index = items.findIndex((item) => item.itemId === itemId);
-        const firstIndex = items.findIndex((item) => item.itemId === lastSelectedItem);
-        if (~index && ~firstIndex) {
-          const start = Math.min(index, firstIndex);
-          const end = Math.max(index, firstIndex);
-          const newSelectedItems = items.slice(start, end + 1).map((item) => item.itemId);
-          setSelectedItems((prev) => {
-            return [...new Set([...prev, ...newSelectedItems])];
-          });
-        }
-      }
-    } else {
-      if (!(auxClick && selectedItems.includes(itemId))) {
-        setSelectedItems([itemId]);
-      }
-    }
-    if (!e.shiftKey) {
-      setLastSelectedItem(newSelectedItem);
-    }
-  };
 
   return (
     <ContextMenu>
