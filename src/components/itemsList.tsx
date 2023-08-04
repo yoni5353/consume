@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/no-misused-promises */
 import { api } from "~/utils/api";
-import { ItemCard } from "./itemCard";
 import { useCallback, useState } from "react";
 import { ContextMenu, ContextMenuTrigger } from "~/components/ui/context-menu";
 import { useAutoAnimate } from "@formkit/auto-animate/react";
@@ -12,6 +11,7 @@ import { format, formatDistance } from "date-fns";
 import { CalendarIcon } from "lucide-react";
 import { ListContextMenu } from "./listContextMenu";
 import { SortableContext, verticalListSortingStrategy } from "@dnd-kit/sortable";
+import { SortableItemCard } from "./itemCard";
 
 export function ItemsList({
   listId,
@@ -103,7 +103,7 @@ export function ItemsList({
           ref={listRef}
         >
           {items?.map((item) => (
-            <ItemCard
+            <SortableItemCard
               key={item.itemId}
               itemId={item.itemId}
               layout={layout === "grid" ? "card" : "inline"}

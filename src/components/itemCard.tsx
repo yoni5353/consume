@@ -8,10 +8,27 @@ import { CircleProgress } from "./progress/circleProgress";
 import { Badge } from "./ui/badge";
 import { Dialog, DialogContent } from "./ui/dialog";
 import { ItemDialog } from "./itemDialog/itemDialog";
-import { useState } from "react";
+import { type ComponentProps, useState } from "react";
 import { AspectRatio } from "./ui/aspect-ratio";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
+
+export function SortableItemCard(props: ComponentProps<typeof ItemCard>) {
+  const { attributes, listeners, setNodeRef, transform, transition } = useSortable({
+    id: props.itemId,
+  });
+
+  const draggableStyle = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+  };
+
+  return (
+    <div ref={setNodeRef} style={draggableStyle} {...attributes} {...listeners}>
+      <ItemCard {...props} />
+    </div>
+  );
+}
 
 export function ItemCard({
   itemId,
@@ -31,15 +48,6 @@ export function ItemCard({
   const { data: item } = api.items.getItem.useQuery(itemId, {
     refetchOnWindowFocus: false,
   });
-
-  const { attributes, listeners, setNodeRef, transform, transition } = useSortable({
-    id: itemId,
-  });
-
-  const draggableStyle = {
-    transform: CSS.Transform.toString(transform),
-    transition,
-  };
 
   if (!item) return null;
 
@@ -113,13 +121,7 @@ export function ItemCard({
     );
 
   return (
-    <div
-      className="flex flex-col gap-5 overflow-hidden"
-      ref={setNodeRef}
-      style={draggableStyle}
-      {...attributes}
-      {...listeners}
-    >
+    <div className="flex flex-col gap-5 overflow-hidden">
       <Button
         onClick={onClick}
         onAuxClick={onAuxClick}
