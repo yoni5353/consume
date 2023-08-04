@@ -17,6 +17,7 @@ import {
   closestCenter,
   useSensor,
   useSensors,
+  type DragOverEvent,
 } from "@dnd-kit/core";
 import { sortableKeyboardCoordinates } from "@dnd-kit/sortable";
 import { ItemCard } from "../itemCard";
@@ -26,6 +27,7 @@ export function ListPageContent({ layout }: { layout: "list" | "grid" }) {
   const [itemCreationList, setItemCreationList] = useState<string>();
   const [selectedItems, setSelectedItems] = useState<string[]>([]);
   const [lastSelectedItem, setLastSelectedItem] = useState<string>();
+  const [itemsToHide, setItemsToHide] = useState<string[]>([]);
 
   const ctx = api.useContext();
 
@@ -45,8 +47,8 @@ export function ListPageContent({ layout }: { layout: "list" | "grid" }) {
     (itemId: string) => {
       if (!selectedItems.includes(itemId)) {
         setSelectedItems([itemId]);
-        setLastSelectedItem(itemId);
       }
+      setLastSelectedItem(itemId);
     },
     [selectedItems]
   );
@@ -100,20 +102,27 @@ export function ListPageContent({ layout }: { layout: "list" | "grid" }) {
   );
 
   const onDragStart = useCallback(
-    (event: DragStartEvent) => {
-      const { id: itemId } = event.active;
+    ({ active }: DragStartEvent) => {
+      const { id: itemId } = active;
       if (typeof itemId !== "string") return;
 
-      console.log("drag start", itemId);
       selectCardPreDrag(itemId);
+
+      setItemsToHide(selectedItems.filter((id) => id !== itemId));
     },
-    [selectCardPreDrag]
+    [selectCardPreDrag, selectedItems]
   );
+
+  const onDragOver = useCallback(({ active, over }: DragOverEvent) => {
+    console.log(active, over);
+  }, []);
 
   const onDragEnd = useCallback((event: DragEndEvent) => {
     const { active, over } = event;
     if (active.id !== over?.id) {
     }
+
+    setItemsToHide([]);
   }, []);
 
   if (!lastSelectedItem && items[0]) {
@@ -155,6 +164,7 @@ export function ListPageContent({ layout }: { layout: "list" | "grid" }) {
         sensors={sensors}
         collisionDetection={closestCenter}
         onDragStart={onDragStart}
+        onDragOver={onDragOver}
         onDragEnd={onDragEnd}
       >
         <div className="main-grid grid h-full w-full grid-cols-8 px-5 xl:grid-cols-6">
@@ -183,14 +193,15 @@ export function ListPageContent({ layout }: { layout: "list" | "grid" }) {
                   onCreateSprint={() => openListCreation({ isSprint: true })}
                   selectedItems={selectedItems}
                   onCardClick={onCardClick}
+                  hiddenItems={itemsToHide}
                 />
               </div>
             </div>
           </div>
         </div>
         <DragOverlay>
-          {selectedItems[0] ? (
-            <ItemCard itemId={selectedItems[0]} selected={true} layout="inline" />
+          {lastSelectedItem ? (
+            <ItemCard itemId={lastSelectedItem} selected={true} layout="inline" />
           ) : null}
         </DragOverlay>
       </DndContext>

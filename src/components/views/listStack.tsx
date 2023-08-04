@@ -13,11 +13,13 @@ export function ListStack({
   onCreateSprint,
   selectedItems,
   onCardClick,
+  hiddenItems,
 }: {
   layout: "list" | "grid";
   onCreateSprint: () => void;
   selectedItems: string[];
   onCardClick: (event: React.MouseEvent, itemId: string) => void;
+  hiddenItems: string[];
 }) {
   const [sprintsViewRef] = useAutoAnimate<HTMLDivElement>();
 
@@ -119,6 +121,7 @@ export function ListStack({
               listId={sprint.id}
               isSprint={true}
               selectedItems={selectedItems}
+              hiddenItems={hiddenItems}
               onCardClick={onCardClick}
             />
           ))}

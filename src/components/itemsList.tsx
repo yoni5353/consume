@@ -19,12 +19,14 @@ export function ItemsList({
   selectedItems,
   layout,
   isSprint,
+  hiddenItems,
 }: {
   listId: string;
   onCardClick: (e: React.MouseEvent, itemId: string) => void;
   selectedItems: string[];
   layout: "list" | "grid";
   isSprint?: boolean;
+  hiddenItems?: string[];
 }) {
   const [listRef] = useAutoAnimate<HTMLDivElement>();
 
@@ -92,7 +94,9 @@ export function ItemsList({
         <ListContextMenu selectedListId={listId} isSprint={isSprint} />
       </ContextMenu>
       <SortableContext
-        items={items.map((item) => item.itemId)}
+        items={items
+          .map((item) => item.itemId)
+          .filter((itemId) => !hiddenItems?.includes(itemId))}
         strategy={verticalListSortingStrategy}
       >
         <div
@@ -103,14 +107,18 @@ export function ItemsList({
           ref={listRef}
         >
           {items?.map((item) => (
-            <SortableItemCard
-              key={item.itemId}
-              itemId={item.itemId}
-              layout={layout === "grid" ? "card" : "inline"}
-              selected={selectedItems.includes(item.itemId)}
-              onClick={(e) => onCardClick(e, item.itemId)}
-              onAuxClick={(e) => onCardClick(e, item.itemId)}
-            />
+            <>
+              {!hiddenItems?.includes(item.itemId) && (
+                <SortableItemCard
+                  key={item.itemId}
+                  itemId={item.itemId}
+                  layout={layout === "grid" ? "card" : "inline"}
+                  selected={selectedItems.includes(item.itemId)}
+                  onClick={(e) => onCardClick(e, item.itemId)}
+                  onAuxClick={(e) => onCardClick(e, item.itemId)}
+                />
+              )}
+            </>
           ))}
         </div>
       </SortableContext>
