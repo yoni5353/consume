@@ -7,19 +7,20 @@ import { useCallback } from "react";
 import { ContextMenu, ContextMenuTrigger } from "../ui/context-menu";
 import { ItemContextMenu } from "../itemContextMenu";
 import { useToast } from "../ui/use-toast";
+import { type ItemDragContext } from "./listPageContent";
 
 export function ListStack({
   layout,
   onCreateSprint,
   selectedItems,
   onCardClick,
-  hiddenItems,
+  dragContext,
 }: {
   layout: "list" | "grid";
   onCreateSprint: () => void;
   selectedItems: string[];
   onCardClick: (event: React.MouseEvent, itemId: string) => void;
-  hiddenItems: string[];
+  dragContext?: ItemDragContext;
 }) {
   const [sprintsViewRef] = useAutoAnimate<HTMLDivElement>();
 
@@ -121,8 +122,8 @@ export function ListStack({
               listId={sprint.id}
               isSprint={true}
               selectedItems={selectedItems}
-              hiddenItems={hiddenItems}
               onCardClick={onCardClick}
+              dragContext={dragContext}
             />
           ))}
           <Button variant="ghost" onClick={onCreateSprint}>

@@ -21,13 +21,21 @@ import {
 } from "@dnd-kit/core";
 import { sortableKeyboardCoordinates } from "@dnd-kit/sortable";
 import { ItemCard } from "../itemCard";
+import { get } from "lodash";
+
+export type ItemDragContext = {
+  draggedIds: string[];
+  mainDraggedId: string;
+  draggedOverListId: string;
+  dragEntry?: "top" | "bottom";
+};
 
 export function ListPageContent({ layout }: { layout: "list" | "grid" }) {
   const [isNavbarOpen, setIsNavbarOpen] = useState(false);
   const [itemCreationList, setItemCreationList] = useState<string>();
   const [selectedItems, setSelectedItems] = useState<string[]>([]);
   const [lastSelectedItem, setLastSelectedItem] = useState<string>();
-  const [itemsToHide, setItemsToHide] = useState<string[]>([]);
+  const [dragContext, setDragContext] = useState<ItemDragContext>();
 
   const ctx = api.useContext();
 
@@ -101,6 +109,14 @@ export function ListPageContent({ layout }: { layout: "list" | "grid" }) {
     })
   );
 
+  // TODO to use sortable's containerId instead (or memoize items)
+  const findListId = useCallback(
+    (itemId: string) => {
+      return items.find((item) => item.itemId === itemId)?.listId;
+    },
+    [items]
+  );
+
   const onDragStart = useCallback(
     ({ active }: DragStartEvent) => {
       const { id: itemId } = active;
@@ -108,21 +124,44 @@ export function ListPageContent({ layout }: { layout: "list" | "grid" }) {
 
       selectCardPreDrag(itemId);
 
-      setItemsToHide(selectedItems.filter((id) => id !== itemId));
+      setDragContext({
+        draggedIds: selectedItems,
+        mainDraggedId: active.id as string,
+        draggedOverListId: findListId(itemId) as string,
+      });
     },
-    [selectCardPreDrag, selectedItems]
+    [findListId, selectCardPreDrag, selectedItems]
   );
 
-  const onDragOver = useCallback(({ active, over }: DragOverEvent) => {
-    console.log(active, over);
-  }, []);
+  const onDragOver = useCallback(
+    ({ active: _, over }: DragOverEvent) => {
+      const overListId = findListId(over?.id as string) as string;
+
+      const overIndex = get(over, "data.current.sortable.index") as number | undefined;
+      if (typeof overIndex !== "number") throw Error("Could not find overIndex");
+
+      if (overListId !== dragContext?.draggedOverListId) {
+        setDragContext((prev) => {
+          if (prev) {
+            return {
+              ...prev,
+              draggedOverListId: overListId,
+              // TODO: should be the other way around (buggy atm)
+              dragEntry: overIndex === 0 ? "bottom" : "top",
+            };
+          }
+        });
+      }
+    },
+    [dragContext?.draggedOverListId, findListId]
+  );
 
   const onDragEnd = useCallback((event: DragEndEvent) => {
     const { active, over } = event;
     if (active.id !== over?.id) {
     }
 
-    setItemsToHide([]);
+    setDragContext(undefined);
   }, []);
 
   if (!lastSelectedItem && items[0]) {
@@ -193,7 +232,7 @@ export function ListPageContent({ layout }: { layout: "list" | "grid" }) {
                   onCreateSprint={() => openListCreation({ isSprint: true })}
                   selectedItems={selectedItems}
                   onCardClick={onCardClick}
-                  hiddenItems={itemsToHide}
+                  dragContext={dragContext}
                 />
               </div>
             </div>

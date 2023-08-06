@@ -1,8 +1,7 @@
 /* eslint-disable @typescript-eslint/no-misused-promises */
 import { api } from "~/utils/api";
-import { useCallback, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { ContextMenu, ContextMenuTrigger } from "~/components/ui/context-menu";
-import { useAutoAnimate } from "@formkit/auto-animate/react";
 import { cn } from "~/utils/ui/cn";
 import { Calendar } from "./ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
@@ -12,6 +11,7 @@ import { CalendarIcon } from "lucide-react";
 import { ListContextMenu } from "./listContextMenu";
 import { SortableContext, verticalListSortingStrategy } from "@dnd-kit/sortable";
 import { SortableItemCard } from "./itemCard";
+import { type ItemDragContext } from "./views/listPageContent";
 
 export function ItemsList({
   listId,
@@ -19,17 +19,15 @@ export function ItemsList({
   selectedItems,
   layout,
   isSprint,
-  hiddenItems,
+  dragContext,
 }: {
   listId: string;
   onCardClick: (e: React.MouseEvent, itemId: string) => void;
   selectedItems: string[];
   layout: "list" | "grid";
   isSprint?: boolean;
-  hiddenItems?: string[];
+  dragContext?: ItemDragContext;
 }) {
-  const [listRef] = useAutoAnimate<HTMLDivElement>();
-
   const { data: list, refetch } = api.lists.getList.useQuery(listId, {
     refetchOnWindowFocus: false,
   });
@@ -50,7 +48,17 @@ export function ItemsList({
     [editList, listId]
   );
 
-  if (!items) return null;
+  const sortableItemIds = useMemo(
+    () =>
+      getSortableItemIdsConsideringDragContext(
+        listId,
+        items?.map((item) => item.itemId) ?? [],
+        dragContext
+      ),
+    [listId, items, dragContext]
+  );
+
+  if (!list) return null;
 
   return (
     <div className="items-list flex flex-col">
@@ -93,35 +101,52 @@ export function ItemsList({
         </ContextMenuTrigger>
         <ListContextMenu selectedListId={listId} isSprint={isSprint} />
       </ContextMenu>
-      <SortableContext
-        items={items
-          .map((item) => item.itemId)
-          .filter((itemId) => !hiddenItems?.includes(itemId))}
-        strategy={verticalListSortingStrategy}
-      >
+      <SortableContext items={sortableItemIds} strategy={verticalListSortingStrategy}>
         <div
           className={cn(
             "items flex flex-col gap-2",
             layout === "grid" && "grid grid-cols-3 gap-5 xl:grid-cols-6"
           )}
-          ref={listRef}
         >
-          {items?.map((item) => (
-            <>
-              {!hiddenItems?.includes(item.itemId) && (
-                <SortableItemCard
-                  key={item.itemId}
-                  itemId={item.itemId}
-                  layout={layout === "grid" ? "card" : "inline"}
-                  selected={selectedItems.includes(item.itemId)}
-                  onClick={(e) => onCardClick(e, item.itemId)}
-                  onAuxClick={(e) => onCardClick(e, item.itemId)}
-                />
-              )}
-            </>
+          {sortableItemIds.map((itemId) => (
+            <SortableItemCard
+              key={itemId}
+              itemId={itemId}
+              layout={layout === "grid" ? "card" : "inline"}
+              selected={selectedItems.includes(itemId)}
+              onClick={(e) => onCardClick(e, itemId)}
+              onAuxClick={(e) => onCardClick(e, itemId)}
+            />
           ))}
         </div>
       </SortableContext>
     </div>
   );
+}
+
+function getSortableItemIdsConsideringDragContext(
+  listId: string,
+  itemsIds: string[],
+  dragContext?: ItemDragContext
+) {
+  if (!dragContext) return itemsIds;
+
+  const { draggedOverListId, mainDraggedId, draggedIds, dragEntry } = dragContext;
+
+  if (draggedOverListId === listId) {
+    if (itemsIds.includes(mainDraggedId)) {
+      const draggedItemsExceptFocused = draggedIds.filter(
+        (itemId) => itemId !== mainDraggedId
+      );
+      return itemsIds.filter((itemId) => !draggedItemsExceptFocused.includes(itemId));
+    } else {
+      if (dragEntry === "top") {
+        return [mainDraggedId, ...itemsIds];
+      } else {
+        return itemsIds.concat(mainDraggedId);
+      }
+    }
+  }
+
+  return itemsIds.filter((itemId) => !draggedIds.includes(itemId));
 }
