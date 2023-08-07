@@ -8,6 +8,7 @@ import { ContextMenu, ContextMenuTrigger } from "../ui/context-menu";
 import { ItemContextMenu } from "../itemContextMenu";
 import { useToast } from "../ui/use-toast";
 import { type ItemDragContext } from "./listPageContent";
+import { useItemsInLists } from "~/utils/queries/useItemsInLists";
 
 export function ListStack({
   layout,
@@ -30,14 +31,14 @@ export function ListStack({
 
   const { data: sprints } = api.lists.getSprints.useQuery();
 
-  const items = sprints?.flatMap((sprint) => sprint.items) ?? [];
+  const itemsInLists = useItemsInLists(sprints?.map((sprint) => sprint.id) ?? []);
 
   const { mutate: deleteItems } = api.items.deleteItems.useMutation({
     async onMutate(itemIds) {
       const relatedLists = [
         ...new Set<string>(
           itemIds.flatMap((itemId) => {
-            return items.find((item) => item.itemId === itemId)?.listId ?? [];
+            return itemsInLists.find((item) => item.itemId === itemId)?.listId ?? [];
           })
         ),
       ];
@@ -74,7 +75,9 @@ export function ListStack({
 
   const { mutate: moveItems } = api.items.moveItems.useMutation({
     onMutate: () => {
-      const originListId = items.find((item) => item.itemId === selectedItems[0])?.listId;
+      const originListId = itemsInLists.find(
+        (item) => item.itemId === selectedItems[0]
+      )?.listId;
       return { originListId };
     },
     onSuccess: (_, { targetListId }, context) => {
@@ -85,7 +88,7 @@ export function ListStack({
 
   const originListsIds = [
     ...new Set(
-      items
+      itemsInLists
         .filter((item) => selectedItems.includes(item.itemId))
         .map((item) => item.listId)
     ),

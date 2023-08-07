@@ -22,6 +22,7 @@ import {
 import { sortableKeyboardCoordinates } from "@dnd-kit/sortable";
 import { ItemCard } from "../itemCard";
 import { get } from "lodash";
+import { useItemsInLists } from "~/utils/queries/useItemsInLists";
 
 export type ItemDragContext = {
   draggedIds: string[];
@@ -47,7 +48,7 @@ export function ListPageContent({ layout }: { layout: "list" | "grid" }) {
     },
   });
 
-  const items = sprints?.flatMap((sprint) => sprint.items) ?? [];
+  const itemsInLists = useItemsInLists(sprints?.map((sprint) => sprint.id) ?? []);
 
   // SELECTION
 
@@ -75,12 +76,16 @@ export function ListPageContent({ layout }: { layout: "list" | "grid" }) {
       });
     } else if (e.shiftKey) {
       if (lastSelectedItem) {
-        const index = items.findIndex((item) => item.itemId === itemId);
-        const firstIndex = items.findIndex((item) => item.itemId === lastSelectedItem);
+        const index = itemsInLists.findIndex((item) => item.itemId === itemId);
+        const firstIndex = itemsInLists.findIndex(
+          (item) => item.itemId === lastSelectedItem
+        );
         if (~index && ~firstIndex) {
           const start = Math.min(index, firstIndex);
           const end = Math.max(index, firstIndex);
-          const newSelectedItems = items.slice(start, end + 1).map((item) => item.itemId);
+          const newSelectedItems = itemsInLists
+            .slice(start, end + 1)
+            .map((item) => item.itemId);
           setSelectedItems((prev) => {
             return [...new Set([...prev, ...newSelectedItems])];
           });
@@ -112,9 +117,9 @@ export function ListPageContent({ layout }: { layout: "list" | "grid" }) {
   // TODO to use sortable's containerId instead (or memoize items)
   const findListId = useCallback(
     (itemId: string) => {
-      return items.find((item) => item.itemId === itemId)?.listId;
+      return itemsInLists.find((item) => item.itemId === itemId)?.listId;
     },
-    [items]
+    [itemsInLists]
   );
 
   const onDragStart = useCallback(
@@ -164,8 +169,8 @@ export function ListPageContent({ layout }: { layout: "list" | "grid" }) {
     setDragContext(undefined);
   }, []);
 
-  if (!lastSelectedItem && items[0]) {
-    setLastSelectedItem(items[0].itemId);
+  if (!lastSelectedItem && itemsInLists[0]) {
+    setLastSelectedItem(itemsInLists[0].itemId);
   }
 
   // LIST CREATION
