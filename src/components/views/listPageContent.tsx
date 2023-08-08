@@ -23,6 +23,7 @@ import { sortableKeyboardCoordinates } from "@dnd-kit/sortable";
 import { ItemCard } from "../itemCard";
 import { get } from "lodash";
 import { useItemsInLists } from "~/utils/queries/useItemsInLists";
+import { type ItemsInLists } from "@prisma/client";
 
 export type ItemDragContext = {
   draggedIds: string[];
@@ -161,13 +162,51 @@ export function ListPageContent({ layout }: { layout: "list" | "grid" }) {
     [dragContext?.draggedOverListId, findListId]
   );
 
-  const onDragEnd = useCallback((event: DragEndEvent) => {
-    const { active, over } = event;
-    if (active.id !== over?.id) {
-    }
+  const onDragEnd = useCallback(
+    ({ over }: DragEndEvent) => {
+      if (!dragContext) return;
 
-    setDragContext(undefined);
-  }, []);
+      const overIndex = get(over, "data.current.sortable.index") as number | undefined;
+      if (typeof overIndex !== "number") throw Error("Could not find overIndex");
+
+      // Optimistcly update items
+      const { draggedIds, draggedOverListId } = dragContext;
+      const draggedItemsInLists = draggedIds
+        .map((itemId) => itemsInLists.find((item) => item.itemId === itemId))
+        .filter((item): item is ItemsInLists => !!item);
+      const relatedLists = [
+        ...new Set<string>([
+          ...draggedItemsInLists.map((item) => item.listId),
+          draggedOverListId,
+        ]),
+      ];
+
+      relatedLists.map((listId) => {
+        ctx.lists.getList.setData(listId, (prevList) => {
+          if (!prevList) return;
+          prevList.items = prevList.items.filter(
+            (item) => !draggedIds.includes(item.itemId)
+          );
+          return prevList;
+        });
+      });
+
+      const itemsToAdd = draggedItemsInLists.map((item) => ({
+        ...item,
+        listId: draggedOverListId,
+      }));
+
+      ctx.lists.getList.setData(draggedOverListId, (prevList) => {
+        if (!prevList) return;
+        prevList.items.splice(overIndex, 0, ...itemsToAdd);
+        return prevList;
+      });
+
+
+      setDragContext(undefined);
+    },
+    [ctx.lists.getList, dragContext, itemsInLists]
+  );
 
   if (!lastSelectedItem && itemsInLists[0]) {
     setLastSelectedItem(itemsInLists[0].itemId);
