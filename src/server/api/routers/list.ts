@@ -15,7 +15,7 @@ export const listsRouter = createTRPCRouter({
   getList: protectedProcedure.input(z.string()).query(({ ctx, input }) => {
     return ctx.prisma.list.findFirst({
       where: { id: input },
-      include: { items: true },
+      include: { items: { orderBy: { position: "asc" } } },
     });
   }),
 
@@ -80,4 +80,25 @@ export const listsRouter = createTRPCRouter({
       },
     });
   }),
+
+  orderList: protectedProcedure
+    .input(
+      z.object({
+        listId: z.string(),
+        itemIds: z.array(z.string()),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      return ctx.prisma.list.update({
+        where: { id: input.listId },
+        data: {
+          items: {
+            updateMany: input.itemIds.map((itemId, index) => ({
+              where: { itemId: itemId },
+              data: { position: index },
+            })),
+          },
+        },
+      });
+    }),
 });

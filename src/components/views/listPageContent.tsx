@@ -49,6 +49,8 @@ export function ListPageContent({ layout }: { layout: "list" | "grid" }) {
     },
   });
 
+  const { mutate: orderList } = api.lists.orderList.useMutation();
+
   const itemsInLists = useItemsInLists(sprints?.map((sprint) => sprint.id) ?? []);
 
   // SELECTION
@@ -202,10 +204,16 @@ export function ListPageContent({ layout }: { layout: "list" | "grid" }) {
         return prevList;
       });
 
+      const newItemsOfList = ctx.lists.getList.getData(draggedOverListId)?.items ?? [];
+
+      orderList({
+        listId: draggedOverListId,
+        itemIds: newItemsOfList.map((item) => item.itemId),
+      });
 
       setDragContext(undefined);
     },
-    [ctx.lists.getList, dragContext, itemsInLists]
+    [ctx.lists.getList, dragContext, itemsInLists, orderList]
   );
 
   if (!lastSelectedItem && itemsInLists[0]) {
