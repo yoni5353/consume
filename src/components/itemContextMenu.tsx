@@ -21,6 +21,7 @@ import { api } from "~/utils/api";
 export function ItemContextMenu({
   itemsAmount,
   singleListId,
+  areSelectedItemsCancelled,
   onCancel,
   onDelete,
   onMoveItems,
@@ -28,6 +29,7 @@ export function ItemContextMenu({
 }: {
   itemsAmount: number;
   singleListId?: string;
+  areSelectedItemsCancelled: boolean;
   onCancel: () => void;
   onDelete: () => void;
   onMoveItems: (targetListId: string) => void;
@@ -92,7 +94,8 @@ export function ItemContextMenu({
       <ContextMenuSeparator />
 
       <ContextMenuItem onSelect={onCancel}>
-        <CircleSlashedIcon className="mr-2 h-4 w-4" /> Cancel
+        <CircleSlashedIcon className="mr-2 h-4 w-4" />
+        {areSelectedItemsCancelled ? "Uncancel" : "Cancel"}
         {!singleItem && ` ${itemsAmount} Items`}
       </ContextMenuItem>
 

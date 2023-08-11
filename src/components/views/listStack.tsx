@@ -25,7 +25,11 @@ export function ListStack({
 
   const { data: sprints } = api.lists.getSprints.useQuery();
 
-  const items = sprints?.flatMap((sprint) => sprint.items) ?? [];
+  const itemsInLists = sprints?.flatMap((sprint) => sprint.items) ?? [];
+
+  const areSelectedItemsCancelled = selectedItems.every(
+    (itemId) => ctx.items.getItem.getData(itemId)?.status === "CANCELLED"
+  );
 
   const { mutate: changeStatus } = api.items.changeStatus.useMutation({
     onMutate: ({ itemIds, newStatus }) => {
@@ -47,7 +51,7 @@ export function ListStack({
       const relatedLists = [
         ...new Set<string>(
           itemIds.flatMap((itemId) => {
-            return items.find((item) => item.itemId === itemId)?.listId ?? [];
+            return itemsInLists.find((item) => item.itemId === itemId)?.listId ?? [];
           })
         ),
       ];
@@ -84,7 +88,9 @@ export function ListStack({
 
   const { mutate: moveItems } = api.items.moveItems.useMutation({
     onMutate: () => {
-      const originListId = items.find((item) => item.itemId === selectedItems[0])?.listId;
+      const originListId = itemsInLists.find(
+        (item) => item.itemId === selectedItems[0]
+      )?.listId;
       return { originListId };
     },
     onSuccess: (_, { targetListId }, context) => {
@@ -95,18 +101,20 @@ export function ListStack({
 
   const originListsIds = [
     ...new Set(
-      items
+      itemsInLists
         .filter((item) => selectedItems.includes(item.itemId))
         .map((item) => item.listId)
     ),
   ];
 
   const onCancelItems = useCallback(() => {
+    const newStatus = areSelectedItemsCancelled ? "DEFAULT" : "CANCELLED";
+
     changeStatus({
       itemIds: selectedItems,
-      newStatus: "CANCELLED",
+      newStatus,
     });
-  }, [changeStatus, selectedItems]);
+  }, [areSelectedItemsCancelled, changeStatus, selectedItems]);
 
   const onMoveItems = useCallback(
     (targetListId: string) => {
@@ -128,8 +136,8 @@ export function ListStack({
     [moveItems, originListsIds.length, selectedItems, toast]
   );
 
-  if (!lastSelectedItem && items[0]) {
-    setLastSelectedItem(items[0].itemId);
+  if (!lastSelectedItem && itemsInLists[0]) {
+    setLastSelectedItem(itemsInLists[0].itemId);
   }
 
   const onCardClick = (e: React.MouseEvent, itemId: string) => {
@@ -146,12 +154,16 @@ export function ListStack({
       });
     } else if (e.shiftKey) {
       if (lastSelectedItem) {
-        const index = items.findIndex((item) => item.itemId === itemId);
-        const firstIndex = items.findIndex((item) => item.itemId === lastSelectedItem);
+        const index = itemsInLists.findIndex((item) => item.itemId === itemId);
+        const firstIndex = itemsInLists.findIndex(
+          (item) => item.itemId === lastSelectedItem
+        );
         if (~index && ~firstIndex) {
           const start = Math.min(index, firstIndex);
           const end = Math.max(index, firstIndex);
-          const newSelectedItems = items.slice(start, end + 1).map((item) => item.itemId);
+          const newSelectedItems = itemsInLists
+            .slice(start, end + 1)
+            .map((item) => item.itemId);
           setSelectedItems((prev) => {
             return [...new Set([...prev, ...newSelectedItems])];
           });
@@ -190,6 +202,7 @@ export function ListStack({
       <ItemContextMenu
         singleListId={originListsIds.length === 1 ? originListsIds[0] : undefined}
         itemsAmount={selectedItems.length}
+        areSelectedItemsCancelled={areSelectedItemsCancelled}
         onDelete={() => {
           deleteItems(selectedItems);
         }}
