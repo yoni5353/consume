@@ -14,18 +14,21 @@ import {
   Share2,
   ClipboardCopy,
   BikeIcon,
+  CircleSlashedIcon,
 } from "lucide-react";
 import { api } from "~/utils/api";
 
 export function ItemContextMenu({
   itemsAmount,
   singleListId,
+  onCancel,
   onDelete,
   onMoveItems,
   onMoveItemsToNewList,
 }: {
   itemsAmount: number;
   singleListId?: string;
+  onCancel: () => void;
   onDelete: () => void;
   onMoveItems: (targetListId: string) => void;
   onMoveItemsToNewList: (originListId: string, isSprint: boolean) => void;
@@ -87,6 +90,11 @@ export function ItemContextMenu({
       </ContextMenuSub>
 
       <ContextMenuSeparator />
+
+      <ContextMenuItem onSelect={onCancel}>
+        <CircleSlashedIcon className="mr-2 h-4 w-4" /> Cancel
+        {!singleItem && ` ${itemsAmount} Items`}
+      </ContextMenuItem>
 
       <ContextMenuItem onSelect={onDelete}>
         <Trash2 className="mr-2 h-4 w-4" /> Delete

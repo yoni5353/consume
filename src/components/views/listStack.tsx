@@ -27,6 +27,21 @@ export function ListStack({
 
   const items = sprints?.flatMap((sprint) => sprint.items) ?? [];
 
+  const { mutate: changeStatus } = api.items.changeStatus.useMutation({
+    onMutate: ({ itemIds, newStatus }) => {
+      itemIds.forEach((itemId) => {
+        ctx.items.getItem.setData(itemId, (prevItem) => {
+          if (prevItem) {
+            return {
+              ...prevItem,
+              status: newStatus,
+            };
+          }
+        });
+      });
+    },
+  });
+
   const { mutate: deleteItems } = api.items.deleteItems.useMutation({
     async onMutate(itemIds) {
       const relatedLists = [
@@ -85,6 +100,13 @@ export function ListStack({
         .map((item) => item.listId)
     ),
   ];
+
+  const onCancelItems = useCallback(() => {
+    changeStatus({
+      itemIds: selectedItems,
+      newStatus: "CANCELLED",
+    });
+  }, [changeStatus, selectedItems]);
 
   const onMoveItems = useCallback(
     (targetListId: string) => {
@@ -167,11 +189,11 @@ export function ListStack({
       </ContextMenuTrigger>
       <ItemContextMenu
         singleListId={originListsIds.length === 1 ? originListsIds[0] : undefined}
-        // listId={listId}
         itemsAmount={selectedItems.length}
         onDelete={() => {
           deleteItems(selectedItems);
         }}
+        onCancel={onCancelItems}
         onMoveItems={onMoveItems}
         onMoveItemsToNewList={(originListId, isSprint) => {
           toast({
