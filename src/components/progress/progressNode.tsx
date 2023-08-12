@@ -8,6 +8,20 @@ import { ConSlider } from "../ui/con-slider";
 import { cn } from "~/utils/ui/cn";
 import { Checkbox } from "../ui/checkbox";
 import { StepsProgress } from "./stepsProgress";
+import ConfettiExplosion, {
+  type ConfettiProps,
+} from "@yoni5353/react-confetti-explosion";
+
+const confettiProps: ConfettiProps = {
+  noGravity: true,
+  duration: 500,
+  width: 50,
+  height: 25,
+  force: 0.8,
+  particleCount: 30,
+  particleSize: 4,
+  colors: ["#23009A", "#3C00FF", "#9B73AF", "#E5B4E3", "#EDE2F7"],
+};
 
 export function ProgressNode({
   progress,
@@ -20,6 +34,7 @@ export function ProgressNode({
 }) {
   const [value, setValue] = useState(progress.currentValue);
   const [isHovering, setIsHovering] = useState<boolean>(false);
+  const [isExploding, setIsExploding] = useState(false);
 
   const ctx = api.useContext();
 
@@ -41,6 +56,14 @@ export function ProgressNode({
     setValue(progress.currentValue);
   }, [progress.currentValue]);
 
+  const isDone = progress.currentValue === progress.maxValue;
+
+  useEffect(() => {
+    if (isDone) {
+      setIsExploding(true);
+    }
+  }, [isDone]);
+
   return (
     <div
       className={cn("flex h-full w-full items-center justify-center", className)}
@@ -51,12 +74,20 @@ export function ProgressNode({
         value,
         progress,
         isHovering,
-        isDone: value === progress.maxValue,
+        isDone,
         onValueChange: (newValue) => setValue(newValue),
         onValueCommit: (newValue) => {
           return updateProgress({ itemId, newProgress: newValue });
         },
       }) ?? defaultDisplay({ progress })}
+
+      {isExploding && (
+        <ConfettiExplosion
+          className="absolute"
+          {...confettiProps}
+          onComplete={() => setIsExploding(false)}
+        />
+      )}
     </div>
   );
 }
