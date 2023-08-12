@@ -353,4 +353,20 @@ export const itemsRouter = createTRPCRouter({
       },
     });
   }),
+
+  changeStatus: protectedProcedure
+    .input(
+      z.object({
+        itemIds: z.array(z.string()),
+        newStatus: z.enum(["DEFAULT", "CANCELLED"]),
+      })
+    )
+    .mutation(({ ctx, input }) => {
+      return ctx.prisma.item.updateMany({
+        where: { id: { in: input.itemIds } },
+        data: {
+          status: input.newStatus,
+        },
+      });
+    }),
 });

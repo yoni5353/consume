@@ -51,6 +51,8 @@ export function ItemCard({
 
   if (!item) return null;
 
+  const isCancelled = item.status === "CANCELLED";
+
   const content =
     layout === "inline" ? (
       <div className="flex h-full w-full flex-row justify-between px-2">
@@ -131,7 +133,8 @@ export function ItemCard({
           "bg-secondary text-primary hover:bg-accent",
           selected && "bg-primary/70 text-secondary hover:bg-primary/80",
           layout === "inline" && "h-10 p-2",
-          layout === "card" && "h-64 w-[130px] rounded-lg p-0"
+          layout === "card" && "h-64 w-[130px] rounded-lg p-0",
+          isCancelled && "line-through opacity-80"
         )}
       >
         {content}

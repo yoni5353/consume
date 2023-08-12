@@ -11,7 +11,7 @@ const config = {
     domains: [
       "cdn.myanimelist.net",
       "occ-0-1853-1167.1.nflxso.net", // Netflix
-      "cdn.akamai.steamstatic.com", // Steam
+      "cdn.akamai.steamstatic.com", "cdn.cloudflare.steamstatic.com", // Steam
       "shortstoryproject.com", // Short Story Project
       "wiki.abidanarchive.com", // Abidan Archive wiki
       "img.youtube.com", // Youtube

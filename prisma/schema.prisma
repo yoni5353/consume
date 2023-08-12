@@ -12,7 +12,7 @@ datasource db {
   // https://www.prisma.io/docs/reference/api-reference/prisma-schema-reference#string
   // provider = "sqlite"
   url          = env("DATABASE_URL")
-  provider     = "mysql"
+  provider     = "postgresql"
   relationMode = "prisma"
 }
 
@@ -29,8 +29,9 @@ model Item {
   image       String @default("")
   tags        Tag[]
 
-  progress   Progress @relation(fields: [progressId], references: [id], onDelete: Cascade)
-  progressId String   @unique
+  progress   Progress   @relation(fields: [progressId], references: [id], onDelete: Cascade)
+  progressId String     @unique
+  status     ItemStatus @default(DEFAULT)
 
   mediaType   MediaType? @relation(fields: [mediaTypeId], references: [id])
   mediaTypeId Int?
@@ -43,6 +44,11 @@ model Item {
   @@index([createdById])
   @@index([mediaTypeId])
   @@index([templateId])
+}
+
+enum ItemStatus {
+  DEFAULT
+  CANCELLED
 }
 
 model Progress {

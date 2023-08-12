@@ -33,6 +33,25 @@ export function ListStack({
 
   const itemsInLists = useItemsInLists(sprints?.map((sprint) => sprint.id) ?? []);
 
+  const areSelectedItemsCancelled = selectedItems.every(
+    (itemId) => ctx.items.getItem.getData(itemId)?.status === "CANCELLED"
+  );
+
+  const { mutate: changeStatus } = api.items.changeStatus.useMutation({
+    onMutate: ({ itemIds, newStatus }) => {
+      itemIds.forEach((itemId) => {
+        ctx.items.getItem.setData(itemId, (prevItem) => {
+          if (prevItem) {
+            return {
+              ...prevItem,
+              status: newStatus,
+            };
+          }
+        });
+      });
+    },
+  });
+
   const { mutate: deleteItems } = api.items.deleteItems.useMutation({
     async onMutate(itemIds) {
       const relatedLists = [
@@ -94,6 +113,15 @@ export function ListStack({
     ),
   ];
 
+  const onCancelItems = useCallback(() => {
+    const newStatus = areSelectedItemsCancelled ? "DEFAULT" : "CANCELLED";
+
+    changeStatus({
+      itemIds: selectedItems,
+      newStatus,
+    });
+  }, [areSelectedItemsCancelled, changeStatus, selectedItems]);
+
   const onMoveItems = useCallback(
     (targetListId: string) => {
       if (originListsIds.length > 1) {
@@ -137,11 +165,12 @@ export function ListStack({
       </ContextMenuTrigger>
       <ItemContextMenu
         singleListId={originListsIds.length === 1 ? originListsIds[0] : undefined}
-        // listId={listId}
         itemsAmount={selectedItems.length}
+        areSelectedItemsCancelled={areSelectedItemsCancelled}
         onDelete={() => {
           deleteItems(selectedItems);
         }}
+        onCancel={onCancelItems}
         onMoveItems={onMoveItems}
         onMoveItemsToNewList={(originListId, isSprint) => {
           toast({
