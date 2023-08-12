@@ -167,8 +167,7 @@ export function ListPageContent({ layout }: { layout: "list" | "grid" }) {
             return {
               ...prev,
               draggedOverListId: overListId,
-              // TODO: should be the other way around (buggy atm)
-              dragEntry: overIndex === 0 ? "bottom" : "top",
+              dragEntry: overIndex === 0 ? "top" : "bottom",
             };
           }
         });
