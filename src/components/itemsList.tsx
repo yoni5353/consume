@@ -39,7 +39,7 @@ export function ItemsList({
 
   const items = list?.items;
 
-  const { setNodeRef, isOver } = useDroppable({
+  const { setNodeRef } = useDroppable({
     id: listId,
     data: {
       type: "list",
@@ -70,10 +70,7 @@ export function ItemsList({
   if (!list) return null;
 
   return (
-    <div
-      className={cn("items-list flex flex-col", isOver && "rounded-md bg-accent")}
-      ref={setNodeRef}
-    >
+    <div className="items-list flex flex-col" ref={setNodeRef}>
       <ContextMenu>
         <ContextMenuTrigger asChild>
           <div className="flex flex-row gap-2 space-y-1 pb-3">
