@@ -1,3 +1,4 @@
+import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
 import { CreateListSchema } from "~/utils/apischemas";
@@ -15,7 +16,7 @@ export const listsRouter = createTRPCRouter({
   getList: protectedProcedure.input(z.string()).query(({ ctx, input }) => {
     return ctx.prisma.list.findFirst({
       where: { id: input },
-      include: { items: { orderBy: { position: "asc" } } },
+      include: { items: { orderBy: [{ position: "asc" }, { assignedAt: "desc" }] } },
     });
   }),
 
@@ -96,6 +97,81 @@ export const listsRouter = createTRPCRouter({
             updateMany: input.itemIds.map((itemId, index) => ({
               where: { itemId: itemId },
               data: { position: index },
+            })),
+          },
+        },
+      });
+    }),
+
+  moveItems: protectedProcedure
+    .input(
+      z.object({
+        targetListId: z.string(),
+        prevConnections: z.array(
+          z.object({
+            itemId: z.string(),
+            listId: z.string(),
+          })
+        ),
+        insertAt: z.optional(z.number()),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      const targetList = await ctx.prisma.list.findFirst({
+        where: { id: input.targetListId },
+        include: {
+          items: {
+            orderBy: [{ position: "asc" }, { assignedAt: "desc" }],
+            select: { itemId: true },
+          },
+        },
+      });
+
+      if (!targetList) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Target list not found",
+        });
+      }
+
+      const targetListCurrentItemIds = targetList.items.map(({ itemId }) => itemId);
+
+      await Promise.all(
+        input.prevConnections.map(async ({ itemId, listId }) => {
+          if (listId !== input.targetListId) {
+            await ctx.prisma.itemsInLists.delete({
+              where: {
+                itemId_listId: {
+                  itemId,
+                  listId,
+                },
+              },
+            });
+          }
+        })
+      );
+
+      const itemIdsToInsert = input.prevConnections.map(({ itemId }) => itemId);
+      const newItemIds = targetListCurrentItemIds.filter(
+        (id) => !itemIdsToInsert.includes(id)
+      );
+      newItemIds.splice(input.insertAt ?? 0, 0, ...itemIdsToInsert);
+
+      return ctx.prisma.list.update({
+        where: { id: input.targetListId },
+        data: {
+          items: {
+            upsert: newItemIds.map((itemId, position) => ({
+              where: {
+                itemId_listId: { itemId, listId: input.targetListId },
+              },
+              update: { position: { set: position } },
+              create: {
+                item: { connect: { id: itemId } },
+                assignedBy: { connect: { id: ctx.session.user.id } },
+                assignedAt: new Date(),
+                position,
+              },
             })),
           },
         },

@@ -9,6 +9,7 @@ import { ItemContextMenu } from "../itemContextMenu";
 import { useToast } from "../ui/use-toast";
 import { type ItemDragContext } from "./listPageContent";
 import { useItemsInLists } from "~/utils/queries/useItemsInLists";
+import { ItemsInLists } from "@prisma/client";
 
 export function ListStack({
   layout,
@@ -92,16 +93,17 @@ export function ListStack({
     },
   });
 
-  const { mutate: moveItems } = api.items.moveItems.useMutation({
-    onMutate: () => {
-      const originListId = itemsInLists.find(
-        (item) => item.itemId === selectedItems[0]
-      )?.listId;
-      return { originListId };
+  const { mutate: moveItems } = api.lists.moveItems.useMutation({
+    onMutate: ({ targetListId, prevConnections }) => {
+      const relatedLists = [targetListId].concat(
+        ...new Set(prevConnections.map((c) => c.listId))
+      );
+      return { relatedLists };
     },
-    onSuccess: (_, { targetListId }, context) => {
-      void ctx.lists.getList.invalidate(context?.originListId);
-      void ctx.lists.getList.invalidate(targetListId);
+    onSuccess: (_, __, context) => {
+      context?.relatedLists.forEach((listId) => {
+        void ctx.lists.getList.invalidate(listId);
+      });
     },
   });
 
@@ -124,22 +126,16 @@ export function ListStack({
 
   const onMoveItems = useCallback(
     (targetListId: string) => {
-      if (originListsIds.length > 1) {
-        // TODO
-        toast({
-          title: "Not implemented",
-          description: "Cannot move items from different lists",
-          variant: "destructive",
-        });
-        return;
-      }
+      const prevConnections = selectedItems
+        .map((itemId) => itemsInLists.find((item) => item.itemId === itemId))
+        .filter((connection): connection is ItemsInLists => !!connection);
 
       moveItems({
         targetListId,
-        itemIds: selectedItems,
+        prevConnections,
       });
     },
-    [moveItems, originListsIds.length, selectedItems, toast]
+    [itemsInLists, moveItems, selectedItems]
   );
 
   return (
@@ -173,6 +169,7 @@ export function ListStack({
         onCancel={onCancelItems}
         onMoveItems={onMoveItems}
         onMoveItemsToNewList={(originListId, isSprint) => {
+          // TODO
           toast({
             title: "Not implemented",
             description: "Turning this off as originListId needs to change",
