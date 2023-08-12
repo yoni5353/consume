@@ -12,6 +12,7 @@ import { ListContextMenu } from "./listContextMenu";
 import { SortableContext, verticalListSortingStrategy } from "@dnd-kit/sortable";
 import { SortableItemCard } from "./itemCard";
 import { type ItemDragContext } from "./views/listPageContent";
+import { useDroppable } from "@dnd-kit/core";
 
 export function ItemsList({
   listId,
@@ -38,6 +39,14 @@ export function ItemsList({
 
   const items = list?.items;
 
+  const { setNodeRef, isOver } = useDroppable({
+    id: listId,
+    data: {
+      type: "list",
+    },
+    disabled: !!items?.length,
+  });
+
   const [date, setDate] = useState<DateRange>();
 
   const onSetDate = useCallback(
@@ -61,7 +70,10 @@ export function ItemsList({
   if (!list) return null;
 
   return (
-    <div className="items-list flex flex-col">
+    <div
+      className={cn("items-list flex flex-col", isOver && "rounded-md bg-accent")}
+      ref={setNodeRef}
+    >
       <ContextMenu>
         <ContextMenuTrigger asChild>
           <div className="flex flex-row gap-2 space-y-1 pb-3">

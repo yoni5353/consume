@@ -18,6 +18,7 @@ import {
   useSensor,
   useSensors,
   type DragOverEvent,
+  type Over,
 } from "@dnd-kit/core";
 import { sortableKeyboardCoordinates } from "@dnd-kit/sortable";
 import { ItemCard } from "../itemCard";
@@ -125,6 +126,25 @@ export function ListPageContent({ layout }: { layout: "list" | "grid" }) {
     [itemsInLists]
   );
 
+  const getOverIndex = useCallback((over: Over | null) => {
+    if (over && get(over, "data.current.type") === "list") return 0;
+
+    const overIndex = get(over, "data.current.sortable.index") as number | undefined;
+    if (typeof overIndex !== "number") throw Error("Could not find overIndex");
+    return overIndex;
+  }, []);
+
+  const getOverListId = useCallback(
+    (over: Over | null) => {
+      if (over && get(over, "data.current.type") === "list") {
+        return over?.id as string;
+      }
+
+      return findListId(over?.id as string) as string;
+    },
+    [findListId]
+  );
+
   const onDragStart = useCallback(
     ({ active }: DragStartEvent) => {
       const { id: itemId } = active;
@@ -143,10 +163,8 @@ export function ListPageContent({ layout }: { layout: "list" | "grid" }) {
 
   const onDragOver = useCallback(
     ({ active: _, over }: DragOverEvent) => {
-      const overListId = findListId(over?.id as string) as string;
-
-      const overIndex = get(over, "data.current.sortable.index") as number | undefined;
-      if (typeof overIndex !== "number") throw Error("Could not find overIndex");
+      const overListId = getOverListId(over);
+      const overIndex = getOverIndex(over);
 
       if (overListId !== dragContext?.draggedOverListId) {
         setDragContext((prev) => {
@@ -161,15 +179,14 @@ export function ListPageContent({ layout }: { layout: "list" | "grid" }) {
         });
       }
     },
-    [dragContext?.draggedOverListId, findListId]
+    [dragContext?.draggedOverListId, getOverIndex, getOverListId]
   );
 
   const onDragEnd = useCallback(
     ({ over }: DragEndEvent) => {
       if (!dragContext) return;
 
-      const overIndex = get(over, "data.current.sortable.index") as number | undefined;
-      if (typeof overIndex !== "number") throw Error("Could not find overIndex");
+      const overIndex = getOverIndex(over);
 
       const { draggedIds, draggedOverListId } = dragContext;
       const draggedItemsInLists = draggedIds
