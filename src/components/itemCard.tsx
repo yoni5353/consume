@@ -8,8 +8,27 @@ import { CircleProgress } from "./progress/circleProgress";
 import { Badge } from "./ui/badge";
 import { Dialog, DialogContent } from "./ui/dialog";
 import { ItemDialog } from "./itemDialog/itemDialog";
-import { useState } from "react";
+import { type ComponentProps, useState } from "react";
 import { AspectRatio } from "./ui/aspect-ratio";
+import { useSortable } from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
+
+export function SortableItemCard(props: ComponentProps<typeof ItemCard>) {
+  const { attributes, listeners, setNodeRef, transform, transition } = useSortable({
+    id: props.itemId,
+  });
+
+  const draggableStyle = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+  };
+
+  return (
+    <div ref={setNodeRef} style={draggableStyle} {...attributes} {...listeners}>
+      <ItemCard {...props} />
+    </div>
+  );
+}
 
 export function ItemCard({
   itemId,

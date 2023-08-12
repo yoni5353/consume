@@ -25,34 +25,6 @@ export const itemsRouter = createTRPCRouter({
       });
     }),
 
-  // Only from one list to another
-  // Since it disconnects the lists by the listId of the first item
-  moveItems: protectedProcedure
-    .input(
-      z.object({
-        targetListId: z.string(),
-        itemIds: z.array(z.string()).min(1),
-      })
-    )
-    .mutation(async ({ ctx, input }) => {
-      const prevListIdOfFirstItem = (
-        await ctx.prisma.item.findFirst({
-          where: { id: { in: input.itemIds } },
-          select: { lists: { select: { listId: true } } },
-        })
-      )?.lists[0]?.listId;
-
-      return ctx.prisma.itemsInLists.updateMany({
-        where: {
-          AND: { itemId: { in: input.itemIds }, listId: prevListIdOfFirstItem },
-        },
-        data: {
-          listId: input.targetListId,
-          assignedAt: new Date(),
-        },
-      });
-    }),
-
   createItem: protectedProcedure
     .input(
       z.object({

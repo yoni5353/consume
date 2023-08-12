@@ -3,20 +3,27 @@ import { PlusCircleIcon } from "lucide-react";
 import { Button } from "../ui/button";
 import { ItemsList } from "../itemsList";
 import { api } from "~/utils/api";
-import { useCallback, useState } from "react";
+import { useCallback } from "react";
 import { ContextMenu, ContextMenuTrigger } from "../ui/context-menu";
 import { ItemContextMenu } from "../itemContextMenu";
 import { useToast } from "../ui/use-toast";
+import { type ItemDragContext } from "./listPageContent";
+import { useItemsInLists } from "~/utils/queries/useItemsInLists";
+import { ItemsInLists } from "@prisma/client";
 
 export function ListStack({
   layout,
   onCreateSprint,
+  selectedItems,
+  onCardClick,
+  dragContext,
 }: {
   layout: "list" | "grid";
   onCreateSprint: () => void;
+  selectedItems: string[];
+  onCardClick: (event: React.MouseEvent, itemId: string) => void;
+  dragContext?: ItemDragContext;
 }) {
-  const [selectedItems, setSelectedItems] = useState<string[]>([]);
-  const [lastSelectedItem, setLastSelectedItem] = useState<string>();
   const [sprintsViewRef] = useAutoAnimate<HTMLDivElement>();
 
   const ctx = api.useContext();
@@ -25,7 +32,7 @@ export function ListStack({
 
   const { data: sprints } = api.lists.getSprints.useQuery();
 
-  const itemsInLists = sprints?.flatMap((sprint) => sprint.items) ?? [];
+  const itemsInLists = useItemsInLists(sprints?.map((sprint) => sprint.id) ?? []);
 
   const areSelectedItemsCancelled = selectedItems.every(
     (itemId) => ctx.items.getItem.getData(itemId)?.status === "CANCELLED"
@@ -86,16 +93,17 @@ export function ListStack({
     },
   });
 
-  const { mutate: moveItems } = api.items.moveItems.useMutation({
-    onMutate: () => {
-      const originListId = itemsInLists.find(
-        (item) => item.itemId === selectedItems[0]
-      )?.listId;
-      return { originListId };
+  const { mutate: moveItems } = api.lists.moveItems.useMutation({
+    onMutate: ({ targetListId, prevConnections }) => {
+      const relatedLists = [targetListId].concat(
+        ...new Set(prevConnections.map((c) => c.listId))
+      );
+      return { relatedLists };
     },
-    onSuccess: (_, { targetListId }, context) => {
-      void ctx.lists.getList.invalidate(context?.originListId);
-      void ctx.lists.getList.invalidate(targetListId);
+    onSuccess: (_, __, context) => {
+      context?.relatedLists.forEach((listId) => {
+        void ctx.lists.getList.invalidate(listId);
+      });
     },
   });
 
@@ -118,66 +126,17 @@ export function ListStack({
 
   const onMoveItems = useCallback(
     (targetListId: string) => {
-      if (originListsIds.length > 1) {
-        // TODO
-        toast({
-          title: "Not implemented",
-          description: "Cannot move items from different lists",
-          variant: "destructive",
-        });
-        return;
-      }
+      const prevConnections = selectedItems
+        .map((itemId) => itemsInLists.find((item) => item.itemId === itemId))
+        .filter((connection): connection is ItemsInLists => !!connection);
 
       moveItems({
         targetListId,
-        itemIds: selectedItems,
+        prevConnections,
       });
     },
-    [moveItems, originListsIds.length, selectedItems, toast]
+    [itemsInLists, moveItems, selectedItems]
   );
-
-  if (!lastSelectedItem && itemsInLists[0]) {
-    setLastSelectedItem(itemsInLists[0].itemId);
-  }
-
-  const onCardClick = (e: React.MouseEvent, itemId: string) => {
-    const auxClick = e.button === 1 || e.button === 2;
-
-    const newSelectedItem = itemId;
-    if (e.ctrlKey) {
-      setSelectedItems((prev) => {
-        if (prev.includes(itemId)) {
-          return prev.filter((id) => id !== itemId);
-        } else {
-          return [...prev, itemId];
-        }
-      });
-    } else if (e.shiftKey) {
-      if (lastSelectedItem) {
-        const index = itemsInLists.findIndex((item) => item.itemId === itemId);
-        const firstIndex = itemsInLists.findIndex(
-          (item) => item.itemId === lastSelectedItem
-        );
-        if (~index && ~firstIndex) {
-          const start = Math.min(index, firstIndex);
-          const end = Math.max(index, firstIndex);
-          const newSelectedItems = itemsInLists
-            .slice(start, end + 1)
-            .map((item) => item.itemId);
-          setSelectedItems((prev) => {
-            return [...new Set([...prev, ...newSelectedItems])];
-          });
-        }
-      }
-    } else {
-      if (!(auxClick && selectedItems.includes(itemId))) {
-        setSelectedItems([itemId]);
-      }
-    }
-    if (!e.shiftKey) {
-      setLastSelectedItem(newSelectedItem);
-    }
-  };
 
   return (
     <ContextMenu>
@@ -191,6 +150,7 @@ export function ListStack({
               isSprint={true}
               selectedItems={selectedItems}
               onCardClick={onCardClick}
+              dragContext={dragContext}
             />
           ))}
           <Button variant="ghost" onClick={onCreateSprint}>
@@ -209,6 +169,7 @@ export function ListStack({
         onCancel={onCancelItems}
         onMoveItems={onMoveItems}
         onMoveItemsToNewList={(originListId, isSprint) => {
+          // TODO
           toast({
             title: "Not implemented",
             description: "Turning this off as originListId needs to change",

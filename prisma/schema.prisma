@@ -105,6 +105,8 @@ model ItemsInLists {
   assignedBy   User     @relation(fields: [assignedById], references: [id])
   assignedById String
 
+  position Int @default(0)
+
   @@id([itemId, listId])
   @@index([itemId])
   @@index([listId])
