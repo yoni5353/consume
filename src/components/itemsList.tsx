@@ -113,7 +113,11 @@ export function ItemsList({
         </ContextMenuTrigger>
         <ListContextMenu selectedListId={listId} isSprint={isSprint} />
       </ContextMenu>
-      <SortableContext items={sortableItemIds} strategy={verticalListSortingStrategy}>
+      <SortableContext
+        items={sortableItemIds}
+        strategy={verticalListSortingStrategy}
+        id={listId}
+      >
         <div
           className={cn(
             "items flex flex-col gap-2",

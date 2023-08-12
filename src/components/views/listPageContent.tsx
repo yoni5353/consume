@@ -19,6 +19,7 @@ import {
   useSensors,
   type DragOverEvent,
   type Over,
+  type Active,
 } from "@dnd-kit/core";
 import { sortableKeyboardCoordinates } from "@dnd-kit/sortable";
 import { ItemCard } from "../itemCard";
@@ -118,14 +119,6 @@ export function ListPageContent({ layout }: { layout: "list" | "grid" }) {
     })
   );
 
-  // TODO to use sortable's containerId instead (or memoize items)
-  const findListId = useCallback(
-    (itemId: string) => {
-      return itemsInLists.find((item) => item.itemId === itemId)?.listId;
-    },
-    [itemsInLists]
-  );
-
   const getOverIndex = useCallback((over: Over | null) => {
     if (over && get(over, "data.current.type") === "list") return 0;
 
@@ -134,16 +127,18 @@ export function ListPageContent({ layout }: { layout: "list" | "grid" }) {
     return overIndex;
   }, []);
 
-  const getOverListId = useCallback(
-    (over: Over | null) => {
-      if (over && get(over, "data.current.type") === "list") {
-        return over?.id as string;
-      }
+  const getOverListId = useCallback((over: Over | Active | null) => {
+    if (over && get(over, "data.current.type") === "list") {
+      return over?.id as string;
+    }
 
-      return findListId(over?.id as string) as string;
-    },
-    [findListId]
-  );
+    const containerId = get(over, "data.current.sortable.containerId") as
+      | number
+      | undefined;
+    if (typeof containerId !== "string") throw Error("Could not find containerId");
+
+    return containerId;
+  }, []);
 
   const onDragStart = useCallback(
     ({ active }: DragStartEvent) => {
@@ -155,10 +150,10 @@ export function ListPageContent({ layout }: { layout: "list" | "grid" }) {
       setDragContext({
         draggedIds: selectedItems,
         mainDraggedId: active.id as string,
-        draggedOverListId: findListId(itemId) as string,
+        draggedOverListId: getOverListId(active),
       });
     },
-    [findListId, selectCardPreDrag, selectedItems]
+    [getOverListId, selectCardPreDrag, selectedItems]
   );
 
   const onDragOver = useCallback(
