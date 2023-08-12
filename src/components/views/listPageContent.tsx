@@ -49,7 +49,7 @@ export function ListPageContent({ layout }: { layout: "list" | "grid" }) {
     },
   });
 
-  const { mutate: orderList } = api.lists.orderList.useMutation();
+  const { mutate: moveItems } = api.lists.moveItems.useMutation();
 
   const itemsInLists = useItemsInLists(sprints?.map((sprint) => sprint.id) ?? []);
 
@@ -171,7 +171,6 @@ export function ListPageContent({ layout }: { layout: "list" | "grid" }) {
       const overIndex = get(over, "data.current.sortable.index") as number | undefined;
       if (typeof overIndex !== "number") throw Error("Could not find overIndex");
 
-      // Optimistcly update items
       const { draggedIds, draggedOverListId } = dragContext;
       const draggedItemsInLists = draggedIds
         .map((itemId) => itemsInLists.find((item) => item.itemId === itemId))
@@ -183,6 +182,7 @@ export function ListPageContent({ layout }: { layout: "list" | "grid" }) {
         ]),
       ];
 
+      // Optimistcly update items
       relatedLists.map((listId) => {
         ctx.lists.getList.setData(listId, (prevList) => {
           if (!prevList) return;
@@ -204,16 +204,16 @@ export function ListPageContent({ layout }: { layout: "list" | "grid" }) {
         return prevList;
       });
 
-      const newItemsOfList = ctx.lists.getList.getData(draggedOverListId)?.items ?? [];
-
-      orderList({
-        listId: draggedOverListId,
-        itemIds: newItemsOfList.map((item) => item.itemId),
+      // Actually move items
+      moveItems({
+        targetListId: draggedOverListId,
+        prevConnections: draggedItemsInLists,
+        insertAt: overIndex,
       });
 
       setDragContext(undefined);
     },
-    [ctx.lists.getList, dragContext, itemsInLists, orderList]
+    [ctx.lists.getList, dragContext, itemsInLists, moveItems]
   );
 
   if (!lastSelectedItem && itemsInLists[0]) {
