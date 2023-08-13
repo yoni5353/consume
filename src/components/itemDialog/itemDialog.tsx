@@ -268,6 +268,9 @@ function TagSelection({ itemId }: { itemId: string }) {
           </Badge>
         ))}
       </div>
+      <button type="submit" className="">
+        ME
+      </button>
     </form>
   );
 }

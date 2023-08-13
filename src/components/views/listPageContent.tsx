@@ -12,7 +12,6 @@ import {
   type DragEndEvent,
   DragOverlay,
   type DragStartEvent,
-  KeyboardSensor,
   PointerSensor,
   closestCenter,
   useSensor,
@@ -21,7 +20,6 @@ import {
   type Over,
   type Active,
 } from "@dnd-kit/core";
-import { sortableKeyboardCoordinates } from "@dnd-kit/sortable";
 import { ItemCard } from "../itemCard";
 import { get } from "lodash";
 import { useItemsInLists } from "~/utils/queries/useItemsInLists";
@@ -113,9 +111,6 @@ export function ListPageContent({ layout }: { layout: "list" | "grid" }) {
       activationConstraint: {
         distance: 5,
       },
-    }),
-    useSensor(KeyboardSensor, {
-      coordinateGetter: sortableKeyboardCoordinates,
     })
   );
 
