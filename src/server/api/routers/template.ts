@@ -43,7 +43,6 @@ export const templatesRouter = createTRPCRouter({
     .input(
       z.object({
         title: z.string(),
-        description: z.string(),
         link: z.string(),
         image: z.string(),
         tags: z.array(z.string()),
@@ -64,7 +63,6 @@ export const templatesRouter = createTRPCRouter({
             },
           },
           title: input.title,
-          description: input.description,
           link: input.link,
           image: input.image,
           // TODO

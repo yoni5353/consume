@@ -23,11 +23,11 @@ model Item {
   createdBy   User     @relation(fields: [createdById], references: [id])
   createdById String
 
-  title       String
-  description String @default("") @db.Text
-  link        String @default("")
-  image       String @default("")
-  tags        Tag[]
+  title String
+  notes String @default("") @db.Text
+  link  String @default("")
+  image String @default("")
+  tags  Tag[]
 
   progress   Progress   @relation(fields: [progressId], references: [id], onDelete: Cascade)
   progressId String     @unique

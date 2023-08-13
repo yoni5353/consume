@@ -43,14 +43,14 @@ export function ItemDialog({ itemId }: { itemId: string }) {
   const ctx = api.useContext();
 
   const { mutate: editItem } = api.items.editItem.useMutation({
-    async onMutate({ mediaTypeId, title, description, link, image }) {
+    async onMutate({ mediaTypeId, title, notes, link, image }) {
       await ctx.items.getItem.cancel(itemId);
       ctx.items.getItem.setData(itemId, (prevItem) => {
         if (prevItem) {
           const newItem = {
             ...prevItem,
             ...(title && { title }),
-            ...(description && { description }),
+            ...(notes && { notes }),
             ...(link && { link }),
             ...(image && { image }),
           };
@@ -72,10 +72,10 @@ export function ItemDialog({ itemId }: { itemId: string }) {
   });
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  const onDescriptionCommit = useCallback(
+  const onNotesCommit = useCallback(
     throttle(
-      (description: string) => {
-        editItem({ itemId, description });
+      (notes: string) => {
+        editItem({ itemId, notes });
       },
       500,
       { leading: false, trailing: true }
@@ -104,12 +104,12 @@ export function ItemDialog({ itemId }: { itemId: string }) {
         </a>
       )}
 
-      {/* DESCRIPTION */}
+      {/* NOTES */}
       <Textarea
-        id="description"
+        id="notes"
         className="font-light tracking-wide"
-        defaultValue={item.description}
-        onChange={(e) => onDescriptionCommit(e.target.value)}
+        defaultValue={item.notes}
+        onChange={(e) => onNotesCommit(e.target.value)}
       />
 
       <div className="h-4"></div>

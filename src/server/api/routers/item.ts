@@ -31,7 +31,7 @@ export const itemsRouter = createTRPCRouter({
         listId: z.string(),
         item: z.object({
           title: z.string().min(1),
-          description: z.optional(z.string()),
+          notes: z.optional(z.string()),
         }),
       })
     )
@@ -45,7 +45,7 @@ export const itemsRouter = createTRPCRouter({
               item: {
                 create: {
                   title: input.item.title,
-                  description: input.item.description,
+                  notes: input.item.notes,
                   createdBy: { connect: { id: ctx.session.user.id } },
                   progress: {
                     create: {
@@ -86,6 +86,7 @@ export const itemsRouter = createTRPCRouter({
         mediaTypeId,
         metaDescription: __,
         storyId: ___,
+        description: ____,
         ...itemArgs
       } = template;
 
@@ -192,7 +193,7 @@ export const itemsRouter = createTRPCRouter({
       z.object({
         itemId: z.string(),
         title: z.optional(z.string().min(1)),
-        description: z.optional(z.string()),
+        notes: z.optional(z.string()),
         mediaTypeId: z.optional(z.number().nullable()),
         tags: z.optional(z.array(z.string())),
         link: z.optional(z.string()),
@@ -222,7 +223,7 @@ export const itemsRouter = createTRPCRouter({
         where: { id: input.itemId },
         data: {
           title: input.title || undefined,
-          description: input.description || undefined,
+          notes: input.notes || undefined,
           link: input.link || undefined,
           image: input.image || undefined,
           mediaType: mediaTypeConnection,
