@@ -15,7 +15,6 @@ import { useCallback } from "react";
 import { useForm } from "react-hook-form";
 import { Badge } from "../ui/badge";
 import { throttle } from "lodash";
-import { Textarea } from "../ui/textarea";
 import { ProgressEditor } from "./progressEditor";
 import { ItemDialogDropdown } from "./itemDialogDropdown";
 import { format } from "date-fns";
@@ -27,6 +26,8 @@ import {
   DropdownMenuContent,
 } from "../ui/dropdown-menu";
 import { SettingsIcon } from "lucide-react";
+import { getTags } from "~/utils/items/tags";
+import { NotesTextarea } from "./notesTextarea";
 
 export function ItemDialog({ itemId }: { itemId: string }) {
   const { data: item } = api.items.getItem.useQuery(itemId, {
@@ -43,7 +44,7 @@ export function ItemDialog({ itemId }: { itemId: string }) {
   const ctx = api.useContext();
 
   const { mutate: editItem } = api.items.editItem.useMutation({
-    async onMutate({ mediaTypeId, title, notes, link, image }) {
+    async onMutate({ mediaTypeId, title, notes, link, image, tags }) {
       await ctx.items.getItem.cancel(itemId);
       ctx.items.getItem.setData(itemId, (prevItem) => {
         if (prevItem) {
@@ -53,6 +54,12 @@ export function ItemDialog({ itemId }: { itemId: string }) {
             ...(notes && { notes }),
             ...(link && { link }),
             ...(image && { image }),
+            ...(tags && {
+              tags: tags.map((tag) => ({
+                name: tag,
+                itemId,
+              })),
+            }),
           };
 
           const newMediaType = mediaTypes?.find((mt) => mt.id === mediaTypeId);
@@ -75,7 +82,8 @@ export function ItemDialog({ itemId }: { itemId: string }) {
   const onNotesCommit = useCallback(
     throttle(
       (notes: string) => {
-        editItem({ itemId, notes });
+        const tags = getTags(notes);
+        editItem({ itemId, notes, tags });
       },
       500,
       { leading: false, trailing: true }
@@ -86,7 +94,7 @@ export function ItemDialog({ itemId }: { itemId: string }) {
   if (!item) return null;
 
   return (
-    <div className="flex h-full flex-col gap-3 overflow-hidden">
+    <div className="flex h-full flex-col gap-3 overflow-hidden px-1">
       {/* SETTINGS  */}
       <div className="absolute right-10 top-3.5">
         <ItemDialogDropdown item={item} />
@@ -105,7 +113,7 @@ export function ItemDialog({ itemId }: { itemId: string }) {
       )}
 
       {/* NOTES */}
-      <Textarea
+      <NotesTextarea
         id="notes"
         className="font-light tracking-wide"
         defaultValue={item.notes}
@@ -189,7 +197,10 @@ export function ItemDialog({ itemId }: { itemId: string }) {
       </div>
 
       {/* FOOTER */}
-      <p className="text-slate-500" title={format(item.createdAt, "'Created at' P H:mm")}>
+      <p
+        className="text-sm text-slate-500"
+        title={format(item.createdAt, "'Created at' P H:mm")}
+      >
         Created {dayjs(item.createdAt).fromNow()}
       </p>
     </div>
@@ -268,9 +279,6 @@ function TagSelection({ itemId }: { itemId: string }) {
           </Badge>
         ))}
       </div>
-      <button type="submit" className="">
-        ME
-      </button>
     </form>
   );
 }
