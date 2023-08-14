@@ -8,12 +8,9 @@ import {
   SelectValue,
 } from "../ui/select";
 import { Label } from "../ui/label";
-import { Input } from "../ui/input";
 import { MediaTypeIcon } from "../resources/mediaTypeIcon";
 import dayjs from "dayjs";
 import { useCallback } from "react";
-import { useForm } from "react-hook-form";
-import { Badge } from "../ui/badge";
 import { throttle } from "lodash";
 import { ProgressEditor } from "./progressEditor";
 import { ItemDialogDropdown } from "./itemDialogDropdown";
@@ -191,9 +188,6 @@ export function ItemDialog({ itemId }: { itemId: string }) {
             </SelectContent>
           </Select>
         </div>
-
-        {/* TAGS */}
-        <TagSelection itemId={item.id} />
       </div>
 
       {/* FOOTER */}
@@ -204,81 +198,5 @@ export function ItemDialog({ itemId }: { itemId: string }) {
         Created {dayjs(item.createdAt).fromNow()}
       </p>
     </div>
-  );
-}
-
-function TagSelection({ itemId }: { itemId: string }) {
-  const { register, handleSubmit, reset } = useForm<{ newTag: string }>({});
-
-  const { data: item } = api.items.getItem.useQuery(itemId);
-
-  const ctx = api.useContext();
-
-  const { mutate: editItem } = api.items.editItem.useMutation({
-    onMutate: ({ tags: newTags }) => {
-      void ctx.items.getItem.cancel(itemId);
-      ctx.items.getItem.setData(itemId, (prevItem) => {
-        if (prevItem && newTags) {
-          return {
-            ...prevItem,
-            tags: [...new Set(newTags)]
-              .sort()
-              .map((tag) => ({ name: tag, itemId: prevItem.id })),
-          };
-        }
-      });
-    },
-  });
-
-  return (
-    <form
-      onSubmit={handleSubmit(({ newTag }) => {
-        if (item) {
-          const trimmedTag = newTag.trim();
-          const prevTags = item.tags.map((tag) => tag.name);
-          editItem({ itemId, tags: [...prevTags, trimmedTag] });
-          reset();
-        }
-      })}
-      className="space-y-5"
-    >
-      <div className="flex flex-row items-center space-x-4">
-        <Label
-          htmlFor="newTag"
-          className="w-[25%] items-center text-right font-mono lowercase"
-        >
-          Add Tag
-        </Label>
-        <Input
-          className="w-32"
-          type="text"
-          id="newTag"
-          {...register("newTag", { required: true, maxLength: 32 })}
-        />
-      </div>
-      <div className="flex flex-row items-center space-x-4">
-        <Label
-          htmlFor="newTag"
-          className="w-[25%] items-center text-right font-mono lowercase"
-        >
-          Remove Tag
-        </Label>
-        {item?.tags.map((tag) => (
-          <Badge
-            key={tag.name}
-            className="hover:cursor-pointer"
-            onClick={() => {
-              if (item) {
-                const prevTags = item.tags.map((t) => t.name);
-                editItem({ itemId, tags: prevTags.filter((t) => t !== tag.name) });
-                reset();
-              }
-            }}
-          >
-            {tag.name}
-          </Badge>
-        ))}
-      </div>
-    </form>
   );
 }
