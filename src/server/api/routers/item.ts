@@ -4,6 +4,7 @@ import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
 import { exludeTemplateMetadta } from "./templateHelpers";
 import { ProgressType, defaultProgressMaxValues } from "~/utils/progress";
 import { type PartialItem, getItemFromLink } from "~/utils/scrapers/main";
+import { SwitchProgressSchema, switchProgress } from "~/utils/items/switchProgress";
 
 export const itemsRouter = createTRPCRouter({
   getItem: protectedProcedure.input(z.string()).query(({ ctx, input }) => {
@@ -229,11 +230,11 @@ export const itemsRouter = createTRPCRouter({
 
   switchProgress: protectedProcedure
     .input(
-      z.object({
-        itemId: z.string(),
-        newProgressType: z.optional(z.nativeEnum(ProgressType)),
-        newMaxValue: z.optional(z.number().min(0)),
-      })
+      SwitchProgressSchema.and(
+        z.object({
+          itemId: z.string(),
+        })
+      )
     )
     .mutation(async ({ ctx, input }) => {
       const currentProgress = (
@@ -247,40 +248,16 @@ export const itemsRouter = createTRPCRouter({
         throw new TRPCError({ code: "NOT_FOUND", message: "Progress not found" });
       }
 
-      if (input.newProgressType && input.newProgressType !== currentProgress.type) {
-        const newCurrentValue =
-          input.newProgressType === ProgressType.PERCENTAGE
-            ? (currentProgress.currentValue / currentProgress.maxValue) * 100
-            : 0;
+      const newProgress = switchProgress(currentProgress, input);
 
-        return ctx.prisma.item.update({
-          where: { id: input.itemId },
-          data: {
-            progress: {
-              update: {
-                type: input.newProgressType,
-                currentValue: newCurrentValue,
-                maxValue:
-                  input.newMaxValue ?? defaultProgressMaxValues[input.newProgressType],
-              },
-            },
+      return ctx.prisma.item.update({
+        where: { id: input.itemId },
+        data: {
+          progress: {
+            update: newProgress,
           },
-        });
-      } else if (!!input.newMaxValue) {
-        return ctx.prisma.item.update({
-          where: { id: input.itemId },
-          data: {
-            progress: {
-              update: {
-                currentValue: Math.min(currentProgress.currentValue, input.newMaxValue),
-                maxValue: input.newMaxValue,
-              },
-            },
-          },
-        });
-      } else {
-        throw new TRPCError({ code: "BAD_REQUEST" });
-      }
+        },
+      });
     }),
 
   updateProgress: protectedProcedure

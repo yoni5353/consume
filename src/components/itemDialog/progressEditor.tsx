@@ -9,6 +9,7 @@ import Image from "next/image";
 import stepsImage from "../../../public/images/progress/5steps/5steps-3.png";
 import { ProgressNode } from "../progress/progressNode";
 import { Input } from "../ui/input";
+import { switchProgress as switchProgressUtil } from "~/utils/items/switchProgress";
 
 export function ProgressEditor({ item }: { item: Item & { progress: Progress } }) {
   const [sliderValue, setSliderValue] = useState<number>();
@@ -16,7 +17,20 @@ export function ProgressEditor({ item }: { item: Item & { progress: Progress } }
   const ctx = api.useContext();
 
   const { mutate: switchProgress } = api.items.switchProgress.useMutation({
-    onSuccess: () => ctx.items.getItem.refetch(),
+    onMutate: (vars) => {
+      const newProgressProps = switchProgressUtil(item.progress, vars);
+      ctx.items.getItem.setData(itemId, (prevItem) => {
+        if (prevItem) {
+          return {
+            ...prevItem,
+            progress: {
+              ...prevItem.progress,
+              ...newProgressProps,
+            },
+          };
+        }
+      });
+    },
   });
 
   const itemId = item.id;
