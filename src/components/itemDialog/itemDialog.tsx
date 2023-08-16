@@ -91,7 +91,7 @@ export function ItemDialog({ itemId }: { itemId: string }) {
   if (!item) return null;
 
   return (
-    <div className="flex h-full flex-col gap-3 overflow-hidden px-1">
+    <div className="flex h-full flex-col gap-4 overflow-hidden px-1">
       {/* SETTINGS  */}
       <div className="absolute right-10 top-3.5">
         <ItemDialogDropdown item={item} />
@@ -117,34 +117,14 @@ export function ItemDialog({ itemId }: { itemId: string }) {
         onChange={(e) => onNotesCommit(e.target.value)}
       />
 
-      <div className="h-4"></div>
-
       {/* BODY */}
-      <div className="relative mx-4 grid grid-cols-2 gap-2 gap-x-10">
+      <div className="relative grid grid-cols-2 gap-2 gap-x-10">
         <div className="absolute left-[50%] h-[100%] w-0.5 rounded-full bg-muted"></div>
 
         {/* PROGRESS */}
-        <div className="flex flex-row items-center space-x-4">
-          <Label className="w-[25%] items-center text-right font-mono lowercase">
-            Progress
-          </Label>
-          <div className="flex h-full w-full flex-row items-center justify-between gap-1">
-            <ProgressNode
-              progress={item.progress}
-              itemId={item.id}
-              className="rounded-lg bg-accent/20 p-2"
-            />
-            <DropdownMenu>
-              <DropdownMenuTrigger>
-                <Button variant="outline" className="rounded-full p-2">
-                  <SettingsIcon className="h-4 w-4" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent className="p-2">
-                <ProgressEditor item={item} />
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </div>
+        <div className="flex flex-col items-center gap-2">
+          <Label className="text-center font-mono text-sm lowercase">progress</Label>
+          <ProgressEditor item={item} />
         </div>
 
         {/* MEDIA TYPE */}
