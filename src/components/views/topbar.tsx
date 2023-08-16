@@ -36,8 +36,8 @@ export function TopBar({
   const userEmail = sessionData?.user?.email;
 
   return (
-    <div className="flex w-full flex-row items-center justify-between p-2">
-      <div />
+    <div className="flex w-full flex-row items-center justify-between p-3 pl-6 md:p-2">
+      <div className="hidden md:flex" />
       <Link href="/">
         <Consume className="text-2xl" />
       </Link>

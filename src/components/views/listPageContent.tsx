@@ -264,9 +264,9 @@ export function ListPageContent({ layout }: { layout: "list" | "grid" }) {
         onDragOver={onDragOver}
         onDragEnd={onDragEnd}
       >
-        <div className="main-grid grid h-full w-full grid-cols-8 px-5 xl:grid-cols-6">
+        <div className="main-grid grid h-full w-full grid-cols-1 md:grid-cols-6 md:px-5">
           {/* NAVBAR */}
-          <div className="flex flex-col justify-center">
+          <div className="hidden flex-col justify-center md:flex">
             <div className="flex flex-row items-center">
               {isNavbarOpen && <NavBar />}
               <Toggle onPressedChange={(pressed) => setIsNavbarOpen(pressed)}>
@@ -276,11 +276,11 @@ export function ListPageContent({ layout }: { layout: "list" | "grid" }) {
           </div>
 
           {/* THE LIST */}
-          <div className="col-span-6 overflow-hidden xl:col-span-4">
-            <div className="lists items-top container grid h-full w-full grid-cols-1 justify-center overflow-auto p-4">
-              <div className="relative flex h-full w-full flex-col space-y-5 overflow-y-auto overflow-x-hidden px-10 pt-2">
+          <div className="col-span-4 overflow-hidden">
+            <div className="lists items-top container grid h-full w-full grid-cols-1 justify-center overflow-auto px-4 pb-2">
+              <div className="relative flex h-full w-full flex-col space-y-5 overflow-y-auto overflow-x-hidden px-2 pt-2 md:px-10">
                 {/* CREATION COMMAND */}
-                <div className="item-creation-field absolute z-10 w-full pr-20">
+                <div className="item-creation-field absolute z-10 w-full pr-5 md:pr-20">
                   {itemCreationList && <ItemCreationInput listId={itemCreationList} />}
                 </div>
                 <div className="h-6" />
