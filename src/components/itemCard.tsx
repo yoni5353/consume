@@ -126,6 +126,7 @@ export function ItemCard({
     <div className="flex flex-col gap-5 overflow-hidden">
       <Button
         onClick={onClick}
+        onTouchEnd={() => setShowDialog(true)}
         onAuxClick={onAuxClick}
         onContextMenu={onAuxClick} // For context menu with keyboard
         onDoubleClick={() => setShowDialog(true)}
@@ -140,7 +141,7 @@ export function ItemCard({
         {content}
       </Button>
       <Dialog open={showDialog} onOpenChange={setShowDialog}>
-        <DialogContent className="min-w-[550px]">
+        <DialogContent className="md:min-w-[550px]">
           <ItemDialog itemId={item.id} />
         </DialogContent>
       </Dialog>

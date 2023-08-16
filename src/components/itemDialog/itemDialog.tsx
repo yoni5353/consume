@@ -118,8 +118,8 @@ export function ItemDialog({ itemId }: { itemId: string }) {
       />
 
       {/* BODY */}
-      <div className="relative grid grid-cols-2 gap-2 gap-x-10">
-        <div className="absolute left-[50%] h-[100%] w-0.5 rounded-full bg-muted"></div>
+      <div className="relative grid grid-cols-1 gap-2 gap-x-10 md:grid-cols-2">
+        <div className="absolute left-[50%] hidden h-[100%] w-0.5 rounded-full bg-muted md:block"></div>
 
         {/* PROGRESS */}
         <div className="flex flex-col items-center gap-2">
