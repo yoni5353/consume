@@ -15,14 +15,6 @@ import { throttle } from "lodash";
 import { ProgressEditor } from "./progressEditor";
 import { ItemDialogDropdown } from "./itemDialogDropdown";
 import { format } from "date-fns";
-import { ProgressNode } from "../progress/progressNode";
-import { Button } from "../ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuTrigger,
-  DropdownMenuContent,
-} from "../ui/dropdown-menu";
-import { SettingsIcon } from "lucide-react";
 import { getTags } from "~/utils/items/tags";
 import { NotesTextarea } from "./notesTextarea";
 

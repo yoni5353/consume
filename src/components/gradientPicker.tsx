@@ -43,7 +43,7 @@ export function GradientPicker({
   );
 }
 
-function ColorSelector({
+export function ColorSelector({
   color,
   onChange,
   onChangeComplete,
@@ -58,7 +58,7 @@ function ColorSelector({
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <div
-          className={cn(className, "h-4 w-24 cursor-pointer")}
+          className={cn("h-4 w-24 cursor-pointer", className)}
           style={{ backgroundColor: `${color}` }}
         />
       </DropdownMenuTrigger>

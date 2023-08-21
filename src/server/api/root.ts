@@ -4,6 +4,7 @@ import { itemsRouter } from "./routers/item";
 import { templatesRouter } from "./routers/template";
 import { mediaTypesRouter } from "./routers/mediaTypes";
 import { goalsRouter } from "./routers/goal";
+import { tagsRouter } from "./routers/tag";
 
 export const appRouter = createTRPCRouter({
   lists: listsRouter,
@@ -11,6 +12,7 @@ export const appRouter = createTRPCRouter({
   templates: templatesRouter,
   mediaTypes: mediaTypesRouter,
   goals: goalsRouter,
+  tags: tagsRouter,
 });
 
 // export type definition of API

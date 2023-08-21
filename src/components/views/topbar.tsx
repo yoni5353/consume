@@ -1,4 +1,4 @@
-import { Layout, LogOut, PaletteIcon, Settings, User, UserIcon } from "lucide-react";
+import { Layout, LogOut, PaletteIcon, TagIcon, User, UserIcon } from "lucide-react";
 import { Consume } from "../ui/con-sume";
 import { Toggle } from "../ui/toggle";
 import { Avatar, AvatarImage, AvatarFallback } from "../ui/avatar";
@@ -15,6 +15,8 @@ import {
 import { signOut, useSession } from "next-auth/react";
 import { GradientPicker } from "../gradientPicker";
 import Link from "next/link";
+import { TagsDialog } from "../tagsDialog";
+import { Dialog, DialogTrigger } from "../ui/dialog";
 
 export function TopBar({
   gradientColorsState,
@@ -65,11 +67,16 @@ export function TopBar({
                 <span>Profile</span>
                 <DropdownMenuShortcut>⇧P</DropdownMenuShortcut>
               </DropdownMenuItem>
-              <DropdownMenuItem>
-                <Settings className="mr-2 h-4 w-4" />
-                <span>Settings</span>
-                <DropdownMenuShortcut>⇧S</DropdownMenuShortcut>
-              </DropdownMenuItem>
+              <Dialog>
+                <DialogTrigger asChild>
+                  <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                    <TagIcon className="mr-2 h-4 w-4" />
+                    <span>Tags</span>
+                    <DropdownMenuShortcut>⇧T</DropdownMenuShortcut>
+                  </DropdownMenuItem>
+                </DialogTrigger>
+                <TagsDialog />
+              </Dialog>
             </DropdownMenuGroup>
             <DropdownMenuGroup>
               <DropdownMenuItem className="flex flex-col items-start gap-2">
