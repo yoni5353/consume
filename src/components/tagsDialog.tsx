@@ -1,4 +1,3 @@
-import { BlockPicker } from "react-color";
 import {
   DialogContent,
   DialogHeader,
@@ -9,9 +8,17 @@ import {
 import { api } from "~/utils/api";
 import { useState } from "react";
 import { ColorSelector } from "./gradientPicker";
+import { EraserIcon } from "lucide-react";
+import { Button } from "./ui/button";
+
+const DEFAULT_TAG_COLOR = "#FFFFFF";
 
 export function TagsDialog() {
   const { data: tags } = api.tags.getAllUserTags.useQuery();
+
+  const { data: userTagColors } = api.tags.getUserTagColors.useQuery();
+
+  const { mutate: updateTagColor } = api.tags.updateTagColor.useMutation();
 
   return (
     <DialogContent>
@@ -25,9 +32,14 @@ export function TagsDialog() {
           {/* TODO Add hint about tags */}
         </div>
       ) : (
-        <div className="grid gap-2 md:grid-cols-2">
+        <div className="grid gap-x-4 gap-y-2 md:grid-cols-2">
           {tags.map((tag) => (
-            <TagBlock key={tag} tag={tag} />
+            <TagBlock
+              key={tag}
+              tag={tag}
+              initialColor={userTagColors?.[tag] ?? ""}
+              onChangeComplete={(color) => updateTagColor({ tag, color })}
+            />
           ))}
         </div>
       )}
@@ -36,8 +48,16 @@ export function TagsDialog() {
   );
 }
 
-function TagBlock({ tag }: { tag: string }) {
-  const [color, setColor] = useState<string>("");
+function TagBlock({
+  tag,
+  initialColor,
+  onChangeComplete,
+}: {
+  tag: string;
+  initialColor: string;
+  onChangeComplete: (color: string) => void;
+}) {
+  const [color, setColor] = useState<string>(initialColor ?? DEFAULT_TAG_COLOR);
 
   return (
     <div className="flex flex-row items-center justify-between">
@@ -48,10 +68,12 @@ function TagBlock({ tag }: { tag: string }) {
         <ColorSelector
           color={color}
           onChange={setColor}
-          onChangeComplete={setColor}
+          onChangeComplete={onChangeComplete}
           className="w-4"
         />
-        <button className="text-sm text-muted-foreground">Reset</button>
+        <Button variant="ghost" className="h-6 w-6 p-0">
+          <EraserIcon className="h-4 w-4 text-muted-foreground" />
+        </Button>
       </div>
     </div>
   );

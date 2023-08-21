@@ -200,6 +200,20 @@ model Tag {
   @@id([name])
 }
 
+model UserTagColor {
+  user   User   @relation(fields: [userId], references: [id])
+  userId String
+
+  tag   Tag    @relation(fields: [tagId], references: [name])
+  tagId String
+
+  color String
+
+  @@id([userId, tagId])
+  @@index([userId])
+  @@index([tagId])
+}
+
 // Necessary for Next auth
 model Account {
   id                String  @id @default(cuid())
@@ -245,6 +259,7 @@ model User {
   ItemTemplate ItemTemplate[]
   MediaType    MediaType[]
   Goal         Goal[]
+  UserTagColor UserTagColor[]
 }
 
 model VerificationToken {

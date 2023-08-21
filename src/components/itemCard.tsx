@@ -12,6 +12,7 @@ import { type ComponentProps, useState } from "react";
 import { AspectRatio } from "./ui/aspect-ratio";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
+import { Tag } from "@prisma/client";
 
 export function SortableItemCard(props: ComponentProps<typeof ItemCard>) {
   const { attributes, listeners, setNodeRef, transform, transition } = useSortable({
@@ -62,11 +63,7 @@ export function ItemCard({
             {item.title}
           </div>
           <div className="space-x-2">
-            {item.tags.map((tag) => (
-              <Badge key={tag.name} className="px-[5px] py-0">
-                {tag.name}
-              </Badge>
-            ))}
+            <ItemTags tags={item.tags} />
           </div>
         </div>
         <div onDoubleClick={(e) => e.stopPropagation()}>
@@ -105,11 +102,7 @@ export function ItemCard({
             <div className="flex flex-row items-center space-x-1">
               <MediaTypeIcon mediaType={item.mediaType ?? undefined} />
               <div className="flex flex-wrap gap-1">
-                {item.tags.map((tag) => (
-                  <Badge key={tag.name} className="px-[5px] py-0">
-                    {tag.name}
-                  </Badge>
-                ))}
+                <ItemTags tags={item.tags} />
               </div>
             </div>
             <CircleProgress
@@ -146,5 +139,22 @@ export function ItemCard({
         </DialogContent>
       </Dialog>
     </div>
+  );
+}
+
+function ItemTags({ tags }: { tags: Tag[] }) {
+  const { data: userTagColors } = api.tags.getUserTagColors.useQuery();
+
+  return (
+    <>
+      {tags.map(({ name: tag }) => {
+        const color = userTagColors?.[tag] ?? "";
+        return (
+          <Badge key={tag} className="px-[5px] py-0" style={{ backgroundColor: color }}>
+            {tag}
+          </Badge>
+        );
+      })}
+    </>
   );
 }
