@@ -194,10 +194,10 @@ model Goal {
 model Tag {
   name String @unique
 
-  Item   Item?   @relation(fields: [itemId], references: [id])
-  itemId String?
+  items        Item[]
+  userTagColor UserTagColor[]
 
-  @@index([itemId])
+  @@id([name])
 }
 
 // Necessary for Next auth
