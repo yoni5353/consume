@@ -106,7 +106,7 @@ export function ItemDialog({ itemId }: { itemId: string }) {
         id="notes"
         className="font-light tracking-wide"
         defaultValue={item.notes}
-        onChange={(e) => onNotesCommit(e.target.value)}
+        onChange={onNotesCommit}
       />
 
       {/* BODY */}

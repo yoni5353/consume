@@ -8,7 +8,10 @@ import { Button } from "../ui/button";
 import { EraserIcon } from "lucide-react";
 import { Badge } from "../ui/badge";
 
-export function NotesTextarea({ onChange, ...props }: TextareaProps) {
+export function NotesTextarea({
+  onChange,
+  ...props
+}: { onChange: (value: string) => void } & Omit<TextareaProps, "onChange">) {
   const [value, setValue] = useState(
     typeof props.defaultValue === "string" ? props.defaultValue : ""
   );
@@ -18,13 +21,24 @@ export function NotesTextarea({ onChange, ...props }: TextareaProps) {
   const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const newValue = e.target.value;
     setValue(newValue);
-    onChange?.(e);
+    onChange?.(newValue);
   };
 
   const highlightedText = value.split(TAG_REGEX).map((part, index) => {
     if (index % 2 === 1) {
       const color = userTagColors?.[part] ?? DEFAULT_TAG_COLOR;
-      return <TagSpan key={index} tag={part} color={color} />;
+      return (
+        <TagSpan
+          key={index}
+          tag={part}
+          color={color}
+          onDelete={() => {
+            const newValue = value.replaceAll(`[${part}]`, "");
+            setValue(newValue);
+            onChange?.(newValue);
+          }}
+        />
+      );
     }
     return (
       <span className="opacity-0" key={index}>
@@ -48,7 +62,15 @@ export function NotesTextarea({ onChange, ...props }: TextareaProps) {
   );
 }
 
-function TagSpan({ tag, color }: { tag: string; color: string }) {
+function TagSpan({
+  tag,
+  color,
+  onDelete,
+}: {
+  tag: string;
+  color: string;
+  onDelete?: () => void;
+}) {
   return (
     <HoverCard openDelay={250} closeDelay={100}>
       <HoverCardTrigger asChild>
@@ -61,7 +83,7 @@ function TagSpan({ tag, color }: { tag: string; color: string }) {
         <Badge className="h-min px-[5px] py-0" style={{ backgroundColor: color }}>
           {tag}
         </Badge>
-        <Button variant="ghost" className="h-8 w-8 p-0">
+        <Button variant="ghost" className="h-8 w-8 p-0" onClick={onDelete}>
           <EraserIcon className="h-4 w-4" />
         </Button>
       </HoverCardContent>
