@@ -1,10 +1,4 @@
-import {
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-  DialogFooter,
-} from "./ui/dialog";
+import { DialogContent, DialogHeader, DialogTitle, DialogDescription } from "./ui/dialog";
 import { api } from "~/utils/api";
 import { useMemo, useState } from "react";
 import { ColorSelector } from "./gradientPicker";
@@ -12,8 +6,7 @@ import { EraserIcon, InfoIcon, Trash2Icon } from "lucide-react";
 import { Button } from "./ui/button";
 import { cn } from "~/utils/ui/cn";
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "./ui/hover-card";
-
-const DEFAULT_TAG_COLOR = "#FFFFFF";
+import { DEFAULT_TAG_COLOR } from "~/styles/colors";
 
 export function TagsDialog() {
   const ctx = api.useContext();
