@@ -218,7 +218,7 @@ export const itemsRouter = createTRPCRouter({
           image: input.image || undefined,
           mediaType: mediaTypeConnection,
           tags: {
-            deleteMany: { name: { notIn: input.tags } },
+            set: [],
             connectOrCreate: input.tags?.map((tag) => ({
               where: { name: tag },
               create: { name: tag },

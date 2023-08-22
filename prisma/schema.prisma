@@ -194,8 +194,8 @@ model Goal {
 model Tag {
   name String @unique
 
-  items        Item[]
-  userTagColor UserTagColor[]
+  items         Item[]
+  userTagColors UserTagColor[]
 
   @@id([name])
 }
@@ -204,7 +204,7 @@ model UserTagColor {
   user   User   @relation(fields: [userId], references: [id])
   userId String
 
-  tag   Tag    @relation(fields: [tagId], references: [name])
+  tag   Tag    @relation(fields: [tagId], references: [name], onDelete: Cascade)
   tagId String
 
   color String

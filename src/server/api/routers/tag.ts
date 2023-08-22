@@ -41,4 +41,12 @@ export const tagsRouter = createTRPCRouter({
         },
       });
     }),
+
+  removeTagColor: protectedProcedure
+    .input(z.string())
+    .mutation(async ({ ctx, input }) => {
+      return ctx.prisma.userTagColor.delete({
+        where: { userId_tagId: { userId: ctx.session.user.id, tagId: input } },
+      });
+    }),
 });
