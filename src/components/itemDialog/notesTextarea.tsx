@@ -6,7 +6,7 @@ import { DEFAULT_TAG_COLOR } from "~/styles/colors";
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "../ui/hover-card";
 import { Button } from "../ui/button";
 import { EraserIcon } from "lucide-react";
-import { Badge } from "../ui/badge";
+import { TagBadge } from "../resources/tagBadge";
 
 export function NotesTextarea({
   onChange,
@@ -80,9 +80,7 @@ function TagSpan({
         >{`[${tag}]`}</span>
       </HoverCardTrigger>
       <HoverCardContent side="top" className="flex w-min flex-row items-center gap-1 p-2">
-        <Badge className="h-min px-[5px] py-0" style={{ backgroundColor: color }}>
-          {tag}
-        </Badge>
+        <TagBadge name={tag} color={color} />
         <Button variant="ghost" className="h-8 w-8 p-0" onClick={onDelete}>
           <EraserIcon className="h-4 w-4" />
         </Button>

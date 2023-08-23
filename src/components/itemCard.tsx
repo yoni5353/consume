@@ -13,6 +13,7 @@ import { AspectRatio } from "./ui/aspect-ratio";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { Tag } from "@prisma/client";
+import { TagBadge } from "./resources/tagBadge";
 
 export function SortableItemCard(props: ComponentProps<typeof ItemCard>) {
   const { attributes, listeners, setNodeRef, transform, transition } = useSortable({
@@ -149,11 +150,7 @@ function ItemTags({ tags }: { tags: Tag[] }) {
     <>
       {tags.map(({ name: tag }) => {
         const color = userTagColors?.[tag] ?? "";
-        return (
-          <Badge key={tag} className="px-[5px] py-0" style={{ backgroundColor: color }}>
-            {tag}
-          </Badge>
-        );
+        return <TagBadge key={tag} name={tag} color={color} />;
       })}
     </>
   );
