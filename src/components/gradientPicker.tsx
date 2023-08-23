@@ -4,7 +4,7 @@ import {
   DropdownMenuTrigger,
 } from "@radix-ui/react-dropdown-menu";
 import { useState } from "react";
-import { BlockPicker } from "react-color";
+import { BlockPicker, BlockPickerProps } from "react-color";
 import { cn } from "~/utils/ui/cn";
 
 export function GradientPicker({
@@ -43,6 +43,26 @@ export function GradientPicker({
   );
 }
 
+export function ConsumeBlockPicker(props: BlockPickerProps) {
+  return (
+    <BlockPicker
+      width="175px"
+      colors={BLOCK_COLORS}
+      styles={{
+        default: {
+          head: { border: "1D283A solid 5px" },
+          body: {
+            backgroundColor: "#030711",
+            borderRadius: "0 0 4px 4px",
+            border: "#1D283A solid 1px",
+          },
+        },
+      }}
+      {...props}
+    />
+  );
+}
+
 export function ColorSelector({
   color,
   onChange,
@@ -63,22 +83,10 @@ export function ColorSelector({
         />
       </DropdownMenuTrigger>
       <DropdownMenuContent align="center" sideOffset={12}>
-        <BlockPicker
-          width="175px"
+        <ConsumeBlockPicker
           color={color}
           onChange={({ hex }) => onChange(hex)}
           onChangeComplete={({ hex }) => onChangeComplete?.(hex)}
-          colors={BLOCK_COLORS}
-          styles={{
-            default: {
-              head: { border: "1D283A solid 5px" },
-              body: {
-                backgroundColor: "#030711",
-                borderRadius: "0 0 4px 4px",
-                border: "#1D283A solid 1px",
-              },
-            },
-          }}
         />
       </DropdownMenuContent>
     </DropdownMenu>

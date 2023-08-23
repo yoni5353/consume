@@ -7,6 +7,10 @@ import { HoverCard, HoverCardContent, HoverCardTrigger } from "../ui/hover-card"
 import { Button } from "../ui/button";
 import { EraserIcon } from "lucide-react";
 import { TagBadge } from "../resources/tagBadge";
+import { DropdownMenu, DropdownMenuContent } from "../ui/dropdown-menu";
+import { DropdownMenuTrigger } from "@radix-ui/react-dropdown-menu";
+import { ColorSelector, ConsumeBlockPicker } from "../gradientPicker";
+import { useUpdateTagColor } from "~/utils/queries/useUpdateTagColor";
 
 export function NotesTextarea({
   onChange,
@@ -71,6 +75,10 @@ function TagSpan({
   color: string;
   onDelete?: () => void;
 }) {
+  const [currentColor, setCurrentColor] = useState(color);
+
+  const { mutate: updateTagColor } = useUpdateTagColor();
+
   return (
     <HoverCard openDelay={250} closeDelay={100}>
       <HoverCardTrigger asChild>
@@ -80,7 +88,18 @@ function TagSpan({
         >{`[${tag}]`}</span>
       </HoverCardTrigger>
       <HoverCardContent side="top" className="flex w-min flex-row items-center gap-1 p-2">
-        <TagBadge name={tag} color={color} />
+        <DropdownMenu>
+          <DropdownMenuTrigger>
+            <TagBadge name={tag} color={color} />
+          </DropdownMenuTrigger>
+          <DropdownMenuContent>
+            <ConsumeBlockPicker
+              color={currentColor}
+              onChange={({ hex }) => setCurrentColor(hex)}
+              onChangeComplete={({ hex }) => updateTagColor({ tag, color: hex })}
+            />
+          </DropdownMenuContent>
+        </DropdownMenu>
         <Button variant="ghost" className="h-8 w-8 p-0" onClick={onDelete}>
           <EraserIcon className="h-4 w-4" />
         </Button>
