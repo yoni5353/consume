@@ -5,19 +5,20 @@ import { cn } from "~/utils/ui/cn";
 import { MediaTypeIcon } from "./resources/mediaTypeIcon";
 import Image from "next/image";
 import { CircleProgress } from "./progress/circleProgress";
-import { Badge } from "./ui/badge";
 import { Dialog, DialogContent } from "./ui/dialog";
 import { ItemDialog } from "./itemDialog/itemDialog";
 import { type ComponentProps, useState } from "react";
 import { AspectRatio } from "./ui/aspect-ratio";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import { Tag } from "@prisma/client";
+import { type Tag } from "@prisma/client";
 import { TagBadge } from "./resources/tagBadge";
 
 export function SortableItemCard(props: ComponentProps<typeof ItemCard>) {
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
   const { attributes, listeners, setNodeRef, transform, transition } = useSortable({
     id: props.itemId,
+    disabled: isDialogOpen,
   });
 
   const draggableStyle = {
@@ -27,7 +28,7 @@ export function SortableItemCard(props: ComponentProps<typeof ItemCard>) {
 
   return (
     <div ref={setNodeRef} style={draggableStyle} {...attributes} {...listeners}>
-      <ItemCard {...props} />
+      <ItemCard {...props} onShowDialogChange={setIsDialogOpen} />
     </div>
   );
 }
@@ -38,14 +39,20 @@ export function ItemCard({
   onAuxClick,
   selected,
   layout,
+  onShowDialogChange,
 }: {
   itemId: string;
   onClick?: (event: React.MouseEvent) => void;
   onAuxClick?: (event: React.MouseEvent) => void;
   selected: boolean;
   layout: "inline" | "card";
+  onShowDialogChange?: (showDialog: boolean) => void;
 }) {
-  const [showDialog, setShowDialog] = useState(false);
+  const [showDialog, _setShowDialog] = useState(false);
+  const setShowDialog = (showDialog: boolean) => {
+    _setShowDialog(showDialog);
+    onShowDialogChange?.(showDialog);
+  };
 
   const { data: item } = api.items.getItem.useQuery(itemId, {
     refetchOnWindowFocus: false,
@@ -135,7 +142,10 @@ export function ItemCard({
         {content}
       </Button>
       <Dialog open={showDialog} onOpenChange={setShowDialog}>
-        <DialogContent className="md:min-w-[550px]">
+        <DialogContent
+          className="md:min-w-[550px]"
+          onContextMenu={(e) => e.stopPropagation()}
+        >
           <ItemDialog itemId={item.id} />
         </DialogContent>
       </Dialog>
