@@ -80,7 +80,8 @@ export function ItemsList({
                 <Popover>
                   <PopoverTrigger className="flex flex-row text-xs hover:cursor-pointer hover:underline">
                     <CalendarIcon className="mr-1 h-4 w-4" />
-                    {list.dueDate ? (
+                    {!list.dueDate && <div className="absolute h-4 w-4">/</div>}
+                    {list.dueDate && (
                       <div>
                         {format(list.startDate, "LLL dd")} -{" "}
                         {format(list.dueDate, "LLL dd")}
@@ -90,8 +91,6 @@ export function ItemsList({
                           <> ({formatDistance(list.dueDate, new Date())} overdue)</>
                         )}
                       </div>
-                    ) : (
-                      <div>No due date</div>
                     )}
                   </PopoverTrigger>
                   <PopoverContent className="w-auto p-0" align="start" sideOffset={10}>
