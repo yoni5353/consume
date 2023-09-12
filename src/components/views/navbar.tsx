@@ -1,10 +1,11 @@
 import { BikeIcon, ListIcon } from "lucide-react";
 import { useState } from "react";
-import { Button } from "~/components/ui/button";
+import { Button, type ButtonProps } from "~/components/ui/button";
 import { api } from "~/utils/api";
 import { ContextMenu, ContextMenuTrigger } from "~/components/ui/context-menu";
 import { useAutoAnimate } from "@formkit/auto-animate/react";
 import { ListContextMenu } from "~/components/listContextMenu";
+import { useDroppable } from "@dnd-kit/core";
 
 export function NavBar() {
   const [currentContextMenuSprint, setCurrentContextMenuSprint] = useState<string>();
@@ -23,8 +24,8 @@ export function NavBar() {
   // });
 
   return (
-    <aside className="sidebar space-y-5 pr-10">
-      <div className="space-y-12 overflow-auto px-2">
+    <aside className="sidebar space-y-5 pr-2">
+      <div className="space-y-6 overflow-auto px-2">
         <div>
           <h2 className="align-center mb-2 flex flex-row px-2 text-lg font-semibold tracking-tight">
             Sprints
@@ -34,24 +35,17 @@ export function NavBar() {
               <ContextMenuTrigger>
                 <div className="sprints-list space-y-2" ref={sprintsRef}>
                   {sprints?.map((sprint) => (
-                    <Button
+                    <ListButton
                       key={sprint.id}
-                      // variant={currentLists.includes(sprint.id) ? "secondary" : "ghost"}
-                      variant="ghost"
-                      size="sm"
-                      className="w-full justify-start text-xs font-extrabold"
+                      droppableId={sprint.id}
                       onClick={() => {
-                        // selectSprint(sprint.id);
                         setCurrentContextMenuSprint(sprint.id);
                       }}
-                      onAuxClick={() => {
-                        // selectSprint(sprint.id); // do not fly to sprint here
-                        setCurrentContextMenuSprint(sprint.id);
-                      }}
+                      onAuxClick={() => setCurrentContextMenuSprint(sprint.id)}
                     >
                       <BikeIcon className="mr-2 h-4 w-4" />
                       <span className="uppercase">{sprint.title}</span>
-                    </Button>
+                    </ListButton>
                   ))}
                 </div>
               </ContextMenuTrigger>
@@ -148,5 +142,26 @@ export function NavBar() {
         </div>
       </div>
     </aside>
+  );
+}
+
+function ListButton({ droppableId, ...props }: { droppableId: string } & ButtonProps) {
+  const { setNodeRef, isOver } = useDroppable({
+    id: droppableId,
+    data: {
+      type: "nav-list",
+    },
+  });
+
+  return (
+    <Button
+      ref={setNodeRef}
+      variant={!isOver ? "ghost" : "secondary"}
+      size="sm"
+      className="w-full justify-start text-xs font-extrabold"
+      {...props}
+    >
+      {props.children}
+    </Button>
   );
 }
