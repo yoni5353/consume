@@ -1,6 +1,5 @@
 import { z } from "zod";
 import { createTRPCRouter, publicProcedure, protectedProcedure } from "~/server/api/trpc";
-import { ProgressType } from "~/utils/progress";
 
 export const templatesRouter = createTRPCRouter({
   searchItemTemplates: publicProcedure.input(z.string()).query(({ ctx, input }) => {
@@ -8,6 +7,7 @@ export const templatesRouter = createTRPCRouter({
       where: {
         title: {
           contains: input,
+          mode: "insensitive",
         },
       },
     });
@@ -18,6 +18,7 @@ export const templatesRouter = createTRPCRouter({
       where: {
         title: {
           contains: input,
+          mode: "insensitive",
         },
       },
     });
