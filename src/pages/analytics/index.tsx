@@ -3,6 +3,7 @@ import { useState } from "react";
 import { TopBar } from "~/components/views/topbar";
 import Head from "next/head";
 import { RecentItems } from "~/components/analytics/recentItems";
+import { PieThing } from "~/components/analytics/pieThing";
 
 const DEFAULT_COLORS: [string, string] = ["#3b82f6", "#76b9ce"];
 
@@ -29,10 +30,13 @@ const AnalyticsPage: NextPage = () => {
           />
 
           <div className="main-grid grid h-full w-full grid-cols-5 px-5 xl:grid-cols-6">
-            {/* NAVBAR */}
             <div></div>
 
-            <RecentItems />
+            <div className="dashboard-grid col-span-4 grid grid-cols-3 ">
+              <PieThing />
+
+              <RecentItems />
+            </div>
           </div>
         </div>
       </main>

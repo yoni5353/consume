@@ -41,6 +41,7 @@ const defaultIconByNames: { [name: string]: (props: IconProps) => JSX.Element } 
   "tv series": TvIcon,
   movie: ClapperboardIcon,
   anime: AxeIcon,
+  "video game": Gamepad2Icon,
 };
 
 const defaultIcon = BoxIcon;

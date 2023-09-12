@@ -2,6 +2,7 @@ import { api } from "~/utils/api";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../ui/card";
 import Image from "next/image";
 import dayjs from "dayjs";
+import { MediaTypeIcon } from "../resources/mediaTypeIcon";
 
 export function RecentItems() {
   const { data: recentItems } = api.items.getRecentItems.useQuery();
@@ -24,7 +25,9 @@ export function RecentItems() {
                 height={64}
               />
             ) : (
-              <div className="h-[64px] w-[48px]" />
+              <div className="flex h-[64px] w-[48px] items-center justify-center">
+                <MediaTypeIcon mediaType={item.mediaType ?? undefined} />
+              </div>
             )}
             <div className="ml-4 space-y-1">
               <p className="text-sm font-medium leading-none">{item.title}</p>
