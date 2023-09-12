@@ -9,8 +9,17 @@ import { EraserIcon } from "lucide-react";
 import { TagBadge } from "../resources/tagBadge";
 import { DropdownMenu, DropdownMenuContent } from "../ui/dropdown-menu";
 import { DropdownMenuTrigger } from "@radix-ui/react-dropdown-menu";
-import { ColorSelector, ConsumeBlockPicker } from "../gradientPicker";
+import { ConsumeBlockPicker } from "../gradientPicker";
 import { useUpdateTagColor } from "~/utils/queries/useUpdateTagColor";
+
+const possibleHints = [
+  "Enter a note about your item...",
+  "Try adding a [tag] to you note!",
+];
+
+function getRandomHint() {
+  return possibleHints[Math.floor(Math.random() * possibleHints.length)];
+}
 
 export function NotesTextarea({
   onChange,
@@ -19,6 +28,7 @@ export function NotesTextarea({
   const [value, setValue] = useState(
     typeof props.defaultValue === "string" ? props.defaultValue : ""
   );
+  const [noteHint] = useState(getRandomHint);
 
   const { data: userTagColors } = api.tags.getUserTagColors.useQuery();
 
@@ -57,6 +67,7 @@ export function NotesTextarea({
         className="text-red-100"
         value={value}
         onChange={handleChange}
+        placeholder={noteHint}
         {...props}
       />
       <div className="pointer-events-none absolute inline-block overflow-hidden whitespace-pre-wrap px-[13px] py-[9px]">
