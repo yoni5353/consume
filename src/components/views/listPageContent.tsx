@@ -17,13 +17,11 @@ import {
   useSensor,
   useSensors,
   type DragOverEvent,
-  type Over,
-  type Active,
 } from "@dnd-kit/core";
 import { ItemCard } from "../itemCard";
-import { get } from "lodash";
 import { useItemsInLists } from "~/utils/queries/useItemsInLists";
 import { type ItemsInLists } from "@prisma/client";
+import { getOverListId, getOverIndex } from "~/utils/dnd/itemDndUtils";
 
 export type ItemDragContext = {
   draggedIds: string[];
@@ -114,27 +112,6 @@ export function ListPageContent({ layout }: { layout: "list" | "grid" }) {
     })
   );
 
-  const getOverIndex = useCallback((over: Over | null) => {
-    if (over && get(over, "data.current.type") === "list") return 0;
-
-    const overIndex = get(over, "data.current.sortable.index") as number | undefined;
-    if (typeof overIndex !== "number") throw Error("Could not find overIndex");
-    return overIndex;
-  }, []);
-
-  const getOverListId = useCallback((over: Over | Active | null) => {
-    if (over && get(over, "data.current.type") === "list") {
-      return over?.id as string;
-    }
-
-    const containerId = get(over, "data.current.sortable.containerId") as
-      | number
-      | undefined;
-    if (typeof containerId !== "string") throw Error("Could not find containerId");
-
-    return containerId;
-  }, []);
-
   const onDragStart = useCallback(
     ({ active }: DragStartEvent) => {
       const { id: itemId } = active;
@@ -148,7 +125,7 @@ export function ListPageContent({ layout }: { layout: "list" | "grid" }) {
         draggedOverListId: getOverListId(active),
       });
     },
-    [getOverListId, selectCardPreDrag, selectedItems]
+    [selectCardPreDrag, selectedItems]
   );
 
   const onDragOver = useCallback(
@@ -168,7 +145,7 @@ export function ListPageContent({ layout }: { layout: "list" | "grid" }) {
         });
       }
     },
-    [dragContext?.draggedOverListId, getOverIndex, getOverListId]
+    [dragContext?.draggedOverListId]
   );
 
   const onDragEnd = useCallback(
