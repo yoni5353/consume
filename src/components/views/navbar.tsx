@@ -11,9 +11,6 @@ export function NavBar({ onClickList }: { onClickList: (listId: string) => void 
   const [currentContextMenuSprint, setCurrentContextMenuSprint] = useState<string>();
   const [currentContextMenuList, setCurrentContextMenuList] = useState<string>();
   const [sprintsRef] = useAutoAnimate<HTMLDivElement>();
-  const [backlogRef] = useAutoAnimate<HTMLDivElement>();
-
-  const { data: lists } = api.lists.getBacklog.useQuery();
 
   const { data: sprints } = api.lists.getSprints.useQuery();
 
@@ -61,34 +58,6 @@ export function NavBar({ onClickList }: { onClickList: (listId: string) => void 
           <h2 className="align-center mb-2 flex flex-row px-2 text-lg font-semibold tracking-tight">
             Backlog
           </h2>
-          <div className="space-y-2 pb-1">
-            <ContextMenu modal={false}>
-              <ContextMenuTrigger>
-                <div className="lists-list space-y-2" ref={backlogRef}>
-                  {lists?.map((list) => (
-                    <Button
-                      key={list.id}
-                      // variant={currentLists.includes(list.id) ? "secondary" : "ghost"}
-                      variant="ghost"
-                      size="sm"
-                      className="w-full justify-start text-xs font-extrabold"
-                      onClick={() => {
-                        setCurrentContextMenuList(list.id);
-                        // moveToList(list.id)
-                      }}
-                      onAuxClick={() => {
-                        setCurrentContextMenuList(list.id);
-                      }}
-                    >
-                      <ListIcon className="mr-2 h-4 w-4" />
-                      <span className="uppercase">{list.title}</span>
-                    </Button>
-                  ))}
-                </div>
-              </ContextMenuTrigger>
-              <ListContextMenu selectedListId={currentContextMenuList ?? null} />
-            </ContextMenu>
-          </div>
         </div>
         <div>
           {/* <h2 className="mb-2 flex flex-row items-center px-2 text-lg font-semibold tracking-tight">

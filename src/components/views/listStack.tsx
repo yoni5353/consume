@@ -32,6 +32,8 @@ export function ListStack({
 
   const { data: sprints } = api.lists.getSprints.useQuery();
 
+  const { data: backlog } = api.lists.getUserBacklog.useQuery();
+
   const itemsInLists = useItemsInLists(sprints?.map((sprint) => sprint.id) ?? []);
 
   const areSelectedItemsCancelled = selectedItems.every(
@@ -157,6 +159,18 @@ export function ListStack({
             <PlusCircleIcon className="mr-2 h-4 w-4" />
             Create Sprint
           </Button>
+          {!backlog && "OH NO"}
+          {backlog && (
+            <ItemsList
+              key={backlog.id}
+              layout={layout}
+              listId={backlog.id}
+              isSprint={false}
+              selectedItems={selectedItems}
+              onCardClick={onCardClick}
+              dragContext={dragContext}
+            />
+          )}
         </div>
       </ContextMenuTrigger>
       <ItemContextMenu

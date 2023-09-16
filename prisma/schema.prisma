@@ -92,7 +92,11 @@ model List {
 
   items ItemsInLists[]
 
+  backlogOf   User?   @relation("BacklogList", fields: [backlogOfId], references: [id])
+  backlogOfId String? @unique
+
   @@index([createdById])
+  @@index([backlogOfId])
 }
 
 model ItemsInLists {
@@ -252,6 +256,8 @@ model User {
   image         String?
   accounts      Account[]
   sessions      Session[]
+
+  backlogList List? @relation("BacklogList")
 
   Item         Item[]
   List         List[]

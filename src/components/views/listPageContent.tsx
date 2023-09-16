@@ -209,8 +209,6 @@ export function ListPageContent({ layout }: { layout: "list" | "grid" }) {
     onSuccess: (newList) => {
       if (newList.isSprint) {
         void ctx.lists.getSprints.invalidate();
-      } else {
-        void ctx.lists.getBacklog.invalidate();
       }
     },
   });

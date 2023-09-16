@@ -4,12 +4,16 @@ import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
 import { CreateListSchema } from "~/utils/apischemas";
 
 export const listsRouter = createTRPCRouter({
-  getBacklog: protectedProcedure.query(({ ctx }) => {
-    return ctx.prisma.list.findMany({
-      where: {
-        createdById: ctx.session.user.id,
-        isSprint: false,
-      },
+  getUserBacklog: protectedProcedure.query(async ({ ctx }) => {
+    const user = await ctx.prisma.user.findUnique({
+      where: { id: ctx.session.user.id },
+      select: { backlogList: true },
+    });
+    const backlogListId = user?.backlogList?.id;
+
+    return ctx.prisma.list.findUnique({
+      where: { id: backlogListId },
+      include: { items: { orderBy: [{ position: "asc" }, { assignedAt: "desc" }] } },
     });
   }),
 
