@@ -70,7 +70,7 @@ export function ItemsList({
   if (!list) return null;
 
   return (
-    <div className="items-list flex flex-col" ref={setNodeRef}>
+    <div className="items-list flex flex-col" ref={setNodeRef} id={`list-${list.id}`}>
       <ContextMenu>
         <ContextMenuTrigger asChild>
           <div className="flex flex-row gap-2 space-y-1 pb-3">

@@ -232,6 +232,15 @@ export function ListPageContent({ layout }: { layout: "list" | "grid" }) {
   );
   const closeListCreation = useCallback(() => _setIsCreateListOpen(false), []);
 
+  // MISC
+
+  const flyToList = useCallback((listId: string) => {
+    const listElement = document.getElementById(`list-${listId}`);
+    if (listElement) {
+      listElement.scrollIntoView({ behavior: "smooth" });
+    }
+  }, []);
+
   return (
     <>
       <DndContext
@@ -245,7 +254,7 @@ export function ListPageContent({ layout }: { layout: "list" | "grid" }) {
           {/* NAVBAR */}
           <div className="hidden flex-col justify-center md:flex">
             <div className="flex flex-row items-center">
-              {isNavbarOpen && <NavBar />}
+              {isNavbarOpen && <NavBar onClickList={flyToList} />}
               <Toggle onPressedChange={(pressed) => setIsNavbarOpen(pressed)}>
                 <ArrowBigRight className="h-4 w-4" />
               </Toggle>
@@ -253,22 +262,24 @@ export function ListPageContent({ layout }: { layout: "list" | "grid" }) {
           </div>
 
           {/* THE LIST */}
-          <div className="col-span-4 overflow-hidden">
-            <div className="lists items-top container grid h-full w-full grid-cols-1 justify-center overflow-auto px-4 pb-2">
-              <div className="relative flex h-full w-full flex-col space-y-5 overflow-y-auto overflow-x-hidden px-2 pt-2 md:px-10">
+          <div className="col-span-4 block overflow-hidden">
+            <div className="lists items-top container grid h-full w-full grid-cols-1 justify-center overflow-hidden px-4 pb-2">
+              <div className="relative flex h-full w-full flex-col overflow-hidden px-2 pt-2 md:px-10">
                 {/* CREATION COMMAND */}
-                <div className="item-creation-field absolute z-10 w-full pr-5 md:pr-20">
+                <div className="item-creation-field z-10 w-full">
                   {itemCreationList && <ItemCreationInput listId={itemCreationList} />}
                 </div>
-                <div className="h-6" />
+                <div className="h-4" />
                 {/* LIST STACK */}
-                <ListStack
-                  layout={layout}
-                  onCreateSprint={() => openListCreation({ isSprint: true })}
-                  selectedItems={selectedItems}
-                  onCardClick={onCardClick}
-                  dragContext={dragContext}
-                />
+                <div className="relative flex flex-col gap-5 overflow-auto">
+                  <ListStack
+                    layout={layout}
+                    onCreateSprint={() => openListCreation({ isSprint: true })}
+                    selectedItems={selectedItems}
+                    onCardClick={onCardClick}
+                    dragContext={dragContext}
+                  />
+                </div>
               </div>
             </div>
           </div>

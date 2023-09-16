@@ -9,7 +9,7 @@ import { ItemContextMenu } from "../itemContextMenu";
 import { useToast } from "../ui/use-toast";
 import { type ItemDragContext } from "./listPageContent";
 import { useItemsInLists } from "~/utils/queries/useItemsInLists";
-import { ItemsInLists } from "@prisma/client";
+import { type ItemsInLists } from "@prisma/client";
 
 export function ListStack({
   layout,

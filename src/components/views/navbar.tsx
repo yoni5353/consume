@@ -7,7 +7,7 @@ import { useAutoAnimate } from "@formkit/auto-animate/react";
 import { ListContextMenu } from "~/components/listContextMenu";
 import { useDroppable } from "@dnd-kit/core";
 
-export function NavBar() {
+export function NavBar({ onClickList }: { onClickList: (listId: string) => void }) {
   const [currentContextMenuSprint, setCurrentContextMenuSprint] = useState<string>();
   const [currentContextMenuList, setCurrentContextMenuList] = useState<string>();
   const [sprintsRef] = useAutoAnimate<HTMLDivElement>();
@@ -39,6 +39,7 @@ export function NavBar() {
                       key={sprint.id}
                       droppableId={sprint.id}
                       onClick={() => {
+                        onClickList(sprint.id);
                         setCurrentContextMenuSprint(sprint.id);
                       }}
                       onAuxClick={() => setCurrentContextMenuSprint(sprint.id)}
