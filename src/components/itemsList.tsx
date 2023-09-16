@@ -29,9 +29,7 @@ export function ItemsList({
   isSprint?: boolean;
   dragContext?: ItemDragContext;
 }) {
-  const { data: list, refetch } = api.lists.getList.useQuery(listId, {
-    refetchOnWindowFocus: false,
-  });
+  const { data: list, refetch } = api.lists.getList.useQuery(listId);
 
   const { mutate: editList } = api.lists.editList.useMutation({
     onSuccess: () => refetch(),

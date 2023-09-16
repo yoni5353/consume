@@ -54,9 +54,7 @@ export function ItemCard({
     onShowDialogChange?.(showDialog);
   };
 
-  const { data: item } = api.items.getItem.useQuery(itemId, {
-    refetchOnWindowFocus: false,
-  });
+  const { data: item } = api.items.getItem.useQuery(itemId);
 
   if (!item) return null;
 
