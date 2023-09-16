@@ -24,6 +24,12 @@ export const listsRouter = createTRPCRouter({
     });
   }),
 
+  getLists: protectedProcedure.query(({ ctx }) => {
+    return ctx.prisma.list.findMany({
+      where: { createdById: ctx.session.user.id },
+    });
+  }),
+
   createList: protectedProcedure
     .input(CreateListSchema)
     .mutation(async ({ ctx, input }) => {

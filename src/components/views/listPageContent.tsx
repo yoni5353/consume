@@ -3,7 +3,7 @@ import { ArrowBigRight } from "lucide-react";
 import { ItemCreationInput } from "../itemCreationInput";
 import { ListStack } from "./listStack";
 import { NavBar } from "./navbar";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { type CreateListSechemaType } from "~/utils/apischemas";
 import { CreateListDialog } from "../createListDialog";
 import { api } from "~/utils/api";
@@ -39,17 +39,19 @@ export function ListPageContent({ layout }: { layout: "list" | "grid" }) {
 
   const ctx = api.useContext();
 
-  const { data: sprints } = api.lists.getSprints.useQuery(undefined, {
+  const { data: lists } = api.lists.getLists.useQuery();
+
+  const { mutate: moveItems } = api.lists.moveItems.useMutation();
+
+  const itemsInLists = useItemsInLists(lists?.map((list) => list.id) ?? []);
+
+  api.lists.getSprints.useQuery(undefined, {
     onSuccess: (newSprints) => {
       if (!itemCreationList && newSprints.length) {
         setItemCreationList(newSprints[0]?.id);
       }
     },
   });
-
-  const { mutate: moveItems } = api.lists.moveItems.useMutation();
-
-  const itemsInLists = useItemsInLists(sprints?.map((sprint) => sprint.id) ?? []);
 
   // SELECTION
 
